@@ -15,4 +15,5 @@
 #define mapWidth 25
 #define mapHeight 20
 
+
 #endif //FARMINGCO_DEFINE_H

@@ -55,6 +55,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     int endGame = 0;
     int countX = 0;
     int countY = 0;
+    int zone = 0;
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -70,8 +71,13 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     playerDst.y = 0;
 
     while (!endGame) {
-        printMap(renderer, grassTexture, mapBg);
-        printMap(renderer, fencesTexture, mapFg);
+        if(zone == 0) {
+            printMap(renderer, grassTexture, mapBg);
+            printMap(renderer, fencesTexture, mapFg);
+        }else if(zone == 1){
+            printMap(renderer, grassTexture, secondZone);
+        }
+
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         SDL_RenderPresent(renderer);
 
@@ -88,19 +94,19 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                             break;
 
                         case SDLK_LEFT:
-                            moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg);
+                            moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
                             break;
 
                         case SDLK_RIGHT:
-                            moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg);
+                            moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
                             break;
 
                         case SDLK_UP:
-                            moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg);
+                            moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
                             break;
 
                         case SDLK_DOWN:
-                            moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg);
+                            moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
                             break;
                     }
             }

@@ -17,6 +17,7 @@
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
 extern char* mapBg[];
 extern char* mapFg[];
+extern char* secondZone[];
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
 #endif //FARMINGCO_MAP_H
