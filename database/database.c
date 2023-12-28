@@ -1,9 +1,9 @@
 //
-// Created by Lina Phe on 08/12/2023.
+// BUSQUET Nicolas & PHE Lina
+// 27/12/2023
+// Création base de données
 //
 
-#include <stdio.h>
-#include <sqlite3.h>
 #include "database.h"
 
 int createDatabase(){
