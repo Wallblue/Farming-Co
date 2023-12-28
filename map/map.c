@@ -80,29 +80,3 @@ void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     }
 }
 
-SDL_Renderer* initRenderer(SDL_Window* window) {
-    // Initialisation du rendu
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) {
-        exitWithError("Erreur de création du rendu");
-    }
-
-    return renderer;
-}
-
-SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
-    // Chargement d'une texture à partir d'une image BMP
-    SDL_Surface *surface = SDL_LoadBMP(imagePath);
-    if (surface == NULL) {
-        exitWithError("Echec de chargement du tileset");
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if(texture == NULL) {
-        exitWithError("Erreur de création du tileset");
-    }
-
-    SDL_FreeSurface(surface);
-
-    return texture;
-}
