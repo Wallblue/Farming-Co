@@ -60,71 +60,6 @@ char* mapFg[] = {
 };
 
 
-
-void loadMap(){
-    //Initialisations
-    SDL_Window *window = NULL;
-    SDL_Event event;
-    SDL_Renderer *renderer = NULL;
-    int endGame = 0;
-
-    //Permet de prendre l'image .bmp
-    SDL_Surface *grass = NULL;
-    SDL_Surface *fences = NULL;
-
-    //la transforme en texture pour l'afficher
-    SDL_Texture *grassText = NULL;
-    SDL_Texture *fencesText = NULL;
-
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) exitWithError("Erreur d'initialisation");
-
-    window = SDL_CreateWindow("FarmingCo",
-                              SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED,
-                              800, 640,
-                              SDL_WINDOW_SHOWN);
-    if (window == NULL) exitWithError("Erreur de création de la fenêtre");
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) exitWithError("Erreur de création du rendu");
-
-    grass = SDL_LoadBMP("../map/sheets/grass.bmp");
-    if (grass == NULL) exitWithError("Echec de chargement du tileset");
-    grassText = SDL_CreateTextureFromSurface(renderer, grass);
-    if(grassText == NULL)exitWithError("Erreur de création du tileset");
-
-    fences = SDL_LoadBMP("../map/sheets/fences.bmp");
-    if (fences == NULL) exitWithError("Echec de chargement du tileset");
-    fencesText = SDL_CreateTextureFromSurface(renderer, fences);
-    if(fencesText == NULL)exitWithError("Erreur de création du tileset 2");
-
-    SDL_FreeSurface(grass);
-    SDL_FreeSurface(fences);
-
-    SDL_Delay(50);
-
-    while(!endGame) {
-        printMap(renderer, grassText, mapBg);
-        printMap(renderer, fencesText, mapFg);
-        SDL_RenderPresent(renderer);
-
-        if (SDL_WaitEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    endGame = 1;
-                    break;
-
-                case SDL_KEYDOWN: //détecte quand on appuie sur une touche
-                    switch( event.key.keysym.sym ) {
-                        case SDLK_h: //quitte si la touche est la lettre H
-                            endGame = 1;
-                            break;
-                    }
-            }
-        }
-    }
-}
-
 //affichage d'une map
 void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     SDL_Rect dst;
@@ -145,4 +80,29 @@ void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     }
 }
 
+SDL_Renderer* initRenderer(SDL_Window* window) {
+    // Initialisation du rendu
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        exitWithError("Erreur de création du rendu");
+    }
 
+    return renderer;
+}
+
+SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
+    // Chargement d'une texture à partir d'une image BMP
+    SDL_Surface *surface = SDL_LoadBMP(imagePath);
+    if (surface == NULL) {
+        exitWithError("Echec de chargement du tileset");
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if(texture == NULL) {
+        exitWithError("Erreur de création du tileset");
+    }
+
+    SDL_FreeSurface(surface);
+
+    return texture;
+}

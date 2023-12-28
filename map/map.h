@@ -19,5 +19,7 @@ extern char* mapBg[];
 extern char* mapFg[];
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
-void loadMap();
+SDL_Renderer* initRenderer(SDL_Window* );
+SDL_Texture* loadTexture(SDL_Renderer*, const char*);
+
 #endif //FARMINGCO_MAP_H
