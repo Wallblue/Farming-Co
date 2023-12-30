@@ -15,20 +15,21 @@ int createDatabase(){
     if(rc != SQLITE_OK){
         fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
-
         return 1;
     }
 
-    char *sql = "CREATE TABLE cooperative("
-                 "coopId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+
+
+    char *sql = "CREATE TABLE IF NOT EXISTS cooperative("
+                 "coopId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "coopName VARCHAR(25),"
                  "startTime DATETIME, "
                  "maxMembers INTEGER, "
                  "level INTEGER, "
                  "money INTEGER);"
 
-                 "CREATE TABLE player("
-                 "playerId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS player("
+                 "playerId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "pseudo VARCHAR(25), "
                  "startDate DATETIME, "
                  "farmName VARCHAR(25),"
@@ -37,8 +38,8 @@ int createDatabase(){
                  "coopId INTEGER, "
                  "FOREIGN KEY(coopId) REFERENCES cooperative(coopId));"
 
-                 "CREATE TABLE object("
-                 "objectId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS object("
+                 "objectId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "x INTEGER, "
                  "y INTEGER, "
                  "w INTEGER, "
@@ -52,13 +53,13 @@ int createDatabase(){
                  "playerId INTEGER, "
                  "FOREIGN KEY(playerId) REFERENCES player(playerId));"
 
-                 "CREATE TABLE place("
-                 "placeId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS place("
+                 "placeId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "name VARCHAR(50), "
                  "type INTEGER);"
 
-                 "CREATE TABLE npc("
-                 "npcId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS npc("
+                 "npcId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "firstName VARCHAR(25), "
                  "lastName VARCHAR(25), "
                  "skin VARCHAR(128), "
@@ -66,8 +67,8 @@ int createDatabase(){
                  "placeId INTEGER, "
                  "FOREIGN KEY(placeId) REFERENCES place(placeId));"
 
-                 "CREATE TABLE item("
-                 "itemId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS item("
+                 "itemId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "itemName VARCHAR(25), "
                  "type INTEGER, "
                  "description TEXT, "
@@ -81,8 +82,8 @@ int createDatabase(){
                  "FOREIGN KEY(ownerId) REFERENCES player(playerId), "
                  "FOREIGN KEY(npcId) REFERENCES npc(npcId));"
 
-                 "CREATE TABLE dialog("
-                 "dialogId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                 "CREATE TABLE IF NOT EXISTS dialog("
+                 "dialogId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "content TEXT, "
                  "npcId INTEGER, "
                  "FOREIGN KEY(npcId) REFERENCES npc(npcId));";

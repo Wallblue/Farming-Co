@@ -22,7 +22,7 @@ int main(int argc, char **argv){
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
 
-    //createDatabase();
+    createDatabase();
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
 
     // Libération des ressources
