@@ -1,0 +1,36 @@
+Une sheet fonctionne de la sorte :
+
++-----+-----+-----+-----+-----+
+|     |     |     |     |     |
++-----+-----+-----+-----+-----+
+|     |     |     |     |     |
++-----+-----+-----+-----+-----+
+|     |     |     |     |     |
++-----+-----+-----+-----+-----+
+|     |     |     |     |     |
++-----+-----+-----+-----+-----+
+|     |     |     |     |     |
++-----+-----+-----+-----+-----+
+
+Chaque carré représente uen "tile", dans notre cas, celle taille mesure 16x16 pixel
+Le tout premier carré tout en haut à gauche sera présenté avec les coordonnées :
+1 -> x:0 y:0
+2 -> x:16 y:0
+3 -> x:0 y:16
+4-> x:16 y:16
+
+imaginons qu'on veuille accéder au prochain à sa droite -> on augmentera de 16.
+
+Dans map.c j'ai présenté une ligne de cette façon :
+
+"0010:;0<1?0010:;0<1?0010:",
+
+je me fie au tableau ascii puisque un élément de cette chaîne est un caractère. Par exemple ":" représente l'élément
+numéro 10 de la tilesheet (sachant que cela se lit de 0 à n, du haut, de la gauche a la droite)
+Imaginons notre carré du dessus, cela sera donc :
+
+0 1 2 3 4
+5 6 7 8 9
+: ; < = >
+etc...
+
