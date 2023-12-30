@@ -56,6 +56,8 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     int countX = 0;
     int countY = 0;
     int zone = 0;
+    char **mapBg;
+    char **mapFg;
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -71,12 +73,31 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     playerDst.y = 0;
 
     while (!endGame) {
-        if(zone == 0) {
-            printMap(renderer, grassTexture, mapBg);
-            printMap(renderer, fencesTexture, mapFg);
-        }else if(zone == 1){
-            printMap(renderer, grassTexture, secondZone);
+        switch(zone){
+            case 0:
+                mapBg = firstZoneBg;
+                mapFg = firstZoneFg;
+                break;
+            case 1:
+                mapBg = secondZoneBg;
+                mapFg = secondZoneFg;
+                break;
+            case 2:
+                mapBg = thirdZoneBg;
+                mapFg = thirdZoneFg;
+                break;
+            case 3:
+                mapBg = fourthZoneBg;
+                mapFg = fourthZoneFg;
+                break;
+            default:
+                mapBg = firstZoneBg;
+                mapFg = firstZoneFg;
+                break;
         }
+
+        printMap(renderer, grassTexture, mapBg);
+        printMap(renderer, fencesTexture, mapFg);
 
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         SDL_RenderPresent(renderer);

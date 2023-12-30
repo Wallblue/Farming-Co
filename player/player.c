@@ -7,26 +7,62 @@
 
 #include "player.h"
 
+
+/*
+ * zone 0 = maison
+ * zone 1 = magasin
+ * zone 2 = ferme des plantes
+ * zone 3 = ferme des arbres
+ */
+
 void moveLeft(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, int *zone) {
     playerSrc->y = 112;
 
     switch(*zone) {
         case 0:
+
             if (*countX - 1 >= 0 && tab[*countY][*countX - 1] == '/') {
                 playerDst->x -= 32;
                 (*countX)--;
             }
             break;
-        case 1:
-            if (*countX - 1 >= 0) {
-                playerDst->x -= 32;
-                (*countX)--;
-            }
 
-            if (*countX == 0) {
+        case 1:
+
+            //magasin -> maison
+            if (*countX-1 == -1) {
                 playerDst->x = 768;
                 *countX = 24;
                 *zone = 0;
+                break;
+            }
+
+            if (tab[*countY][*countX - 1] == '/') {
+                playerDst->x -= 32;
+                (*countX)--;
+            }
+            break;
+
+        case 2:
+
+            if(*countX-1>= 0 && tab[*countY][*countX-1] == '/') {
+                playerDst->x -= 32;
+                (*countX)--;
+            }
+            break;
+
+        case 3:
+            //arbres -> plantes
+            if(*countX-1 == -1){
+                playerDst->x = 768;
+                *countX = 24;
+                *zone = 2;
+                break;
+            }
+
+            if(*countX-1>= 0 && tab[*countY][*countX-1] == '/') {
+                playerDst->x -= 32;
+                (*countX)--;
             }
             break;
     }
@@ -37,20 +73,48 @@ void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *count
 
     switch(*zone){
         case 0:
+
+            //maison -> magasin
+            if(*countX+1 == 25){
+                playerDst->x = 0;
+                *countX = 0;
+                *zone = 1;
+                break;
+            }
+
             if(tab[*countY][*countX+1] == '/') {
                 playerDst->x += 32;
                 (*countX)++;
             }
+            break;
 
-            if(*countX == 25) {
+        case 1 :
+
+            if(*countX+1 <= 24 && tab[*countY][*countX+1] == '/') {
+                playerDst->x += 32;
+                (*countX)++;
+            }
+            break;
+
+        case 2:
+
+            //plantes -> arbres
+            if(*countX+1 == 25){
                 playerDst->x = 0;
                 *countX = 0;
-                *zone = 1;
+                *zone = 3;
+                break;
             }
 
+            if(*countX+1 <= 24 && tab[*countY][*countX+1] == '/') {
+                playerDst->x += 32;
+                (*countX)++;
+            }
             break;
-        case 1 :
-            if(*countX+1 <= 24) {
+
+        case 3:
+
+            if(*countX+1 <= 24 && tab[*countY][*countX+1] == '/') {
                 playerDst->x += 32;
                 (*countX)++;
             }
@@ -62,16 +126,109 @@ void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *count
 
 void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, int *zone) {
     playerSrc->y = 64;
-    if(*countY-1 >= 0 && tab[*countY-1][*countX] == '/') {
-        playerDst->y -= 32;
-        (*countY)--;
+
+    switch (*zone) {
+        case 0:
+
+            if (*countY - 1 >= 0 && tab[*countY - 1][*countX] == '/') {
+                playerDst->y -= 32;
+                (*countY)--;
+            }
+            break;
+
+        case 1:
+
+            if (*countY - 1 >= 0 && tab[*countY - 1][*countX] == '/') {
+                playerDst->y -= 32;
+                (*countY)--;
+            }
+            break;
+
+        case 2:
+
+            //plantes -> maison
+            if(*countY-1 == -1){
+                playerDst->y = 608;
+                *countY = 19;
+                *zone = 0;
+                break;
+            }
+
+            if (*countY - 1 >= 0 && tab[*countY - 1][*countX] == '/') {
+                playerDst->y -= 32;
+                (*countY)--;
+            }
+
+
+            break;
+
+        case 3:
+
+            //arbres -> magasin
+            if(*countY-1 == -1){
+                playerDst->y = 608;
+                *countY = 19;
+                *zone = 1;
+                break;
+            }
+
+            if (*countY - 1 >= 0 && tab[*countY - 1][*countX] == '/') {
+                playerDst->y -= 32;
+                (*countY)--;
+            }
+
+            break;
     }
 }
 
-void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, int *zone) {
+void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, int *zone){
     playerSrc->y = 16;
-    if(*countY+1 <= 19 && tab[*countY+1][*countX] == '/') {
-        playerDst->y += 32;
-        (*countY)++;
+
+    switch(*zone){
+        case 0:
+
+            //maison -> plantes
+            if(*countY+1 == 20){
+                playerDst->y = 0;
+                *countY = 0;
+                *zone = 2;
+                break;
+            }
+            if(*countY+1 <= 19 && tab[*countY+1][*countX] == '/') {
+                playerDst->y += 32;
+                (*countY)++;
+            }
+
+            break;
+        case 1:
+
+            //magasin -> arbres
+            if(*countY+1 == 20){
+                playerDst->y = 0;
+                *countY = 0;
+                *zone = 3;
+                break;
+            }
+            if(*countY+1 <= 19 && tab[*countY+1][*countX] == '/') {
+                playerDst->y += 32;
+                (*countY)++;
+            }
+
+            break;
+
+        case 2:
+            if(*countY+1 <= 19 && tab[*countY+1][*countX] == '/') {
+                playerDst->y += 32;
+                (*countY)++;
+            }
+            break;
+
+        case 3:
+            if(*countY+1 <= 19 && tab[*countY+1][*countX] == '/') {
+                playerDst->y += 32;
+                (*countY)++;
+            }
+            break;
     }
+
 }
