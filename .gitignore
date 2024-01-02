@@ -54,5 +54,6 @@ dkms.conf
 *.cmake
 CMakeLists.txt
 cmake-build-debug/
+lib/
 
 .DS_Store
