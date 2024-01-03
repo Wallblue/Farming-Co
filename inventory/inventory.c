@@ -15,6 +15,14 @@ void init_inventory(Inventory inventory){
     }
 }
 
+void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* sprite, const char* type){
+    item->id = id;
+    strcpy(item->itemName, name);
+    item->quantity = quantity;
+    strcpy(item->sprite, sprite);
+    strcpy(item->itemType, type);
+}
+
 short item_find(int id, Inventory inventory){
     short i;
     for(i = 0; i < INVENTORY_SIZE; i++)
@@ -23,14 +31,23 @@ short item_find(int id, Inventory inventory){
     return -1;
 }
 
-unsigned char isInventoryFull(Inventory inventory){
-    return 0;
+short firstEmptySlot(Inventory inventory){
+    short i;
+    for(i = 0; i < INVENTORY_SIZE; i++)
+        if(inventory[i].id == 0 && inventory[i].quantity == 0)
+            return i;
+    return -1;
 }
 
 unsigned char item_set(Item item, Inventory inventory){
-    //if(isInventoryFull(inventory)) return 1;
+    short index = firstEmptySlot(inventory);
+    if(index == -1) return 1; //If inventory is full
 
-
+    inventory[index].id = item.id;
+    inventory[index].quantity = item.quantity;
+    strcpy(inventory[index].itemName, item.itemName);
+    strcpy(inventory[index].sprite, item.sprite);
+    strcpy(inventory[index].itemType, item.itemType);
     return 0;
 }
 
@@ -57,7 +74,6 @@ char* jsonifyInventory(Inventory inventory){
     int i;
 
     for(i = 0; i < INVENTORY_SIZE; i++){
-        if(inventory[i].quantity == 0) break;
         jsonItem = cJSON_CreateObject();
         cJSON_AddNumberToObject(jsonItem, "id", inventory[i].id);
         cJSON_AddStringToObject(jsonItem, "name", inventory[i].itemName);
