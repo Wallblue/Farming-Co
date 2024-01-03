@@ -70,7 +70,7 @@ int createDatabase(){
                  "CREATE TABLE IF NOT EXISTS item("
                  "itemId INTEGER PRIMARY KEY AUTOINCREMENT, "
                  "itemName VARCHAR(25), "
-                 "type INTEGER, "
+                 "type VARCHAR(25), "
                  "description TEXT, "
                  "energyBonus INTEGER, "
                  "ability INTEGER, "
