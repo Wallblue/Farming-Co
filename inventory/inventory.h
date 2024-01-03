@@ -19,11 +19,12 @@
 
 //Functions :
     void init_inventory(Inventory inventory);
+    void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* sprite, const char* type);
 
     short item_find(int id, Inventory inventory); //Return a specified Item index in the inventory or -1
     unsigned char item_set(Item item, Inventory inventory); //Set a new item in the inventory and return 0 if it worked 1 else
     unsigned char item_add(Item item, Inventory inventory); //Add parameter item to existing items or set it if no existing ones
-    unsigned char isInventoryFull(Inventory inventory);
+    short firstEmptySlot(Inventory inventory); //Return the first slot's index without item, -1 if not anymore
 
     unsigned char item_has(int id, unsigned char quantity, Inventory inventory); //Return true if an item exists at a given quantity in inventory, false else
     unsigned char item_remove(int id, Inventory inventory); // Remove all of a given item in inventory
