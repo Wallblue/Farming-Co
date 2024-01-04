@@ -23,16 +23,16 @@
 //Functions :
     void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* sprite, const char* type);
     void resetItem(Item* item);
-    void init_inventory(Inventory inventory);
+    void initInventory(Inventory inventory);
 
-    short item_find(int id, const Inventory inventory); //Return a specified Item index in the inventory or -1
-    unsigned char item_set(Item item, Inventory inventory); //Set a new item in the inventory and return 0 if it worked 1 else
-    unsigned char item_add(Item item, Inventory inventory); //Add parameter item to existing items or set it if no existing ones
+    short itemFind(int id, const Inventory inventory); //Return a specified Item index in the inventory or -1
+    unsigned char itemSet(Item item, Inventory inventory); //Set a new item in the inventory and return 0 if it worked 1 else
+    unsigned char itemAdd(Item item, Inventory inventory); //Add parameter item to existing items or set it if no existing ones
     short firstEmptySlot(const Inventory inventory); //Return the first slot's index without item, -1 if not anymore
 
-    unsigned char item_substract(int id, unsigned char quantity, Inventory inventory); //Substract a given quantity of an item
+    unsigned char itemSubstract(int id, unsigned char quantity, Inventory inventory); //Substract a given quantity of an item
 
-    unsigned char save_inventory(Inventory inventory); //Save inventory into a json file
+    unsigned char saveInventory(Inventory inventory); //Save inventory into a json file
     unsigned char loadInventory(Inventory inventory);
     char* jsonifyInventory(Inventory inventory); //Convert inventory in a json string
 #endif
