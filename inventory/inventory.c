@@ -4,23 +4,22 @@
 #include <cJSON.h>
 #include <string.h>
 
-void init_inventory(Inventory inventory){
-    unsigned char i;
-    for(i = 0; i < INVENTORY_SIZE; i++){
-        inventory[i].id = 0;
-        strcpy(inventory[i].itemName, "");
-        inventory[i].quantity = 0;
-        strcpy(inventory[i].sprite, "");
-        strcpy(inventory[i].itemType, "");
-    }
-}
-
 void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* sprite, const char* type){
     item->id = id;
     strcpy(item->itemName, name);
     item->quantity = quantity;
     strcpy(item->sprite, sprite);
     strcpy(item->itemType, type);
+}
+
+void resetItem(Item* item){
+    affectItem(item, 0, "", 0, "", "");
+}
+
+void init_inventory(Inventory inventory){
+    unsigned char i;
+    for(i = 0; i < INVENTORY_SIZE; i++)
+        resetItem(inventory + i);
 }
 
 short item_find(int id, const Inventory inventory){
@@ -56,11 +55,23 @@ unsigned char item_add(Item item, Inventory inventory){
     return SUCCESS;
 }
 
+unsigned char item_substract(int id, unsigned char quantity, Inventory inventory){
+    short index = item_find(id, inventory);
+    if(index == -1 || inventory[index].quantity < quantity) return FAILURE;
+
+    if(inventory[index].quantity == quantity)
+        resetItem(inventory + index);
+    else
+        inventory[index].quantity -= quantity;
+
+    return SUCCESS;
+}
+
 unsigned char save_inventory(Inventory inventory){
     char* jsonString;
     FILE* fp;
 
-    fp = fopen("inventorySave.json", "w");
+    fp = fopen(INVENTORY_SAVE_FILE, "w");
     if(fp == NULL) {
         fprintf(stderr, "\nError while saving inventory.\n");
         return FAILURE;
@@ -72,14 +83,58 @@ unsigned char save_inventory(Inventory inventory){
     return SUCCESS;
 }
 
+unsigned char loadInventory(Inventory inventory){
+    FILE* fp;
+    char* save;
+    cJSON* jsonInventory;
+    cJSON* jsonItem;
+    size_t fileSize;
+    char i = 0;
+
+    fp = fopen(INVENTORY_SAVE_FILE, "r");
+    if(fp == NULL) return 2;
+
+    fseek(fp, 0, SEEK_END);
+    fileSize = ftell(fp);
+    rewind(fp);
+
+    save = malloc((fileSize + 1) * sizeof(char));
+    if(save == NULL) return FAILURE;
+    fread(save, fileSize, 1, fp);
+    save[fileSize] = '\0';
+
+
+    jsonInventory = cJSON_Parse(save);
+    free(save);
+    if(jsonInventory == NULL) return FAILURE;
+
+    cJSON_ArrayForEach(jsonItem, jsonInventory){
+        cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
+        cJSON* name = cJSON_GetObjectItemCaseSensitive(jsonItem, "name");
+        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonItem, "quantity");
+        cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonItem, "sprite");
+        cJSON* type = cJSON_GetObjectItemCaseSensitive(jsonItem, "type");
+
+        affectItem(inventory + i, id->valueint, name->valuestring, quantity->valueint, sprite->valuestring, type->valuestring);
+        ++i;
+    }
+
+    return SUCCESS;
+}
+
 char* jsonifyInventory(Inventory inventory){
-    cJSON *jsonInventory = cJSON_CreateArray();
+    cJSON *jsonInventory;
     cJSON *jsonItem;
     char *jsonString;
     int i;
 
+    jsonInventory = cJSON_CreateArray();
+    if(jsonInventory == NULL) return NULL;
+
     for(i = 0; i < INVENTORY_SIZE; i++){
         jsonItem = cJSON_CreateObject();
+        if(jsonItem == NULL) return NULL;
+
         cJSON_AddNumberToObject(jsonItem, "id", inventory[i].id);
         cJSON_AddStringToObject(jsonItem, "name", inventory[i].itemName);
         cJSON_AddNumberToObject(jsonItem, "quantity", inventory[i].quantity);
