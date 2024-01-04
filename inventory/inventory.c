@@ -16,13 +16,13 @@ void resetItem(Item* item){
     affectItem(item, 0, "", 0, "", "");
 }
 
-void init_inventory(Inventory inventory){
+void initInventory(Inventory inventory){
     unsigned char i;
     for(i = 0; i < INVENTORY_SIZE; i++)
         resetItem(inventory + i);
 }
 
-short item_find(int id, const Inventory inventory){
+short itemFind(int id, const Inventory inventory){
     short i;
     for(i = 0; i < INVENTORY_SIZE; i++)
         if(inventory[i].id == id)
@@ -38,7 +38,7 @@ short firstEmptySlot(const Inventory inventory){
     return -1;
 }
 
-unsigned char item_set(const Item item, Inventory inventory){
+unsigned char itemSet(Item item, Inventory inventory){
     short index = firstEmptySlot(inventory);
     if(index == -1) return FAILURE; //If inventory is full
 
@@ -46,17 +46,17 @@ unsigned char item_set(const Item item, Inventory inventory){
     return SUCCESS;
 }
 
-unsigned char item_add(Item item, Inventory inventory){
-    short index = item_find(item.id, inventory);
+unsigned char itemAdd(Item item, Inventory inventory){
+    short index = itemFind(item.id, inventory);
     if(index == -1) //If item does not exist in this inventory
-        return item_set(item, inventory);
+        return itemSet(item, inventory);
     //but if it does
     inventory[index].quantity += item.quantity;
     return SUCCESS;
 }
 
-unsigned char item_substract(int id, unsigned char quantity, Inventory inventory){
-    short index = item_find(id, inventory);
+unsigned char itemSubstract(int id, unsigned char quantity, Inventory inventory){
+    short index = itemFind(id, inventory);
     if(index == -1 || inventory[index].quantity < quantity) return FAILURE;
 
     if(inventory[index].quantity == quantity)
@@ -67,7 +67,7 @@ unsigned char item_substract(int id, unsigned char quantity, Inventory inventory
     return SUCCESS;
 }
 
-unsigned char save_inventory(Inventory inventory){
+unsigned char saveInventory(Inventory inventory){
     char* jsonString;
     FILE* fp;
 
