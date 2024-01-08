@@ -12,6 +12,9 @@ SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
 int main(int argc, char **argv){
+    int timeInGame = 0;
+    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
+
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         exitWithError("Erreur d'initialisation");
     }
@@ -24,13 +27,9 @@ int main(int argc, char **argv){
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
 
-    int timeInGame = 0;
 
-    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
     createDatabase();
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture, &timeInGame, lightLayer);
-
-
 
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);

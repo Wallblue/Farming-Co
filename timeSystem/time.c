@@ -18,7 +18,16 @@ int day(void* timeInGame) {
 
         if ((elapsedTime / (1000 * 60)) == *getHours + 1) {
             (*getHours)++;
-            printf("\nIl est %d h", (*getHours)+7 );
+            if(*getHours<17)
+                printf("\nIl est %d h", (*getHours)+7);
+            else
+                printf("\nIl est %d h", (*getHours)-17);
+        }
+
+
+        if(*getHours+1 == 24){
+            startTime = currentTime;
+            *getHours = 0;
         }
 
     } while (*getHours < 23);
@@ -31,7 +40,7 @@ void applyFilter(SDL_Renderer * renderer, int * timeInGame, SDL_Texture *lightLa
     int nightFilter = 0;
 
     if(*timeInGame >= 12){
-        nightFilter = 11 * (*timeInGame/2);
+        nightFilter = 15 * (*timeInGame/2);
     }
 
     SDL_SetRenderTarget(renderer, lightLayer);
