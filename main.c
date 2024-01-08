@@ -4,9 +4,10 @@
 #include "map/map.h"
 #include "player/player.h"
 #include "error/error.h"
+#include "timeSystem/time.h"
 
 SDL_Window* initWindow();
-void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
+void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, int *, SDL_Texture *);
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
@@ -21,9 +22,15 @@ int main(int argc, char **argv){
     SDL_Texture* grassTexture = loadTexture(renderer, "../map/sheets/grass.bmp");
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
+    SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
 
+    int timeInGame = 0;
+
+    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
     createDatabase();
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, &timeInGame, lightLayer);
+
+
 
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);
@@ -35,6 +42,7 @@ int main(int argc, char **argv){
 
     return 0;
 }
+
 
 SDL_Window* initWindow() {
     // Initialisation de la fenêtre
@@ -50,7 +58,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, int * timeInGame, SDL_Texture *lightLayer) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -71,6 +79,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     playerSrc.y = tileHeightWidth;
     playerDst.x = 0;
     playerDst.y = 0;
+
 
     while (!endGame) {
         switch(zone){
@@ -100,9 +109,12 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
         printMap(renderer, fencesTexture, mapFg);
 
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
+
+        applyFilter(renderer, timeInGame, lightLayer);
+
         SDL_RenderPresent(renderer);
 
-        if (SDL_WaitEvent(&event)) {
+        if (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
                     endGame = 1;
@@ -161,3 +173,4 @@ SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
 
     return texture;
 }
+
