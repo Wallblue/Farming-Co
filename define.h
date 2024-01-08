@@ -15,5 +15,11 @@
 #define mapWidth 25
 #define mapHeight 20
 
+struct ThreadData{
+    int *timeInGame;
+    int *sleep;
+};
+
+
 
 #endif //FARMINGCO_DEFINE_H

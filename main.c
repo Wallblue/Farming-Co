@@ -7,13 +7,19 @@
 #include "timeSystem/time.h"
 
 SDL_Window* initWindow();
-void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, int *, SDL_Texture *);
+void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, int *, SDL_Texture *, int*);
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
 int main(int argc, char **argv){
     int timeInGame = 0;
-    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
+    int sleep = 0;
+
+    struct ThreadData threadData;
+    threadData.timeInGame = &timeInGame;
+    threadData.sleep = &sleep;
+
+    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)(&threadData));
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         exitWithError("Erreur d'initialisation");
@@ -29,7 +35,7 @@ int main(int argc, char **argv){
 
 
     createDatabase();
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, &timeInGame, lightLayer);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, &timeInGame, lightLayer, threadData.sleep);
 
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);
@@ -57,7 +63,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, int * timeInGame, SDL_Texture *lightLayer) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -139,6 +145,10 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
 
                         case SDLK_DOWN:
                             moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
+                            break;
+
+                        case SDLK_s:
+                            *sleep = 1;
                             break;
                     }
             }
