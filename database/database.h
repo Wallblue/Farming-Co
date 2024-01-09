@@ -11,5 +11,7 @@
 #include <sqlite3.h>
 
 int createDatabase();
+unsigned char openDb(sqlite3** db);
+unsigned char executeSQL(sqlite3* db, const char* request);
 
 #endif //FARMINGCO_DATABASE_H

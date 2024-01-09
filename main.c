@@ -22,7 +22,7 @@ int main(int argc, char **argv){
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
 
-    createDatabase();
+    if(createDatabase() == FAILURE) return EXIT_FAILURE;
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
 
     // Libération des ressources
@@ -33,7 +33,7 @@ int main(int argc, char **argv){
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 SDL_Window* initWindow() {

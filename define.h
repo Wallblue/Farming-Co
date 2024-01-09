@@ -15,5 +15,7 @@
 #define mapWidth 25
 #define mapHeight 20
 
+#define FAILURE 1
+#define SUCCESS 0
 
 #endif //FARMINGCO_DEFINE_H

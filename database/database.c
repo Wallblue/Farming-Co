@@ -5,20 +5,12 @@
 //
 
 #include "database.h"
+#include "../define.h"
 
 int createDatabase(){
     sqlite3 *db;
-    char *err_msg = 0;
 
-    int rc = sqlite3_open("../database/farmingco.db", &db);
-
-    if(rc != SQLITE_OK){
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        return 1;
-    }
-
-
+    if(openDb(&db) == FAILURE) return FAILURE;
 
     char *sql = "CREATE TABLE IF NOT EXISTS cooperative("
                  "coopId INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -69,8 +61,8 @@ int createDatabase(){
 
                  "CREATE TABLE IF NOT EXISTS item("
                  "itemId INTEGER PRIMARY KEY AUTOINCREMENT, "
-                 "itemName VARCHAR(25), "
-                 "type INTEGER, "
+                 "name VARCHAR(25), "
+                 "type VARCHAR(25), "
                  "description TEXT, "
                  "energyBonus INTEGER, "
                  "ability INTEGER, "
@@ -88,8 +80,27 @@ int createDatabase(){
                  "npcId INTEGER, "
                  "FOREIGN KEY(npcId) REFERENCES npc(npcId));";
 
+    if(executeSQL(db, sql) == FAILURE) return FAILURE;
 
-    rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+    sqlite3_close(db);
+
+    return 0;
+}
+
+unsigned char openDb(sqlite3** db){
+    int rc = sqlite3_open("../database/farmingco.db", db);
+
+    if(rc != SQLITE_OK){
+        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(*db));
+        sqlite3_close(*db);
+        return FAILURE;
+    }
+    return SUCCESS;
+}
+
+unsigned char executeSQL(sqlite3* db, const char* request){
+    char *err_msg = 0;
+    int rc = sqlite3_exec(db, request, 0, 0, &err_msg);
 
     if(rc != SQLITE_OK){
         fprintf(stderr, "SQL error: %s\n", err_msg);
@@ -97,12 +108,7 @@ int createDatabase(){
         sqlite3_free(err_msg);
         sqlite3_close(db);
 
-        return 1;
+        return FAILURE;
     }
-
-    sqlite3_close(db);
-
-    return 0;
-
-
+    return SUCCESS;
 }
