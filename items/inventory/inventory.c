@@ -1,19 +1,24 @@
 #include "inventory.h"
+#include "../../define.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cJSON.h>
 #include <string.h>
 
-void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* sprite, const char* type){
+void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite){
     item->id = id;
-    strcpy(item->itemName, name);
+    strcpy(item->name, name);
     item->quantity = quantity;
+    strcpy(item->type, type);
+    strcpy(item->description, description);
+    item->energyBonus = energyBonus;
+    item->ability = ability;
+    item->growTime = growTime;
     strcpy(item->sprite, sprite);
-    strcpy(item->itemType, type);
 }
 
 void resetItem(Item* item){
-    affectItem(item, 0, "", 0, "", "");
+    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "");
 }
 
 void initInventory(Inventory inventory){
@@ -38,20 +43,20 @@ short firstEmptySlot(const Inventory inventory){
     return -1;
 }
 
-unsigned char itemSet(Item item, Inventory inventory){
+unsigned char itemSet(const Item* item, Inventory inventory){
     short index = firstEmptySlot(inventory);
     if(index == -1) return FAILURE; //If inventory is full
 
-    affectItem(inventory + index, item.id, item.itemName, item.quantity, item.sprite, item.itemType);
+    affectItem(inventory + index, item->id, item->name, item->quantity, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite);
     return SUCCESS;
 }
 
-unsigned char itemAdd(Item item, Inventory inventory){
-    short index = itemFind(item.id, inventory);
+unsigned char itemAdd(const Item* item, Inventory inventory){
+    short index = itemFind(item->id, inventory);
     if(index == -1) //If item does not exist in this inventory
         return itemSet(item, inventory);
     //but if it does
-    inventory[index].quantity += item.quantity;
+    inventory[index].quantity += item->quantity;
     return SUCCESS;
 }
 
@@ -84,40 +89,52 @@ unsigned char saveInventory(Inventory inventory){
 }
 
 unsigned char loadInventory(Inventory inventory){
-    FILE* fp;
-    char* save;
     cJSON* jsonInventory;
     cJSON* jsonItem;
-    size_t fileSize;
     char i = 0;
 
-    fp = fopen(INVENTORY_SAVE_FILE, "r");
+    if(parseJsonFile(INVENTORY_SAVE_FILE, &jsonInventory) == FAILURE) return FAILURE;
+
+    cJSON_ArrayForEach(jsonItem, jsonInventory){
+        cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
+        cJSON* name = cJSON_GetObjectItemCaseSensitive(jsonItem, "name");
+        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonItem, "quantity");
+        cJSON* type = cJSON_GetObjectItemCaseSensitive(jsonItem, "type");
+        cJSON* description = cJSON_GetObjectItemCaseSensitive(jsonItem, "description");
+        cJSON* energyBonus = cJSON_GetObjectItemCaseSensitive(jsonItem, "energyBonus");
+        cJSON* ability = cJSON_GetObjectItemCaseSensitive(jsonItem, "ability");
+        cJSON* growTime = cJSON_GetObjectItemCaseSensitive(jsonItem, "growTime");
+        cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonItem, "sprite");
+
+        affectItem(inventory + i, id->valueint, name->valuestring, quantity->valueint, type->valuestring, description->valuestring,
+                   energyBonus->valueint, ability->valueint, growTime->valueint ,sprite->valuestring);
+        ++i;
+    }
+
+    return SUCCESS;
+}
+
+unsigned char parseJsonFile(const char* fileName, cJSON** dest){
+    FILE* fp;
+    char* jsonFileContent;
+    size_t fileSize;
+
+    fp = fopen(fileName, "r");
     if(fp == NULL) return 2;
 
     fseek(fp, 0, SEEK_END);
     fileSize = ftell(fp);
     rewind(fp);
 
-    save = malloc((fileSize + 1) * sizeof(char));
-    if(save == NULL) return FAILURE;
-    fread(save, fileSize, 1, fp);
-    save[fileSize] = '\0';
+    jsonFileContent = malloc((fileSize + 1) * sizeof(char));
+    if(jsonFileContent == NULL) return FAILURE;
+    fread(jsonFileContent, fileSize, 1, fp);
+    jsonFileContent[fileSize] = '\0';
+    fclose(fp);
 
-
-    jsonInventory = cJSON_Parse(save);
-    free(save);
-    if(jsonInventory == NULL) return FAILURE;
-
-    cJSON_ArrayForEach(jsonItem, jsonInventory){
-        cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
-        cJSON* name = cJSON_GetObjectItemCaseSensitive(jsonItem, "name");
-        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonItem, "quantity");
-        cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonItem, "sprite");
-        cJSON* type = cJSON_GetObjectItemCaseSensitive(jsonItem, "type");
-
-        affectItem(inventory + i, id->valueint, name->valuestring, quantity->valueint, sprite->valuestring, type->valuestring);
-        ++i;
-    }
+    *dest = cJSON_Parse(jsonFileContent);
+    free(jsonFileContent);
+    if(*dest == NULL) return FAILURE;
 
     return SUCCESS;
 }
@@ -136,10 +153,10 @@ char* jsonifyInventory(Inventory inventory){
         if(jsonItem == NULL) return NULL;
 
         cJSON_AddNumberToObject(jsonItem, "id", inventory[i].id);
-        cJSON_AddStringToObject(jsonItem, "name", inventory[i].itemName);
+        cJSON_AddStringToObject(jsonItem, "name", inventory[i].name);
         cJSON_AddNumberToObject(jsonItem, "quantity", inventory[i].quantity);
         cJSON_AddStringToObject(jsonItem, "sprite", inventory[i].sprite);
-        cJSON_AddStringToObject(jsonItem, "type", inventory[i].itemType);
+        cJSON_AddStringToObject(jsonItem, "type", inventory[i].type);
 
         cJSON_AddItemToArray(jsonInventory, jsonItem);
     }

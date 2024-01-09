@@ -1,0 +1,48 @@
+[
+  {
+    "id": 1,
+    "name": "pebble",
+    "type": "misc",
+    "description": "A little piece of a big rock.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "pebble.png"
+  }, {
+    "id": 2,
+    "name": "grass",
+    "type": "misc",
+    "description": "It's just grass.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "grass.png"
+  }, {
+    "id": 3,
+    "name": "stick",
+    "type": "misc",
+    "description": "A long but thin piece of wood.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "stick.png"
+  }, {
+    "id": 4,
+    "name": "stone",
+    "type": "misc",
+    "description": "It's like a lot of pebbles stacked together.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "stone.png"
+  }, {
+    "id": 5,
+    "name": "wood",
+    "type": "misc",
+    "description": "Mother Nature craft this with sticks.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "wood.png"
+  }
+]
