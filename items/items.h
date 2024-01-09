@@ -21,6 +21,6 @@ typedef struct Item Item;
 //Functions :
 unsigned char addItemToDatabase(int id);
 unsigned char addItemsToDatabase();
-
+unsigned char dejsonifyItems();
 
 #endif
