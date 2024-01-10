@@ -4,6 +4,7 @@
 #include "map/map.h"
 #include "player/player.h"
 #include "error/error.h"
+#include "save/save.h"
 
 SDL_Window* initWindow();
 void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
@@ -22,11 +23,17 @@ int main(int argc, char **argv){
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
+    unsigned char err;
 
     if(createDatabase() == FAILURE) return EXIT_FAILURE;
+
+    if((err = loadObjectsMaps()) == 2)
     initObjectMaps();
+    else if(err == FAILURE) return EXIT_FAILURE;
+
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture);
 
+    if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);
     SDL_DestroyTexture(fencesTexture);

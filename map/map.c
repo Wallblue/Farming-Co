@@ -229,19 +229,34 @@ void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     }
 }
 
-void initObjectMap(char*** map){
-    *map = malloc(mapHeight * sizeof(char *));
+unsigned char initObjectMaps(){
+    mapObjects1 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects1 == NULL) return FAILURE;
+    mapObjects2 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects2 == NULL) return FAILURE;
+    mapObjects3 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects3 == NULL) return FAILURE;
+    mapObjects4 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects4 == NULL) return FAILURE;
+
+    char* defaultLine = "//////////////////////////";
+
     for (int i = 0; i < mapHeight; i++){
-        (*map)[i] = malloc(mapWidth * sizeof(char));
-        strcat((*map)[i], "//////////////////////////");
+        if(initLine(mapObjects1 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects2 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects3 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects4 + i, defaultLine) == FAILURE) return FAILURE;
     }
+
+    return SUCCESS;
 }
 
-void initObjectMaps(){
-    initObjectMap(&mapObjects1);
-    initObjectMap(&mapObjects2);
-    initObjectMap(&mapObjects3);
-    initObjectMap(&mapObjects4);
+unsigned char initLine(char** line, const char* defaultLine){
+    *line = malloc(mapWidth * sizeof(char));
+    if(*line == NULL) return FAILURE;
+    strcpy(*line, defaultLine);
+
+    return SUCCESS;
 }
 
 void freeObjectMaps(){
