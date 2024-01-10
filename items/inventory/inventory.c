@@ -122,9 +122,7 @@ unsigned char parseJsonFile(const char* fileName, cJSON** dest){
     fp = fopen(fileName, "r");
     if(fp == NULL) return 2;
 
-    fseek(fp, 0, SEEK_END);
-    fileSize = ftell(fp);
-    rewind(fp);
+    fileSize = getFileSize(fp);
 
     jsonFileContent = malloc((fileSize + 1) * sizeof(char));
     if(jsonFileContent == NULL) return FAILURE;

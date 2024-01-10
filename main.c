@@ -161,3 +161,11 @@ SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
 
     return texture;
 }
+
+size_t getFileSize(FILE* fp){
+    size_t fileSize;
+    fseek(fp, 0, SEEK_END);
+    fileSize = ftell(fp);
+    rewind(fp);
+    return fileSize;
+}
