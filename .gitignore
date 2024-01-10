@@ -58,5 +58,6 @@ lib/
 database/farmingco.db
 farmingco.db
 save/objectMapsSave.dat
+objectMapsSave.dat
 
 .DS_Store
