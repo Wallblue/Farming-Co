@@ -174,27 +174,40 @@ char* thirdZoneFg[] = {
 };
 
 char* fourthZoneFg[] = {
-        "//////////////////////////",
-        "//////////////////////////",
-        "///////////////////////////",
-        "///////////////://///:////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
-        "//////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "///////////////://///:///",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
 };
+
+
+
+char** mapObjects1;
+char** mapObjects2;
+char** mapObjects3;
+char** mapObjects4;
+
+void inputObject(int xMouse, int yMouse, char** tab){
+    yMouse = yMouse/32;
+    xMouse = xMouse/32;
+    tab[yMouse][xMouse] = '3';
+}
 
 //affichage d'une map
 void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
@@ -216,3 +229,39 @@ void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     }
 }
 
+unsigned char initObjectMaps(){
+    mapObjects1 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects1 == NULL) return FAILURE;
+    mapObjects2 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects2 == NULL) return FAILURE;
+    mapObjects3 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects3 == NULL) return FAILURE;
+    mapObjects4 = malloc(mapHeight * sizeof(char *));
+    if(mapObjects4 == NULL) return FAILURE;
+
+    char* defaultLine = "//////////////////////////";
+
+    for (int i = 0; i < mapHeight; i++){
+        if(initLine(mapObjects1 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects2 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects3 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(mapObjects4 + i, defaultLine) == FAILURE) return FAILURE;
+    }
+
+    return SUCCESS;
+}
+
+unsigned char initLine(char** line, const char* defaultLine){
+    *line = malloc(mapWidth * sizeof(char));
+    if(*line == NULL) return FAILURE;
+    strcpy(*line, defaultLine);
+
+    return SUCCESS;
+}
+
+void freeObjectMaps(){
+    free(mapObjects1);
+    free(mapObjects2);
+    free(mapObjects3);
+    free(mapObjects4);
+}

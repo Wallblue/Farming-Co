@@ -4,9 +4,10 @@
 #include "map/map.h"
 #include "player/player.h"
 #include "error/error.h"
+#include "save/save.h"
 
 SDL_Window* initWindow();
-void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
+void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
@@ -21,10 +22,18 @@ int main(int argc, char **argv){
     SDL_Texture* grassTexture = loadTexture(renderer, "../map/sheets/grass.bmp");
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
+    SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
+    unsigned char err;
 
     if(createDatabase() == FAILURE) return EXIT_FAILURE;
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
 
+    if((err = loadObjectsMaps()) == 2)
+    initObjectMaps();
+    else if(err == FAILURE) return EXIT_FAILURE;
+
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture);
+
+    if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);
     SDL_DestroyTexture(fencesTexture);
@@ -32,6 +41,8 @@ int main(int argc, char **argv){
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    freeObjectMaps();
 
     return EXIT_SUCCESS;
 }
@@ -50,7 +61,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -58,6 +69,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     int zone = 0;
     char **mapBg;
     char **mapFg;
+    char **mapObjects;
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -71,33 +83,40 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     playerSrc.y = tileHeightWidth;
     playerDst.x = 0;
     playerDst.y = 0;
+    int x, y;
 
     while (!endGame) {
         switch(zone){
             case 0:
                 mapBg = firstZoneBg;
                 mapFg = firstZoneFg;
+                mapObjects = mapObjects1;
                 break;
             case 1:
                 mapBg = secondZoneBg;
                 mapFg = secondZoneFg;
+                mapObjects = mapObjects2;
                 break;
             case 2:
                 mapBg = thirdZoneBg;
                 mapFg = thirdZoneFg;
+                mapObjects = mapObjects3;
                 break;
             case 3:
                 mapBg = fourthZoneBg;
                 mapFg = fourthZoneFg;
+                mapObjects = mapObjects4;
                 break;
             default:
                 mapBg = firstZoneBg;
                 mapFg = firstZoneFg;
+                mapObjects = mapObjects1;
                 break;
         }
 
         printMap(renderer, grassTexture, mapBg);
         printMap(renderer, fencesTexture, mapFg);
+        printMap(renderer, furnitureTexture, mapObjects);
 
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         SDL_RenderPresent(renderer);
@@ -129,7 +148,16 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                         case SDLK_DOWN:
                             moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
                             break;
+
                     }
+
+                    case SDL_MOUSEBUTTONUP:
+                        switch(event.button.button){
+                            case SDL_BUTTON_LEFT:
+                                SDL_GetMouseState(&x, &y);
+                                inputObject(x, y, mapObjects);
+                                break;
+                        }
             }
         }
     }

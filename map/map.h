@@ -13,6 +13,7 @@
 #include <SDL.h>
 #include "../define.h"
 #include "../error/error.h"
+#include "../save/save.h"
 
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
 extern char* firstZoneBg[];
@@ -23,7 +24,16 @@ extern char* thirdZoneBg[];
 extern char* thirdZoneFg[];
 extern char* fourthZoneBg[];
 extern char* fourthZoneFg[];
+extern char** mapObjects1;
+extern char** mapObjects2;
+extern char** mapObjects3;
+extern char** mapObjects4;
 
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
+void inputObject(int, int, char**);
+unsigned char initObjectMaps();
+unsigned char initLine(char** line, const char* defaultLine);
+void freeObjectMaps();
+
 #endif //FARMINGCO_MAP_H
