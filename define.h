@@ -18,4 +18,6 @@
 #define FAILURE 1
 #define SUCCESS 0
 
+size_t getFileSize(FILE* fp);
+
 #endif //FARMINGCO_DEFINE_H
