@@ -55,5 +55,7 @@ dkms.conf
 CMakeLists.txt
 cmake-build-debug/
 lib/
+database/farmingco.db
+farmingco.db
 
 .DS_Store
