@@ -28,7 +28,7 @@ unsigned char addItemsToDatabase(){
         cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonObject, "sprite");
 
         sqlReq = malloc(454 * sizeof(char)); //Allocating max size bc we can't calculate it before
-        sqlReq[sprintf(sqlReq, "INSERT INTO ITEM VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, NULL, \"%s\", %hhu, NULL, NULL)",
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, NULL, \"%s\", %hhu, NULL, NULL);",
                 id->valueint, name->valuestring, type->valuestring, description->valuestring, energyBonus->valueint, ability->valueint, sprite->valuestring, growTime->valueint) + 1] = '\0';
 
         if(executeSQL(db, sqlReq) == FAILURE){

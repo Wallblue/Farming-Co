@@ -4,6 +4,8 @@
 #include "map/map.h"
 #include "player/player.h"
 #include "error/error.h"
+#include "items/items.h"
+#include "items/inventory/inventory.h"
 
 SDL_Window* initWindow();
 void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
@@ -22,7 +24,16 @@ int main(int argc, char **argv){
     SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
 
+    Inventory inventory;
+    unsigned char res;
+
     if(createDatabase() == FAILURE) return EXIT_FAILURE;
+    if(addItemsToDatabase() == FAILURE) return EXIT_FAILURE;
+    /*if((res = loadInventory(inventory)) != SUCCESS){
+        if(res == 2) initInventory(inventory);
+        else return EXIT_SUCCESS;
+    }*/
+
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
 
     // Libération des ressources

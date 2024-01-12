@@ -16,7 +16,7 @@ int createDatabase(){
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
-    fp = fopen("../database/init.sql", "r");
+    fp = fopen("../database/init.sql", "rb");
     if(fp == NULL) return FAILURE;
     fileSize = getFileSize(fp);
 
@@ -51,7 +51,6 @@ unsigned char executeSQL(sqlite3* db, const char* request){
 
     if(rc != SQLITE_OK){
         fprintf(stderr, "SQL error: %s\n", err_msg);
-
         sqlite3_free(err_msg);
         sqlite3_close(db);
 

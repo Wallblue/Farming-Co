@@ -91,9 +91,9 @@ unsigned char saveInventory(Inventory inventory){
 unsigned char loadInventory(Inventory inventory){
     cJSON* jsonInventory;
     cJSON* jsonItem;
-    char i = 0;
+    unsigned char i;
 
-    if(parseJsonFile(INVENTORY_SAVE_FILE, &jsonInventory) == FAILURE) return FAILURE;
+    if((i = parseJsonFile(INVENTORY_SAVE_FILE, &jsonInventory)) != SUCCESS) return i;
 
     cJSON_ArrayForEach(jsonItem, jsonInventory){
         cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
