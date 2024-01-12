@@ -20,4 +20,10 @@
 
 size_t getFileSize(FILE* fp);
 
+struct ThreadData{
+    int *timeInGame;
+    int *sleep;
+};
+
+
 #endif //FARMINGCO_DEFINE_H
