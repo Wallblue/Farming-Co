@@ -7,11 +7,12 @@
 #include "time.h"
 
 
-int day(void* timeInGame) {
-    int* getHours = (int*)timeInGame;
+int day(void* data) {
+    struct ThreadData* threadData = (struct ThreadData*)data;
+    int* getHours = threadData->timeInGame;
+    int* sleep = threadData->sleep;
 
     Uint64 startTime = SDL_GetTicks64();
-
     do {
         Uint64 currentTime = SDL_GetTicks64();
         Uint64 elapsedTime = currentTime - startTime;
@@ -25,10 +26,16 @@ int day(void* timeInGame) {
                 printf("\nIl est %d h", (*getHours)-17);
         }
 
-
         if(*getHours+1 == 24){
             startTime = currentTime;
             *getHours = 0;
+            printf("\nIl est %d h", (*getHours)+7);
+        }
+
+        if(*sleep == 1){
+            startTime = currentTime;
+            *getHours = 0;
+            *sleep = 0;
             printf("\nIl est %d h", (*getHours)+7);
         }
 
@@ -53,3 +60,4 @@ void applyFilter(SDL_Renderer * renderer, int * timeInGame, SDL_Texture *lightLa
     SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_BLEND);
     SDL_RenderCopy(renderer, lightLayer, NULL, &gameRect);
 }
+
