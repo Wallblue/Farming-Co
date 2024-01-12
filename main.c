@@ -5,13 +5,17 @@
 #include "player/player.h"
 #include "error/error.h"
 #include "save/save.h"
+#include "time/time.h"
 
 SDL_Window* initWindow();
-void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture*, SDL_Texture*, SDL_Texture*);
+void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *);
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
 int main(int argc, char **argv){
+    int timeInGame = 0;
+    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
+
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         exitWithError("Erreur d'initialisation");
     }
@@ -27,11 +31,13 @@ int main(int argc, char **argv){
 
     if(createDatabase() == FAILURE) return EXIT_FAILURE;
 
+    SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
+
     if((err = loadObjectsMaps()) == 2)
     initObjectMaps();
     else if(err == FAILURE) return EXIT_FAILURE;
 
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer);
 
     if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
     // Libération des ressources
@@ -47,6 +53,7 @@ int main(int argc, char **argv){
     return EXIT_SUCCESS;
 }
 
+
 SDL_Window* initWindow() {
     // Initialisation de la fenêtre
     SDL_Window *window = SDL_CreateWindow("FarmingCo",
@@ -61,7 +68,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -84,6 +91,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     playerDst.x = 0;
     playerDst.y = 0;
     int x, y;
+
 
     while (!endGame) {
         switch(zone){
@@ -119,9 +127,12 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
         printMap(renderer, furnitureTexture, mapObjects);
 
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
+
+        applyFilter(renderer, timeInGame, lightLayer);
+
         SDL_RenderPresent(renderer);
 
-        if (SDL_WaitEvent(&event)) {
+        if (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
                     endGame = 1;
@@ -197,3 +208,4 @@ size_t getFileSize(FILE* fp){
     rewind(fp);
     return fileSize;
 }
+
