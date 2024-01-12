@@ -41,8 +41,7 @@ int main(int argc, char **argv){
 
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
 
-    if((err = loadObjectsMaps()) == 2)
-    initObjectMaps();
+    if((err = loadObjectsMaps()) == 2)initObjectMaps();
     else if(err == FAILURE) return EXIT_FAILURE;
 
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
