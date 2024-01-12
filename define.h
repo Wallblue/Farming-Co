@@ -4,6 +4,7 @@
 // But du fichier :
 // DEFINE de tous les éléments qui seront utilisés pour la map, le player... (pour meilleure clarté)
 //
+#include <stdio.h>
 
 #ifndef FARMINGCO_DEFINE_H
 #define FARMINGCO_DEFINE_H
