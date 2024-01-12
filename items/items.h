@@ -19,8 +19,10 @@ struct Item{
 typedef struct Item Item;
 
 //Functions :
-unsigned char addItemToDatabase(int id);
+void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite);
+void resetItem(Item* item);
 unsigned char addItemsToDatabase();
+void printItem(const Item* item);
 unsigned char dejsonifyItems();
 
 #endif

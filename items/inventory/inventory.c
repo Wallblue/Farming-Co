@@ -1,35 +1,21 @@
 #include "inventory.h"
 #include "../../define.h"
+#include "../../database/database.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cJSON.h>
 #include <string.h>
-
-void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite){
-    item->id = id;
-    strcpy(item->name, name);
-    item->quantity = quantity;
-    strcpy(item->type, type);
-    strcpy(item->description, description);
-    item->energyBonus = energyBonus;
-    item->ability = ability;
-    item->growTime = growTime;
-    strcpy(item->sprite, sprite);
-}
-
-void resetItem(Item* item){
-    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "");
-}
+#include <sqlite3.h>
 
 void initInventory(Inventory inventory){
     unsigned char i;
-    for(i = 0; i < INVENTORY_SIZE; i++)
+    for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         resetItem(inventory + i);
 }
 
-short itemFind(int id, const Inventory inventory){
+short findItem(int id, const Inventory inventory){
     short i;
-    for(i = 0; i < INVENTORY_SIZE; i++)
+    for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         if(inventory[i].id == id)
             return i;
     return -1;
@@ -37,13 +23,13 @@ short itemFind(int id, const Inventory inventory){
 
 short firstEmptySlot(const Inventory inventory){
     short i;
-    for(i = 0; i < INVENTORY_SIZE; i++)
+    for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         if(inventory[i].id == 0 && inventory[i].quantity == 0)
             return i;
     return -1;
 }
 
-unsigned char itemSet(const Item* item, Inventory inventory){
+unsigned char setItem(const Item* item, Inventory inventory){
     short index = firstEmptySlot(inventory);
     if(index == -1) return FAILURE; //If inventory is full
 
@@ -51,17 +37,17 @@ unsigned char itemSet(const Item* item, Inventory inventory){
     return SUCCESS;
 }
 
-unsigned char itemAdd(const Item* item, Inventory inventory){
-    short index = itemFind(item->id, inventory);
+unsigned char addItem(const Item* item, Inventory inventory){
+    short index = findItem(item->id, inventory);
     if(index == -1) //If item does not exist in this inventory
-        return itemSet(item, inventory);
+        return setItem(item, inventory);
     //but if it does
     inventory[index].quantity += item->quantity;
     return SUCCESS;
 }
 
-unsigned char itemSubstract(int id, unsigned char quantity, Inventory inventory){
-    short index = itemFind(id, inventory);
+unsigned char substractItem(int id, unsigned char quantity, Inventory inventory){
+    short index = findItem(id, inventory);
     if(index == -1 || inventory[index].quantity < quantity) return FAILURE;
 
     if(inventory[index].quantity == quantity)
@@ -77,11 +63,14 @@ unsigned char saveInventory(Inventory inventory){
     FILE* fp;
 
     fp = fopen(INVENTORY_SAVE_FILE, "w");
-    if(fp == NULL) {
-        fprintf(stderr, "\nError while saving inventory.\n");
+    if(fp == NULL) return FAILURE;
+
+    jsonString = jsonifyInventory(inventory);
+    if(jsonString == NULL){
+        fclose(fp);
         return FAILURE;
     }
-    jsonString = jsonifyInventory(inventory);
+
     fwrite(jsonString, strlen(jsonString), 1, fp);
     fclose(fp);
     free(jsonString);
@@ -91,26 +80,43 @@ unsigned char saveInventory(Inventory inventory){
 unsigned char loadInventory(Inventory inventory){
     cJSON* jsonInventory;
     cJSON* jsonItem;
+    sqlite3* db;
+    sqlite3_stmt* res;
     unsigned char i;
+    int rc;
+
+    if(openDb(&db) == FAILURE) return FAILURE;
 
     if((i = parseJsonFile(INVENTORY_SAVE_FILE, &jsonInventory)) != SUCCESS) return i;
 
     cJSON_ArrayForEach(jsonItem, jsonInventory){
+        //On récupère l'id et la quantité dans la save
         cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
-        cJSON* name = cJSON_GetObjectItemCaseSensitive(jsonItem, "name");
         cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonItem, "quantity");
-        cJSON* type = cJSON_GetObjectItemCaseSensitive(jsonItem, "type");
-        cJSON* description = cJSON_GetObjectItemCaseSensitive(jsonItem, "description");
-        cJSON* energyBonus = cJSON_GetObjectItemCaseSensitive(jsonItem, "energyBonus");
-        cJSON* ability = cJSON_GetObjectItemCaseSensitive(jsonItem, "ability");
-        cJSON* growTime = cJSON_GetObjectItemCaseSensitive(jsonItem, "growTime");
-        cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonItem, "sprite");
 
-        affectItem(inventory + i, id->valueint, name->valuestring, quantity->valueint, type->valuestring, description->valuestring,
-                   energyBonus->valueint, ability->valueint, growTime->valueint ,sprite->valuestring);
+        if(id->valueint == 0){
+            resetItem(inventory + i++);
+            continue;
+        }
+
+        //On récupère le reste dans la bdd
+        if(prepareRequest(db, "SELECT * FROM item WHERE itemId = ?1", &res) == FAILURE) return FAILURE;
+        sqlite3_bind_int(res, 1, id->valueint);
+        rc = sqlite3_step(res);
+        if(rc != SQLITE_ROW){
+            fprintf(stderr, "Can't load saved item.");
+            return FAILURE;
+        }
+
+
+        affectItem(inventory + i, id->valueint, (char*)sqlite3_column_text(res, 1), quantity->valueint, (char*)sqlite3_column_text(res, 2), (char*)sqlite3_column_text(res, 3),
+                   sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7));
+
+        sqlite3_finalize(res);
         ++i;
     }
 
+    sqlite3_close(db);
     return SUCCESS;
 }
 
@@ -141,20 +147,17 @@ char* jsonifyInventory(Inventory inventory){
     cJSON *jsonInventory;
     cJSON *jsonItem;
     char *jsonString;
-    int i;
+    unsigned char i;
 
     jsonInventory = cJSON_CreateArray();
     if(jsonInventory == NULL) return NULL;
 
-    for(i = 0; i < INVENTORY_SIZE; i++){
+    for(i = 0; i < INVENTORY_MAX_SIZE; i++){
         jsonItem = cJSON_CreateObject();
         if(jsonItem == NULL) return NULL;
 
         cJSON_AddNumberToObject(jsonItem, "id", inventory[i].id);
-        cJSON_AddStringToObject(jsonItem, "name", inventory[i].name);
         cJSON_AddNumberToObject(jsonItem, "quantity", inventory[i].quantity);
-        cJSON_AddStringToObject(jsonItem, "sprite", inventory[i].sprite);
-        cJSON_AddStringToObject(jsonItem, "type", inventory[i].type);
 
         cJSON_AddItemToArray(jsonInventory, jsonItem);
     }

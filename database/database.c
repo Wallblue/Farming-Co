@@ -58,3 +58,15 @@ unsigned char executeSQL(sqlite3* db, const char* request){
     }
     return SUCCESS;
 }
+
+unsigned char prepareRequest(sqlite3* db, const char* request, sqlite3_stmt** res){
+    int rc = sqlite3_prepare_v2(db, request, -1, res, 0);
+
+    if(rc != SQLITE_OK){
+        fprintf(stderr, "Failed to fetch data %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+
+        return FAILURE;
+    }
+    return SUCCESS;
+}

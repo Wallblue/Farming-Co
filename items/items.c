@@ -6,6 +6,23 @@
 #include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite){
+    item->id = id;
+    strcpy(item->name, name);
+    item->quantity = quantity;
+    strcpy(item->type, type);
+    strcpy(item->description, description);
+    item->energyBonus = energyBonus;
+    item->ability = ability;
+    item->growTime = growTime;
+    strcpy(item->sprite, sprite);
+}
+
+void resetItem(Item* item){
+    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "");
+}
 
 unsigned char addItemsToDatabase(){
     cJSON* jsonContent = NULL;
@@ -40,4 +57,11 @@ unsigned char addItemsToDatabase(){
 
     sqlite3_close(db);
     return SUCCESS;
+}
+
+void printItem(const Item* item){
+    FILE* fp = fopen("print.txt", "w");
+    fprintf(fp, "id : %d\nname : %s\ntype : %s\ndescription : %s\nenergyBonus : %hu\nability : %hhu\ngrowTime : %hhu\nsprite : %s\nquantity : %hhu",
+            item->id, item->name, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite, item->quantity);
+    fclose(fp);
 }

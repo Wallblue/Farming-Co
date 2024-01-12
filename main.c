@@ -27,14 +27,17 @@ int main(int argc, char **argv){
     Inventory inventory;
     unsigned char res;
 
-    if(createDatabase() == FAILURE) return EXIT_FAILURE;
-    if(addItemsToDatabase() == FAILURE) return EXIT_FAILURE;
-    /*if((res = loadInventory(inventory)) != SUCCESS){
+    if(createDatabase() == FAILURE) exitWithError("Database creation error.");
+    if(addItemsToDatabase() == FAILURE) exitWithError("Items database saving impossible");
+
+    if((res = loadInventory(inventory)) != SUCCESS){
         if(res == 2) initInventory(inventory);
-        else return EXIT_SUCCESS;
-    }*/
+        else exitWithError("Can't load saved inventory.");
+    }
 
     gameLoop(renderer, grassTexture, fencesTexture, playerTexture);
+
+    if(saveInventory(inventory) == FAILURE) exitWithError("Can't save inventory");
 
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);

@@ -5,6 +5,7 @@
 //
 
 #include "error.h"
+#include <SDL.h>
 
 void exitWithError(const char* message) {
     SDL_Log("ERREUR : %s : %s\n", message, SDL_GetError());
