@@ -44,5 +44,32 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "wood.png"
+  }, {
+    "id": 6,
+    "name": "axe",
+    "type": "tool",
+    "description": "Isn't it a pretty tool if we forget it kills trees ?",
+    "energyBonus": 0,
+    "ability": 1,
+    "growTime": 0,
+    "sprite": "axe.png"
+  }, {
+    "id": 7,
+    "name": "hoe",
+    "type": "tool",
+    "description": "It's the person you talk with when you work.",
+    "energyBonus": 0,
+    "ability": 2,
+    "growTime": 0,
+    "sprite": "hoe.png"
+  }, {
+    "id": 8,
+    "name": "watering_can",
+    "type": "tool",
+    "description": "A pocket rain maker.",
+    "energyBonus": 0,
+    "ability": 3,
+    "growTime": 0,
+    "sprite": "watering_can.png"
   }
 ]

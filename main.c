@@ -25,7 +25,6 @@ int main(int argc, char **argv){
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
 
     Inventory inventory;
-    Item* item;
     unsigned char res;
 
     if(createDatabase() == FAILURE) exitWithError("Database creation error.");

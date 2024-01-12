@@ -26,6 +26,5 @@ void resetItem(Item* item);
 unsigned char addItemsToDatabase();
 unsigned char getItem(int id, Item* dest, sqlite3* db);
 void printItem(const Item* item);
-unsigned char dejsonifyItems();
 
 #endif
