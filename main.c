@@ -134,19 +134,19 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                             break;
 
                         case SDLK_LEFT:
-                            moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
+                            moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                             break;
 
                         case SDLK_RIGHT:
-                            moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
+                            moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                             break;
 
                         case SDLK_UP:
-                            moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
+                            moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                             break;
 
                         case SDLK_DOWN:
-                            moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, &zone);
+                            moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                             break;
 
                     }
