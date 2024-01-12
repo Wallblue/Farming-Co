@@ -8,13 +8,21 @@
 #include "time/time.h"
 
 SDL_Window* initWindow();
-void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *);
+
+void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *);
+
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 
 int main(int argc, char **argv){
     int timeInGame = 0;
-    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)&timeInGame);
+    int sleep = 0;
+
+    struct ThreadData threadData;
+    threadData.timeInGame = &timeInGame;
+    threadData.sleep = &sleep;
+
+    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)(&threadData));
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         exitWithError("Erreur d'initialisation");
@@ -37,7 +45,7 @@ int main(int argc, char **argv){
     initObjectMaps();
     else if(err == FAILURE) return EXIT_FAILURE;
 
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
 
     if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
     // Libération des ressources
@@ -68,7 +76,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -158,6 +166,10 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
 
                         case SDLK_DOWN:
                             moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                            break;
+
+                        case SDLK_s:
+                            *sleep = 1;
                             break;
 
                     }
