@@ -29,24 +29,28 @@ short firstEmptySlot(const Inventory inventory){
     return -1;
 }
 
-unsigned char setItem(const Item* item, Inventory inventory){
+unsigned char setItem(int id, unsigned char quantity, Inventory inventory){
+    Item item;
     short index = firstEmptySlot(inventory);
+
     if(index == -1) return FAILURE; //If inventory is full
 
-    affectItem(inventory + index, item->id, item->name, item->quantity, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite);
+    getItem(id, &item, NULL);
+    affectItem(inventory + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus, item.ability, item.growTime, item.sprite);
     return SUCCESS;
 }
 
-unsigned char addItem(const Item* item, Inventory inventory){
-    short index = findItem(item->id, inventory);
+unsigned char addItem(int id, unsigned char quantity, Inventory inventory){
+    short index = findItem(id, inventory);
+
     if(index == -1) //If item does not exist in this inventory
-        return setItem(item, inventory);
+        return setItem(id, quantity, inventory);
     //but if it does
-    inventory[index].quantity += item->quantity;
+    inventory[index].quantity += quantity;
     return SUCCESS;
 }
 
-unsigned char substractItem(int id, unsigned char quantity, Inventory inventory){
+unsigned char subtractItem(int id, unsigned char quantity, Inventory inventory){
     short index = findItem(id, inventory);
     if(index == -1 || inventory[index].quantity < quantity) return FAILURE;
 
@@ -81,9 +85,7 @@ unsigned char loadInventory(Inventory inventory){
     cJSON* jsonInventory;
     cJSON* jsonItem;
     sqlite3* db;
-    sqlite3_stmt* res;
     unsigned char i;
-    int rc;
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
@@ -100,19 +102,9 @@ unsigned char loadInventory(Inventory inventory){
         }
 
         //On récupère le reste dans la bdd
-        if(prepareRequest(db, "SELECT * FROM item WHERE itemId = ?1", &res) == FAILURE) return FAILURE;
-        sqlite3_bind_int(res, 1, id->valueint);
-        rc = sqlite3_step(res);
-        if(rc != SQLITE_ROW){
-            fprintf(stderr, "Can't load saved item.");
-            return FAILURE;
-        }
+        if(getItem(id->valueint, inventory + i, db) == FAILURE) return FAILURE;
+        inventory[i].quantity = quantity->valueint;
 
-
-        affectItem(inventory + i, id->valueint, (char*)sqlite3_column_text(res, 1), quantity->valueint, (char*)sqlite3_column_text(res, 2), (char*)sqlite3_column_text(res, 3),
-                   sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7));
-
-        sqlite3_finalize(res);
         ++i;
     }
 

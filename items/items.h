@@ -5,6 +5,8 @@
 #define MAX_STR 25
 #define DESC_MAX 255
 
+#include <sqlite3.h>
+
 struct Item{
     int id;
     char name[MAX_STR];
@@ -22,6 +24,7 @@ typedef struct Item Item;
 void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite);
 void resetItem(Item* item);
 unsigned char addItemsToDatabase();
+unsigned char getItem(int id, Item* dest, sqlite3* db);
 void printItem(const Item* item);
 unsigned char dejsonifyItems();
 

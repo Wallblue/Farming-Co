@@ -59,6 +59,29 @@ unsigned char addItemsToDatabase(){
     return SUCCESS;
 }
 
+unsigned char getItem(int id, Item* dest, sqlite3* db){
+    sqlite3_stmt* res;
+    int rc;
+
+    if(db == NULL)
+        if(openDb(&db) == FAILURE) return FAILURE;
+
+    if(prepareRequest(db, "SELECT * FROM item WHERE itemId = ?1", &res) == FAILURE) return FAILURE;
+    sqlite3_bind_int(res, 1, id);
+    rc = sqlite3_step(res);
+    if(rc != SQLITE_ROW){
+        fprintf(stderr, "Can't get item.");
+        return FAILURE;
+    }
+
+    affectItem(dest, id, (char*)sqlite3_column_text(res, 1), 0, (char*)sqlite3_column_text(res, 2), (char*)sqlite3_column_text(res, 3),
+               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7));
+
+    if(db == NULL) sqlite3_close(db);
+    sqlite3_finalize(res);
+    return SUCCESS;
+}
+
 void printItem(const Item* item){
     FILE* fp = fopen("print.txt", "w");
     fprintf(fp, "id : %d\nname : %s\ntype : %s\ndescription : %s\nenergyBonus : %hu\nability : %hhu\ngrowTime : %hhu\nsprite : %s\nquantity : %hhu",
