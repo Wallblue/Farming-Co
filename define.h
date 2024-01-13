@@ -16,6 +16,9 @@
 #define mapWidth 25
 #define mapHeight 20
 
+#define gameWidth (mapWidth*dstHeightWidth)
+#define gameHeight (mapHeight*dstHeightWidth)
+
 #define FAILURE 1
 #define SUCCESS 0
 

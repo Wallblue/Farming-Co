@@ -45,7 +45,7 @@ int day(void* data) {
 }
 
 void applyFilter(SDL_Renderer * renderer, int * timeInGame, SDL_Texture *lightLayer){
-    SDL_Rect gameRect = {0, 0, 800, 640};
+    SDL_Rect gameRect = {0, 0, gameWidth, gameHeight};
     int nightFilter = 0;
 
     if(*timeInGame >= 12){
