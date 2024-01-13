@@ -8,10 +8,11 @@
 #include "time/time.h"
 #include "items/items.h"
 #include "items/inventory/inventory.h"
+#include "menus/menu.h"
 
 SDL_Window* initWindow();
 
-void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *);
+void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture *, int * , SDL_Texture *, int *);
 
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
@@ -38,6 +39,7 @@ int main(int argc, char **argv){
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
+    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, HOTBAR_HEIGHT);
     unsigned char err;
     Inventory inventory;
 
@@ -55,7 +57,7 @@ int main(int argc, char **argv){
     }
 
 
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, hotbarTexture, &timeInGame, lightLayer, threadData.sleep);
 
     err = saveObjectMaps();
     if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
@@ -64,6 +66,7 @@ int main(int argc, char **argv){
     SDL_DestroyTexture(grassTexture);
     SDL_DestroyTexture(fencesTexture);
     SDL_DestroyTexture(playerTexture);
+    SDL_DestroyTexture(hotbarTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -79,7 +82,7 @@ SDL_Window* initWindow() {
     SDL_Window *window = SDL_CreateWindow("FarmingCo",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          800, 640,
+                                          gameWidth, gameHeight,
                                           SDL_WINDOW_SHOWN);
     if (window == NULL) {
         exitWithError("Erreur de création de la fenêtre");
@@ -88,12 +91,13 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, SDL_Texture* hotbarTexture ,int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
     int countY = 0;
     int zone = 0;
+    unsigned char currentSlot = 1;
     char **mapBg;
     char **mapFg;
     char **mapObjects;
@@ -149,7 +153,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
 
         applyFilter(renderer, timeInGame, lightLayer);
-
+        printHotbarHUD(renderer, hotbarTexture, currentSlot);
         SDL_RenderPresent(renderer);
 
         if (SDL_PollEvent(&event)) {
@@ -184,15 +188,56 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                             *sleep = 1;
                             break;
 
+                        case SDLK_1:
+                            currentSlot = 1;
+                            break;
+                        case SDLK_2:
+                            currentSlot = 2;
+                            break;
+                        case SDLK_3:
+                            currentSlot = 3;
+                            break;
+                        case SDLK_4:
+                            currentSlot = 4;
+                            break;
+                        case SDLK_5:
+                            currentSlot = 5;
+                            break;
+                        case SDLK_6:
+                            currentSlot = 6;
+                            break;
+                        case SDLK_7:
+                            currentSlot = 7;
+                            break;
+                        case SDLK_8:
+                            currentSlot = 8;
+                            break;
+                        case SDLK_9:
+                            currentSlot = 9;
+                            break;
+                        case SDLK_0:
+                            currentSlot = 10;
+                            break;
                     }
+                    break;
 
-                    case SDL_MOUSEBUTTONUP:
-                        switch(event.button.button){
-                            case SDL_BUTTON_LEFT:
-                                SDL_GetMouseState(&x, &y);
-                                inputObject(x, y, mapObjects);
-                                break;
-                        }
+                case SDL_MOUSEBUTTONUP:
+                    switch(event.button.button){
+                        case SDL_BUTTON_LEFT:
+                            SDL_GetMouseState(&x, &y);
+                            inputObject(x, y, mapObjects);
+                            break;
+                    }
+                    break;
+
+                case SDL_MOUSEWHEEL:
+                    if(event.wheel.y > 0) ++currentSlot;
+                    if(event.wheel.y < 0) --currentSlot;
+                    if(event.wheel.x > 0) ++currentSlot;
+                    if(event.wheel.x < 0) --currentSlot;
+                    currentSlot = currentSlot == 0 ? 10 : currentSlot;
+                    currentSlot = currentSlot == 11 ? 1 : currentSlot;
+                    break;
             }
         }
     }
