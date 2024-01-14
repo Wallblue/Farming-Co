@@ -56,8 +56,7 @@ CMakeLists.txt
 cmake-build-debug/
 lib/
 database/farmingco.db
-farmingco.db
 save/objectMapsSave.dat
-objectMapsSave.dat  
+save/inventorySave.json
 
 .DS_Store

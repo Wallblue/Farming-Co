@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "name": "pebble",
+    "type": "misc",
+    "description": "A little piece of a big rock.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "pebble.png"
+  }, {
+    "id": 2,
+    "name": "grass",
+    "type": "misc",
+    "description": "It's just grass.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "grass.png"
+  }, {
+    "id": 3,
+    "name": "stick",
+    "type": "misc",
+    "description": "A long but thin piece of wood.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "stick.png"
+  }, {
+    "id": 4,
+    "name": "stone",
+    "type": "misc",
+    "description": "It's like a lot of pebbles stacked together.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "stone.png"
+  }, {
+    "id": 5,
+    "name": "wood",
+    "type": "misc",
+    "description": "Mother Nature craft this with sticks.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "wood.png"
+  }, {
+    "id": 6,
+    "name": "axe",
+    "type": "tool",
+    "description": "Isn't it a pretty tool if we forget it kills trees ?",
+    "energyBonus": 0,
+    "ability": 1,
+    "growTime": 0,
+    "sprite": "axe.png"
+  }, {
+    "id": 7,
+    "name": "hoe",
+    "type": "tool",
+    "description": "It's the person you talk with when you work.",
+    "energyBonus": 0,
+    "ability": 2,
+    "growTime": 0,
+    "sprite": "hoe.png"
+  }, {
+    "id": 8,
+    "name": "watering_can",
+    "type": "tool",
+    "description": "A pocket rain maker.",
+    "energyBonus": 0,
+    "ability": 3,
+    "growTime": 0,
+    "sprite": "watering_can.png"
+  }
+]

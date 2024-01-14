@@ -6,6 +6,8 @@
 #include "error/error.h"
 #include "save/save.h"
 #include "time/time.h"
+#include "items/items.h"
+#include "items/inventory/inventory.h"
 
 SDL_Window* initWindow();
 
@@ -34,19 +36,29 @@ int main(int argc, char **argv){
     SDL_Texture* floorTexture = loadTexture(renderer, "../map/sheets/floors.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
-    unsigned char err;
-
-    if(createDatabase() == FAILURE) return EXIT_FAILURE;
-
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
+    unsigned char err;
+    Inventory inventory;
 
-    if((err = loadObjectsMaps()) == 2)
-    initObjectMaps();
-    else if(err == FAILURE) return EXIT_FAILURE;
+    if(createDatabase() == FAILURE) exitWithError("Database creation error.");
+    if(addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
+
+    if((err = loadObjectsMaps()) != SUCCESS){
+        if(err == 2) err = initObjectMaps();
+        if(err == FAILURE) exitWithError("Can't load map.");
+    }
+
+    if((err = loadInventory(inventory)) != SUCCESS){
+        if(err == 2) initInventory(inventory);
+        else exitWithError("Can't load saved inventory.");
+    }
+
 
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
 
-    if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
+    err = saveObjectMaps();
+    if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
+
     // Libération des ressources
     SDL_DestroyTexture(floorTexture);
     SDL_DestroyTexture(playerTexture);
@@ -220,4 +232,3 @@ size_t getFileSize(FILE* fp){
     rewind(fp);
     return fileSize;
 }
-
