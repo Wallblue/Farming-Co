@@ -9,7 +9,7 @@
 
 SDL_Window* initWindow();
 
-void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *);
+void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *);
 
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
@@ -31,8 +31,7 @@ int main(int argc, char **argv){
     SDL_Window* window = initWindow();
     SDL_Renderer* renderer = initRenderer(window);
 
-    SDL_Texture* grassTexture = loadTexture(renderer, "../map/sheets/grass.bmp");
-    SDL_Texture* fencesTexture = loadTexture(renderer, "../map/sheets/fences.bmp");
+    SDL_Texture* floorTexture = loadTexture(renderer, "../map/sheets/floors.bmp");
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
     unsigned char err;
@@ -45,12 +44,11 @@ int main(int argc, char **argv){
     initObjectMaps();
     else if(err == FAILURE) return EXIT_FAILURE;
 
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
+    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
 
     if(saveObjectMaps() == FAILURE) return EXIT_FAILURE;
     // Libération des ressources
-    SDL_DestroyTexture(grassTexture);
-    SDL_DestroyTexture(fencesTexture);
+    SDL_DestroyTexture(floorTexture);
     SDL_DestroyTexture(playerTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -76,7 +74,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -130,8 +128,10 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                 break;
         }
 
-        printMap(renderer, grassTexture, mapBg);
-        printMap(renderer, fencesTexture, mapFg);
+        printMap(renderer, floorTexture, mapBg);
+        printMap(renderer, floorTexture, mapFg);
+        if(zone == 0)printMap(renderer, floorTexture, houseRoof);
+
         printMap(renderer, furnitureTexture, mapObjects);
 
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
@@ -178,7 +178,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
                         switch(event.button.button){
                             case SDL_BUTTON_LEFT:
                                 SDL_GetMouseState(&x, &y);
-                                inputObject(x, y, mapObjects);
+                                inputObject(x, y, mapObjects, mapFg);
                                 break;
                         }
             }
