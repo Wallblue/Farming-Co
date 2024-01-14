@@ -60,6 +60,7 @@ int main(int argc, char **argv){
     if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
+
     SDL_DestroyTexture(floorTexture);
     SDL_DestroyTexture(playerTexture);
     SDL_DestroyRenderer(renderer);
@@ -89,8 +90,8 @@ SDL_Window* initWindow() {
 void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
     // Boucle principale du jeu
     int endGame = 0;
-    int countX = 0;
-    int countY = 0;
+    int countX = 18;
+    int countY = 5;
     int zone = 0;
     char **mapBg;
     char **mapFg;
@@ -106,10 +107,9 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
     playerDst.h = dstHeightWidth;
     playerSrc.x = tileHeightWidth;
     playerSrc.y = tileHeightWidth;
-    playerDst.x = 0;
-    playerDst.y = 0;
+    playerDst.x = 576;
+    playerDst.y = 160;
     int x, y;
-
 
     while (!endGame) {
         switch(zone){
@@ -133,10 +133,10 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
                 mapFg = fourthZoneFg;
                 mapObjects = mapObjects4;
                 break;
-            default:
-                mapBg = firstZoneBg;
-                mapFg = firstZoneFg;
-                mapObjects = mapObjects1;
+            case 4:
+                mapBg = home;
+                mapFg = homeFg;
+                mapObjects = homeObjects;
                 break;
         }
 

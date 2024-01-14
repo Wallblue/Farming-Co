@@ -17,7 +17,7 @@
 
 void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, char **, int*);
 void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, char **, int*);
-void moveUp(SDL_Rect *, SDL_Rect *, const int *, int *, char **, char **, int*);
-void moveDown(SDL_Rect *, SDL_Rect *, const int *, int *, char **, char **, int*);
+void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, char **, int*);
+void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, char **, int*);
 
 #endif //FARMINGCO_PLAYER_H

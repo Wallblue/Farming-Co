@@ -103,6 +103,30 @@ char* fourthZoneBg[] = {
         "1001423311:20511231130200",
 };
 
+char* home[] = {
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@YYYYYYYYYYYYYYYYY@@@@",
+        "@@@@@@@@@@@@Y@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+        "@@@@@@@@@@@@@@@@@@@@@@@@@",
+
+};
+
 //objets sur la map (ex: eau)
 char* firstZoneFg[] = {
         "//////////////HIIIIIIIJ//",
@@ -174,6 +198,29 @@ char* secondZoneFg[] = {
         "/////////////////////////",
 };
 
+char* homeFg[] = {
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "@@@@@@@@@@@@/@@@@@@@@@@@@",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+        "/////////////////////////",
+};
+
 char* thirdZoneFg[] = {
         "/////////////////////////",
         "/////////////////////////",
@@ -224,6 +271,7 @@ char** mapObjects1;
 char** mapObjects2;
 char** mapObjects3;
 char** mapObjects4;
+char** homeObjects;
 
 void inputObject(int xMouse, int yMouse, char** tab, char **mapFg){
     yMouse = yMouse/32;
@@ -261,6 +309,8 @@ unsigned char initObjectMaps(){
     if(mapObjects3 == NULL) return FAILURE;
     mapObjects4 = malloc(mapHeight * sizeof(char *));
     if(mapObjects4 == NULL) return FAILURE;
+    homeObjects = malloc(mapHeight * sizeof(char *));
+    if(homeObjects == NULL) return FAILURE;
 
     char* defaultLine = "//////////////////////////";
 
@@ -269,6 +319,7 @@ unsigned char initObjectMaps(){
         if(initLine(mapObjects2 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(mapObjects3 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(mapObjects4 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(homeObjects + i, defaultLine) == FAILURE) return FAILURE;
     }
 
     return SUCCESS;
@@ -287,4 +338,5 @@ void freeObjectMaps(){
     free(mapObjects2);
     free(mapObjects3);
     free(mapObjects4);
+    free(homeObjects);
 }

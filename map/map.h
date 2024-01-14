@@ -25,11 +25,13 @@ extern char* thirdZoneFg[];
 extern char* fourthZoneBg[];
 extern char* fourthZoneFg[];
 extern char* houseRoof[];
+extern char* home[];
+extern char* homeFg[];
 extern char** mapObjects1;
 extern char** mapObjects2;
 extern char** mapObjects3;
 extern char** mapObjects4;
-
+extern char** homeObjects;
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
 void inputObject(int, int, char**, char **);

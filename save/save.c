@@ -30,6 +30,7 @@ unsigned char saveObjectMaps(){
         fwrite(mapObjects2[i], mapWidth, 1, fp);
         fwrite(mapObjects3[i], mapWidth, 1, fp);
         fwrite(mapObjects4[i], mapWidth, 1, fp);
+        fwrite(homeObjects[i], mapWidth, 1, fp);
     }
     fclose(fp);
 
@@ -51,12 +52,15 @@ unsigned char loadObjectsMaps(){
     if(mapObjects3 == NULL) return FAILURE;
     mapObjects4 = malloc(mapHeight * sizeof(char *));
     if(mapObjects4 == NULL) return FAILURE;
+    homeObjects = malloc(mapHeight * sizeof(char *));
+    if(homeObjects == NULL) return FAILURE;
 
     for (i = 0; i < mapHeight; i++) {
         if(loadMapLine(mapObjects1 + i, fp) == FAILURE) return FAILURE;
         if(loadMapLine(mapObjects2 + i, fp) == FAILURE) return FAILURE;
         if(loadMapLine(mapObjects3 + i, fp) == FAILURE) return FAILURE;
         if(loadMapLine(mapObjects4 + i, fp) == FAILURE) return FAILURE;
+        if(loadMapLine(homeObjects + i, fp) == FAILURE) return FAILURE;
     }
 
     fclose(fp);

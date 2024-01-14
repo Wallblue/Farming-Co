@@ -65,6 +65,12 @@ void moveLeft(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *
                 (*countX)--;
             }
             break;
+        case 4:
+            if(*countX-1>= 4 && tab[*countY][*countX-1] == '/'  && objects[*countY][*countX - 1] == '/') {
+                playerDst->x -= 32;
+                (*countX)--;
+            }
+            break;
     }
 }
 
@@ -119,21 +125,38 @@ void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int 
                 (*countX)++;
             }
             break;
+
+        case 4:
+            if(*countX+1 <= 20 && tab[*countY][*countX+1] == '/' && objects[*countY][*countX+1] == '/') {
+                playerDst->x += 32;
+                (*countX)++;
+            }
+            break;
     }
 
 
 }
 
-void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, const int *countX, int *countY, char **tab, char **objects, int *zone) {
+void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, char **objects, int *zone) {
     playerSrc->y = 64;
 
     switch (*zone) {
         case 0:
 
+            if(tab[*countY-1][*countX] == 'Q'){
+                *zone = 4;
+                *countY = 14;
+                *countX = 12;
+                playerDst->y = 448;
+                playerDst->x = 384;
+                break;
+            }
             if (*countY - 1 >= 0 && tab[*countY - 1][*countX] == '/' && objects[*countY - 1][*countX] == '/' ) {
                 playerDst->y -= 32;
                 (*countY)--;
             }
+
+
             break;
 
         case 1:
@@ -178,10 +201,17 @@ void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, const int *countX, int *co
             }
 
             break;
+
+        case 4:
+            if (*countY - 1 >= 5 && tab[*countY - 1][*countX] == '/' && objects[*countY - 1][*countX] == '/') {
+                playerDst->y -= 32;
+                (*countY)--;
+            }
+            break;
     }
 }
 
-void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, const int *countX, int *countY, char **tab, char **objects, int *zone){
+void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, char **objects, int *zone){
     playerSrc->y = 16;
 
     switch(*zone){
@@ -228,6 +258,21 @@ void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, const int *countX, int *
                 playerDst->y += 32;
                 (*countY)++;
             }
+            break;
+        case 4:
+            if(*countY+1 == 15){
+                playerDst->y = 160;
+                playerDst->x = 576;
+                *countY = 5;
+                *countX = 18;
+                *zone = 0;
+                break;
+            }
+            if(*countY+1 <= 14 && tab[*countY+1][*countX] == '/' && objects[*countY+1][*countX] == '/') {
+                playerDst->y += 32;
+                (*countY)++;
+            }
+
             break;
     }
 
