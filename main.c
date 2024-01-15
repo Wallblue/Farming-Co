@@ -8,6 +8,7 @@
 #include "time/time.h"
 #include "items/items.h"
 #include "items/inventory/inventory.h"
+#include <SDL_ttf.h>
 
 SDL_Window* initWindow();
 
@@ -15,30 +16,29 @@ void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture* , SDL_Texture* , int * ,
 
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
-
+void writeText(SDL_Renderer*);
 int main(int argc, char **argv){
     int timeInGame = 0;
     int sleep = 0;
+
+    if(SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
+    if(TTF_Init() != 0)exitWithError("Erreur d'initialisation");
+
+    SDL_Window* window = initWindow();
+    SDL_Renderer* renderer = initRenderer(window);
+
+    SDL_Texture* floorTexture = loadTexture(renderer, "../assets/sheets/floors.bmp");
+    SDL_Texture* playerTexture = loadTexture(renderer, "../assets/sheets/player.bmp");
+    SDL_Texture* furnitureTexture = loadTexture(renderer, "../assets/sheets/furniture.bmp");
+    SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
+    unsigned char err;
+    Inventory inventory;
 
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
 
     SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)(&threadData));
-
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        exitWithError("Erreur d'initialisation");
-    }
-
-    SDL_Window* window = initWindow();
-    SDL_Renderer* renderer = initRenderer(window);
-
-    SDL_Texture* floorTexture = loadTexture(renderer, "../map/sheets/floors.bmp");
-    SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
-    SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
-    SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
-    unsigned char err;
-    Inventory inventory;
 
     if(createDatabase() == FAILURE) exitWithError("Database creation error.");
     if(addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
@@ -53,14 +53,13 @@ int main(int argc, char **argv){
         else exitWithError("Can't load saved inventory.");
     }
 
-
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
 
     err = saveObjectMaps();
     if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
-
+    TTF_Quit();
     SDL_DestroyTexture(floorTexture);
     SDL_DestroyTexture(playerTexture);
     SDL_DestroyRenderer(renderer);
@@ -140,14 +139,14 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
                 break;
         }
 
+        SDL_RenderClear(renderer);
+
         printMap(renderer, floorTexture, mapBg);
         printMap(renderer, floorTexture, mapFg);
         if(zone == 0)printMap(renderer, floorTexture, houseRoof);
-
         printMap(renderer, furnitureTexture, mapObjects);
-
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
-
+        seeTime(renderer, timeInGame);
         applyFilter(renderer, timeInGame, lightLayer);
 
         SDL_RenderPresent(renderer);
@@ -190,7 +189,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
                         switch(event.button.button){
                             case SDL_BUTTON_LEFT:
                                 SDL_GetMouseState(&x, &y);
-                                inputObject(x, y, mapObjects, mapFg);
+                                inputObject(x, y, mapObjects, mapFg, &zone);
                                 break;
                         }
             }
@@ -232,3 +231,4 @@ size_t getFileSize(FILE* fp){
     rewind(fp);
     return fileSize;
 }
+

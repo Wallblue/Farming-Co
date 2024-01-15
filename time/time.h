@@ -15,6 +15,7 @@
 
 int day(void*);
 void applyFilter(SDL_Renderer *, int *, SDL_Texture *);
+void seeTime(SDL_Renderer*, int*);
 //void sleep(int *, Uint64*);
 
 #endif //FARMINGCO_TIME_H

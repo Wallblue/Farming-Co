@@ -273,10 +273,15 @@ char** mapObjects3;
 char** mapObjects4;
 char** homeObjects;
 
-void inputObject(int xMouse, int yMouse, char** tab, char **mapFg){
+void inputObject(int xMouse, int yMouse, char** tab, char **mapFg, int* zone){
     yMouse = yMouse/32;
     xMouse = xMouse/32;
-    if(mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
+
+
+    if(*zone == 4 && yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20)
+        tab[yMouse][xMouse] = '3';
+
+    if(*zone != 4 && mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
         tab[yMouse][xMouse] = '3';
 }
 

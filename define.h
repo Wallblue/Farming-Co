@@ -5,6 +5,8 @@
 // DEFINE de tous les éléments qui seront utilisés pour la map, le player... (pour meilleure clarté)
 //
 #include <stdio.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 
 #ifndef FARMINGCO_DEFINE_H
 #define FARMINGCO_DEFINE_H
@@ -27,5 +29,6 @@ struct ThreadData{
     int *timeInGame;
     int *sleep;
 };
+
 
 #endif //FARMINGCO_DEFINE_H

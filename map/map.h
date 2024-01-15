@@ -34,7 +34,7 @@ extern char** mapObjects4;
 extern char** homeObjects;
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
-void inputObject(int, int, char**, char **);
+void inputObject(int, int, char**, char **, int*);
 unsigned char initObjectMaps();
 unsigned char initLine(char** line, const char* defaultLine);
 void freeObjectMaps();
