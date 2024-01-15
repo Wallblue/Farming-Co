@@ -14,6 +14,7 @@
 #include "../define.h"
 #include "../error/error.h"
 #include "../save/save.h"
+#include "../items/items.h"
 
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
 extern char* firstZoneBg[];
@@ -27,16 +28,17 @@ extern char* fourthZoneFg[];
 extern char* houseRoof[];
 extern char* home[];
 extern char* homeFg[];
-extern char** mapObjects1;
-extern char** mapObjects2;
-extern char** mapObjects3;
-extern char** mapObjects4;
-extern char** homeObjects;
+extern unsigned char** mapObjects1;
+extern unsigned char** mapObjects2;
+extern unsigned char** mapObjects3;
+extern unsigned char** mapObjects4;
+extern unsigned char** homeObjects;
 
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
-void inputObject(int, int, char**, char **, int*);
+void inputObject(int, int, unsigned char**, char **, int, int, Item*);
 unsigned char initObjectMaps();
-unsigned char initLine(char** line, const char* defaultLine);
+unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();
+unsigned char setObject(int x, int y, int zone, int todayDate, int growTime, unsigned char spriteRef);
 
 #endif //FARMINGCO_MAP_H

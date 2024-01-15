@@ -70,3 +70,11 @@ unsigned char prepareRequest(sqlite3* db, const char* request, sqlite3_stmt** re
     }
     return SUCCESS;
 }
+
+unsigned char startGame(){
+    sqlite3* db;
+    if(openDb(&db) == FAILURE) return FAILURE;
+    char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 50, NULL)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    return SUCCESS;
+}

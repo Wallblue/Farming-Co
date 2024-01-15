@@ -15,7 +15,7 @@
  * zone 3 = ferme des arbres
  */
 
-void moveLeft(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *countY, char **tab, char **objects, int *zone) {
+void moveLeft(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *countY, char **tab, unsigned char **objects, int *zone) {
     playerSrc->y = 112;
 
     switch(*zone) {
@@ -74,7 +74,7 @@ void moveLeft(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *
     }
 }
 
-void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *countY, char **tab,  char **objects, int *zone) {
+void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int *countY, char **tab, unsigned char **objects, int *zone) {
     playerSrc->y = 160;
 
     switch(*zone){
@@ -137,7 +137,7 @@ void moveRight(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, const int 
 
 }
 
-void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, char **objects, int *zone) {
+void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, unsigned char **objects, int *zone) {
     playerSrc->y = 64;
 
     switch (*zone) {
@@ -211,7 +211,7 @@ void moveUp(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, 
     }
 }
 
-void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, char **objects, int *zone){
+void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY, char **tab, unsigned char **objects, int *zone){
     playerSrc->y = 16;
 
     switch(*zone){

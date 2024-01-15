@@ -5,14 +5,15 @@
 //
 
 #include "time.h"
-
-
+#include <sqlite3.h>
+#include "../database/database.h"
 
 int day(void* data) {
     struct ThreadData* threadData = (struct ThreadData*)data;
     int* getHours = threadData->timeInGame;
     int* sleep = threadData->sleep;
     int* pause = threadData->pause;
+    int* todayDate = threadData->todayDate;
 
     Uint64 startTime = SDL_GetTicks64();
     Uint64 pauseTime = 0;
@@ -37,11 +38,13 @@ int day(void* data) {
 
             if (*getHours == 24) {
                 startTime = currentTime;
+                (*todayDate)++;
                 *getHours = 0;
             }
 
             if (*sleep == 1) {
                 startTime = currentTime;
+                (*todayDate)++;
                 *getHours = 0;
                 *sleep = 0;
             }
@@ -70,7 +73,7 @@ void applyFilter(SDL_Renderer * renderer, int * timeInGame, SDL_Texture *lightLa
     SDL_RenderCopy(renderer, lightLayer, NULL, &gameRect);
 }
 
-void seeTime(SDL_Renderer *renderer, int* timeInGame) {
+void seeTime(SDL_Renderer *renderer, const int* timeInGame) {
     TTF_Font* font = loadFont();
 
     SDL_Color textColor = {0, 0, 0};
@@ -183,4 +186,19 @@ TTF_Font *loadFont(){
     if(!font) exitWithError("Erreur de chargement de la police");
 
     return font;
+}
+
+int getDateInGame(){
+    sqlite3_stmt* res;
+    sqlite3* db;
+    int rc;
+    if(openDb(&db) == FAILURE) return -1;
+
+    if(prepareRequest(db, "SELECT timeInGame FROM player WHERE playerId = 1", &res) == FAILURE) return -1;
+    rc = sqlite3_step(res);
+    if(rc != SQLITE_ROW){
+        fprintf(stderr, "Can't get current day");
+        return -1;
+    }
+    return sqlite3_column_int(res, 0);
 }

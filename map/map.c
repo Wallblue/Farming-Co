@@ -6,6 +6,9 @@
 //
 
 #include "map.h"
+#include <sqlite3.h>
+#include "../database/database.h"
+#include "../items/items.h"
 
 //Création de la templates des maps qui  fonctionnent avec les caractères ascii & l'utilisation
 //d'une tilemap (ici tilemap de 16x16) -> se référencer sur map/sheets/utilisationSheets.txt
@@ -267,22 +270,42 @@ char* fourthZoneFg[] = {
         "/////////////////////////",
 };
 
-char** mapObjects1;
-char** mapObjects2;
-char** mapObjects3;
-char** mapObjects4;
-char** homeObjects;
+unsigned char** mapObjects1;
+unsigned char** mapObjects2;
+unsigned char** mapObjects3;
+unsigned char** mapObjects4;
+unsigned char** homeObjects;
 
-void inputObject(int xMouse, int yMouse, char** tab, char **mapFg, int* zone){
+void inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, int zone, int todayDate, Item* heldItem){
     yMouse = yMouse/32;
     xMouse = xMouse/32;
 
 
-    if(*zone == 4 && yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20)
-        tab[yMouse][xMouse] = '3';
+    if(zone == 4 && yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20)
+        tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
 
-    if(*zone != 4 && mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
-        tab[yMouse][xMouse] = '3';
+    if(zone != 4 && mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
+        tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
+
+    setObject(xMouse, yMouse, zone, todayDate, heldItem->growTime, heldItem->objectSpriteRef);
+}
+
+unsigned char setObject(int x, int y, int zone, int todayDate, int growTime, unsigned char spriteRef){
+    sqlite3* db;
+    char* sqlReq;
+
+    openDb(&db);
+    sqlReq = malloc(454 * sizeof(char)); //Allocating max size bc we can't calculate it before
+    sqlReq[sprintf(sqlReq, "INSERT INTO object (x, y, zone, poseDate, growDate, sprite) VALUES (%d, %d, %d, %d, %d, \"%c\";",
+                   x, y, zone, todayDate, todayDate + growTime, spriteRef) + 1] = '\0';
+
+    if(executeSQL(db, sqlReq) == FAILURE){
+        free(sqlReq);
+        return FAILURE;
+    }
+    free(sqlReq);
+    sqlite3_close(db);
+    return SUCCESS;
 }
 
 //affichage d'une map
@@ -330,10 +353,10 @@ unsigned char initObjectMaps(){
     return SUCCESS;
 }
 
-unsigned char initLine(char** line, const char* defaultLine){
+unsigned char initLine(unsigned char** line, const char* defaultLine){
     *line = malloc(mapWidth * sizeof(char));
     if(*line == NULL) return FAILURE;
-    strcpy(*line, defaultLine);
+    strcpy((char*)*line, defaultLine);
 
     return SUCCESS;
 }

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS cooperative(
 CREATE TABLE IF NOT EXISTS player(
       playerId INTEGER PRIMARY KEY AUTOINCREMENT,
       pseudo VARCHAR(25),
-      startDate DATETIME,
+      startDate DATE,
       farmName VARCHAR(25),
       timeInGame INTEGER,
       maxEnergy INTEGER,
@@ -24,10 +24,11 @@ CREATE TABLE IF NOT EXISTS object(
       y INTEGER,
       w INTEGER,
       h INTEGER,
+      zone INTEGER,
       name VARCHAR(25),
       growTime INT,
       growDate INT,
-      sprite VARCHAR(128),
+      spriteRef CHARACTER(1),
       state INTEGER,
       boosted BOOLEAN,
       playerId INTEGER,
@@ -60,8 +61,10 @@ CREATE TABLE IF NOT EXISTS item(
     quantity INTEGER,
     sprite VARCHAR(128),
     growTime INTEGER,
+    linkedObjectSprite CHARACTER(1),
     ownerId INTEGER,
     npcId INTEGER,
+    FOREIGN KEY (linkedObjectSprite) REFERENCES object(spriteRef),
     FOREIGN KEY (ownerId) REFERENCES player(playerId),
     FOREIGN KEY (npcId) REFERENCES npc(npcId)
 );

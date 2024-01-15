@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite){
+void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite, unsigned char objectSpriteRef){
     item->id = id;
     strcpy(item->name, name);
     item->quantity = quantity;
@@ -18,10 +18,11 @@ void affectItem(Item* item, int id, const char* name, unsigned char quantity, co
     item->ability = ability;
     item->growTime = growTime;
     strcpy(item->sprite, sprite);
+    item->objectSpriteRef = objectSpriteRef;
 }
 
 void resetItem(Item* item){
-    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "");
+    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "", 0);
 }
 
 unsigned char addItemsToDatabase(){
@@ -75,7 +76,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
     }
 
     affectItem(dest, id, (char*)sqlite3_column_text(res, 1), 0, (char*)sqlite3_column_text(res, 2), (char*)sqlite3_column_text(res, 3),
-               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7));
+               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 8));
 
     if(db == NULL) sqlite3_close(db);
     sqlite3_finalize(res);

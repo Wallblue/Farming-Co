@@ -13,7 +13,7 @@
 
 SDL_Window *initWindow();
 
-void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, int *, SDL_Texture *, int *, int *, Inventory inventory);
+void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, SDL_Texture *, struct ThreadData* , Inventory inventory);
 
 SDL_Renderer *initRenderer(SDL_Window *);
 
@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
     int timeInGame = 0;
     int sleep = 0;
     int pause = 0;
+    int todayDate;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
     if (TTF_Init() != 0)exitWithError("Erreur d'initialisation");
@@ -38,15 +39,18 @@ int main(int argc, char **argv) {
     unsigned char err;
     Inventory inventory;
 
+    if (createDatabase() == FAILURE) exitWithError("Database creation error.");
+    if (startGame() == FAILURE) exitWithError("Couldn't start game.");
+    if (addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
+
+    todayDate = getDateInGame();
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
     threadData.pause = &pause;
+    threadData.todayDate = &todayDate;
 
     SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
-
-    if (createDatabase() == FAILURE) exitWithError("Database creation error.");
-    if (addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
 
     if ((err = loadObjectsMaps()) != SUCCESS) {
         if (err == 2) err = initObjectMaps();
@@ -58,8 +62,7 @@ int main(int argc, char **argv) {
         else exitWithError("Can't load saved inventory.");
     }
 
-    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep,
-             threadData.pause, inventory);
+    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, lightLayer, &threadData ,inventory);
 
     err = saveObjectMaps();
     if(saveInventory(inventory) == FAILURE || err == FAILURE) exitWithError("Couldn't save properly.");
@@ -92,7 +95,7 @@ SDL_Window *initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, int *timeInGame, SDL_Texture *lightLayer, int *sleep, int *pause, Inventory inventory) {
+void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 18;
@@ -101,7 +104,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     unsigned char currentSlot = 1;
     char **mapBg;
     char **mapFg;
-    char **mapObjects;
+    unsigned char **mapObjects;
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
 
@@ -155,14 +158,16 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
 
         if (zone == 0)printMap(renderer, floorTexture, houseRoof);
 
-        printMap(renderer, furnitureTexture, mapObjects);
+        printMap(renderer, furnitureTexture, (char**)mapObjects);
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
-        seeTime(renderer, timeInGame);
-        applyFilter(renderer, timeInGame, lightLayer);
+        seeTime(renderer, data->timeInGame);
+        applyFilter(renderer,  data->timeInGame, lightLayer);
         if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
             exitWithError("Can't load hotbar");
 
-        if (*pause == 1)pauseMenu(renderer, lightLayer);
+        if(*data->pause == 1)pauseMenu(renderer, lightLayer);
+
+
 
         SDL_RenderPresent(renderer);
 
@@ -173,13 +178,13 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                     break;
 
                 case SDL_KEYDOWN: //détecte quand on appuie sur une touche
-                    if (*pause == 0 || event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (*data->pause == 0 || event.key.keysym.sym == SDLK_ESCAPE) {
                         switch (event.key.keysym.sym) {
                             case SDLK_ESCAPE:
-                                if (*pause == 0) {
-                                    *pause = 1;
+                                if (*data->pause == 0) {
+                                    *data->pause = 1;
                                 } else
-                                    *pause = 0;
+                                    *data->pause = 0;
                                 break;
 
                             case SDLK_LEFT:
@@ -199,7 +204,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 break;
 
                             case SDLK_s:
-                                *sleep = 1;
+                                *data->sleep = 1;
                                 break;
 
                             case SDLK_e:
@@ -240,20 +245,20 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                         break;
 
                         case SDL_MOUSEBUTTONUP:
-                            if (*pause == 0) {
+                            if (*data->pause == 0) {
                                 switch (event.button.button) {
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
-                                        inputObject(x, y, mapObjects, mapFg, &zone);
+                                        inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + currentSlot);
                                         break;
                                 }
-                            } else if (*pause == 1) {
+                            } else if (*data->pause == 1) {
                                 switch (event.button.button) {
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
                                         if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
                                             y <= screenHeight / 3 + 66)
-                                            *pause = 0;
+                                            *data->pause = 0;
 
                                         if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 &&
                                             y <= screenHeight / 2 + 66)

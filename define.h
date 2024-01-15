@@ -33,6 +33,7 @@ struct ThreadData{
     int *timeInGame;
     int *sleep;
     int *pause;
+    int *todayDate;
 };
 
 #endif //FARMINGCO_DEFINE_H

@@ -11,6 +11,6 @@
 
 unsigned char saveObjectMaps();
 unsigned char loadObjectsMaps();
-unsigned char loadMapLine(char** line, FILE* fp);
+unsigned char loadMapLine(unsigned char** line, FILE* fp);
 
 #endif //FARMINGCO_SAVE_H
