@@ -18,6 +18,9 @@
 #define mapWidth 25
 #define mapHeight 20
 
+#define screenWidth 800
+#define screenHeight 640
+
 #define FAILURE 1
 #define SUCCESS 0
 
@@ -28,7 +31,7 @@ size_t getFileSize(FILE* fp);
 struct ThreadData{
     int *timeInGame;
     int *sleep;
+    int *pause;
 };
-
 
 #endif //FARMINGCO_DEFINE_H

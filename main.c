@@ -10,26 +10,30 @@
 #include "items/inventory/inventory.h"
 #include <SDL_ttf.h>
 
-SDL_Window* initWindow();
+SDL_Window *initWindow();
 
-void gameLoop(SDL_Renderer*, SDL_Texture*, SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *);
+void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, int *, SDL_Texture *, int *, int *);
 
-SDL_Renderer* initRenderer(SDL_Window* );
-SDL_Texture* loadTexture(SDL_Renderer*, const char*);
-void writeText(SDL_Renderer*);
-int main(int argc, char **argv){
+
+SDL_Renderer *initRenderer(SDL_Window *);
+
+SDL_Texture *loadTexture(SDL_Renderer *, const char *);
+
+
+int main(int argc, char **argv) {
     int timeInGame = 0;
     int sleep = 0;
+    int pause = 0;
 
-    if(SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
-    if(TTF_Init() != 0)exitWithError("Erreur d'initialisation");
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
+    if (TTF_Init() != 0)exitWithError("Erreur d'initialisation");
 
-    SDL_Window* window = initWindow();
-    SDL_Renderer* renderer = initRenderer(window);
+    SDL_Window *window = initWindow();
+    SDL_Renderer *renderer = initRenderer(window);
 
-    SDL_Texture* floorTexture = loadTexture(renderer, "../assets/sheets/floors.bmp");
-    SDL_Texture* playerTexture = loadTexture(renderer, "../assets/sheets/player.bmp");
-    SDL_Texture* furnitureTexture = loadTexture(renderer, "../assets/sheets/furniture.bmp");
+    SDL_Texture *floorTexture = loadTexture(renderer, "../assets/sheets/floors.bmp");
+    SDL_Texture *playerTexture = loadTexture(renderer, "../assets/sheets/player.bmp");
+    SDL_Texture *furnitureTexture = loadTexture(renderer, "../assets/sheets/furniture.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
     unsigned char err;
     Inventory inventory;
@@ -37,26 +41,28 @@ int main(int argc, char **argv){
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
+    threadData.pause = &pause;
 
-    SDL_Thread* threadID = SDL_CreateThread( day, "LazyThread", (void*)(&threadData));
+    SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
-    if(createDatabase() == FAILURE) exitWithError("Database creation error.");
-    if(addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
+    if (createDatabase() == FAILURE) exitWithError("Database creation error.");
+    if (addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
 
-    if((err = loadObjectsMaps()) != SUCCESS){
-        if(err == 2) err = initObjectMaps();
-        if(err == FAILURE) exitWithError("Can't load map.");
+    if ((err = loadObjectsMaps()) != SUCCESS) {
+        if (err == 2) err = initObjectMaps();
+        if (err == FAILURE) exitWithError("Can't load map.");
     }
 
-    if((err = loadInventory(inventory)) != SUCCESS){
-        if(err == 2) initInventory(inventory);
+    if ((err = loadInventory(inventory)) != SUCCESS) {
+        if (err == 2) initInventory(inventory);
         else exitWithError("Can't load saved inventory.");
     }
 
-    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep);
+    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep,
+             threadData.pause);
 
     err = saveObjectMaps();
-    if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
+    if (err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
     TTF_Quit();
@@ -72,12 +78,12 @@ int main(int argc, char **argv){
 }
 
 
-SDL_Window* initWindow() {
+SDL_Window *initWindow() {
     // Initialisation de la fenêtre
     SDL_Window *window = SDL_CreateWindow("FarmingCo",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          800, 640,
+                                          screenWidth, screenHeight,
                                           SDL_WINDOW_SHOWN);
     if (window == NULL) {
         exitWithError("Erreur de création de la fenêtre");
@@ -86,7 +92,9 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
+void
+gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture,
+         int *timeInGame, SDL_Texture *lightLayer, int *sleep, int *pause) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 18;
@@ -111,7 +119,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
     int x, y;
 
     while (!endGame) {
-        switch(zone){
+        switch (zone) {
             case 0:
                 mapBg = firstZoneBg;
                 mapFg = firstZoneFg;
@@ -143,11 +151,15 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
 
         printMap(renderer, floorTexture, mapBg);
         printMap(renderer, floorTexture, mapFg);
-        if(zone == 0)printMap(renderer, floorTexture, houseRoof);
+
+        if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+
         printMap(renderer, furnitureTexture, mapObjects);
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         seeTime(renderer, timeInGame);
         applyFilter(renderer, timeInGame, lightLayer);
+
+        if(*pause == 1)pauseMenu(renderer, lightLayer);
 
         SDL_RenderPresent(renderer);
 
@@ -158,46 +170,53 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* pl
                     break;
 
                 case SDL_KEYDOWN: //détecte quand on appuie sur une touche
-                    switch( event.key.keysym.sym ) {
-                        case SDLK_h: //quitte si la touche est la lettre H
-                            endGame =1;
-                            break;
+                    if (*pause == 0 || event.key.keysym.sym == SDLK_ESCAPE) {
+                        switch (event.key.keysym.sym) {
+                            case SDLK_ESCAPE:
+                                if (*pause == 0) {
+                                    *pause = 1;
+                                }else
+                                    *pause = 0;
+                                break;
 
-                        case SDLK_LEFT:
-                            moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
-                            break;
+                            case SDLK_LEFT:
+                                moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                break;
 
-                        case SDLK_RIGHT:
-                            moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
-                            break;
+                            case SDLK_RIGHT:
+                                moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                break;
 
-                        case SDLK_UP:
-                            moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
-                            break;
+                            case SDLK_UP:
+                                moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                break;
 
-                        case SDLK_DOWN:
-                            moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
-                            break;
+                            case SDLK_DOWN:
+                                moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                break;
 
-                        case SDLK_s:
-                            *sleep = 1;
-                            break;
+                            case SDLK_s:
+                                *sleep = 1;
+                                break;
 
+                        }
                     }
 
-                    case SDL_MOUSEBUTTONUP:
-                        switch(event.button.button){
+                case SDL_MOUSEBUTTONUP:
+                    if (*pause == 0) {
+                        switch (event.button.button) {
                             case SDL_BUTTON_LEFT:
                                 SDL_GetMouseState(&x, &y);
                                 inputObject(x, y, mapObjects, mapFg, &zone);
                                 break;
                         }
+                    }
             }
         }
     }
 }
 
-SDL_Renderer* initRenderer(SDL_Window* window) {
+SDL_Renderer *initRenderer(SDL_Window *window) {
     // Initialisation du rendu
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) {
@@ -207,7 +226,7 @@ SDL_Renderer* initRenderer(SDL_Window* window) {
     return renderer;
 }
 
-SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
+SDL_Texture *loadTexture(SDL_Renderer *renderer, const char *imagePath) {
     // Chargement d'une texture à partir d'une image BMP
     SDL_Surface *surface = SDL_LoadBMP(imagePath);
     if (surface == NULL) {
@@ -215,7 +234,7 @@ SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
     }
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if(texture == NULL) {
+    if (texture == NULL) {
         exitWithError("Erreur de création du tileset");
     }
 
@@ -224,11 +243,12 @@ SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
     return texture;
 }
 
-size_t getFileSize(FILE* fp){
+size_t getFileSize(FILE *fp) {
     size_t fileSize;
     fseek(fp, 0, SEEK_END);
     fileSize = ftell(fp);
     rewind(fp);
     return fileSize;
 }
+
 
