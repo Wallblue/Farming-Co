@@ -9,10 +9,11 @@
 #include "items/items.h"
 #include "items/inventory/inventory.h"
 #include "menus/menu.h"
+#include <SDL_ttf.h>
 
 SDL_Window* initWindow();
 
-void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture *, int * , SDL_Texture *, int *);
+void gameLoop(SDL_Renderer*, SDL_Texture* , SDL_Texture* , SDL_Texture* , SDL_Texture* , int * , SDL_Texture *, int *, Inventory inventory);
 
 SDL_Renderer* initRenderer(SDL_Window* );
 SDL_Texture* loadTexture(SDL_Renderer*, const char*);
@@ -20,7 +21,8 @@ SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 int main(int argc, char **argv){
     int timeInGame = 0;
     int sleep = 0;
-
+    TTF_Init();
+    TTF_Quit();
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
@@ -39,7 +41,6 @@ int main(int argc, char **argv){
     SDL_Texture* playerTexture = loadTexture(renderer, "../player/sheets/player.bmp");
     SDL_Texture* furnitureTexture = loadTexture(renderer, "../map/sheets/furniture.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
-    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, HOTBAR_HEIGHT);
     unsigned char err;
     Inventory inventory;
 
@@ -57,16 +58,15 @@ int main(int argc, char **argv){
     }
 
 
-    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, hotbarTexture, &timeInGame, lightLayer, threadData.sleep);
+    gameLoop(renderer, grassTexture, fencesTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep, inventory);
 
     err = saveObjectMaps();
-    if(err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
+    if(saveInventory(inventory) == FAILURE || err == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
     SDL_DestroyTexture(grassTexture);
     SDL_DestroyTexture(fencesTexture);
     SDL_DestroyTexture(playerTexture);
-    SDL_DestroyTexture(hotbarTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -91,7 +91,7 @@ SDL_Window* initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture, SDL_Texture* hotbarTexture ,int * timeInGame, SDL_Texture *lightLayer, int *sleep) {
+void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fencesTexture, SDL_Texture* playerTexture, SDL_Texture* furnitureTexture ,int * timeInGame, SDL_Texture *lightLayer, int *sleep, Inventory inventory) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 0;
@@ -101,6 +101,9 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     char **mapBg;
     char **mapFg;
     char **mapObjects;
+
+    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, HOTBAR_HEIGHT);
+    SDL_Texture* inventoryTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT);
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -154,6 +157,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
 
         applyFilter(renderer, timeInGame, lightLayer);
         printHotbarHUD(renderer, hotbarTexture, currentSlot);
+        printInventoryHUD(renderer, inventoryTexture, inventory);
         SDL_RenderPresent(renderer);
 
         if (SDL_PollEvent(&event)) {
@@ -241,6 +245,9 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
             }
         }
     }
+
+    SDL_DestroyTexture(inventoryTexture);
+    SDL_DestroyTexture(hotbarTexture);
 }
 
 SDL_Renderer* initRenderer(SDL_Window* window) {
