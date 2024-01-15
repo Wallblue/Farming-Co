@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS object(
       w INTEGER,
       h INTEGER,
       name VARCHAR(25),
-      poseDate INT,
+      growTime INT,
       growDate INT,
       sprite VARCHAR(128),
       state INTEGER,
