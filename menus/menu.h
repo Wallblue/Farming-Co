@@ -18,4 +18,6 @@ unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTe
 SDL_Texture* loadTextureFromBMP(char* sprite, SDL_Renderer* renderer);
 unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slotRect);
 
+char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory);
+
 #endif

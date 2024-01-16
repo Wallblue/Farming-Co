@@ -1,6 +1,6 @@
-#include "menu.h"
-#include "../colors.h"
-#include "../define.h"
+#include "../menu.h"
+#include "../../colors.h"
+#include "../../define.h"
 #include <SDL.h>
 #include <string.h>
 
@@ -22,7 +22,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
         if(inventory[i].id != 0) //If there's an item in this slot we load the sprite
             if(insertItemInSlot(renderer, inventory + i, &hotbarSlot) == FAILURE) return FAILURE;
 
-        if(i == selectedSlot){
+        if(i == selectedSlot - 1){
             SDL_SetRenderDrawColor(renderer, RED, 255);
             SDL_RenderDrawRect(renderer, &hotbarSlot);
             SDL_SetRenderDrawColor(renderer, GREY, 128);

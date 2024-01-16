@@ -103,7 +103,6 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     char **mapObjects;
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, HOTBAR_HEIGHT);
-    SDL_Texture* inventoryTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT);
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -157,7 +156,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
 
         applyFilter(renderer, timeInGame, lightLayer);
         if(printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE) exitWithError("Can't load hotbar");
-        printInventoryHUD(renderer, inventoryTexture, inventory);
+
         SDL_RenderPresent(renderer);
 
         if (SDL_PollEvent(&event)) {
@@ -190,6 +189,10 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
 
                         case SDLK_s:
                             *sleep = 1;
+                            break;
+
+                        case SDLK_e:
+                            if(inventoryEventLoop(renderer, inventory) == -1) endGame = 1;
                             break;
 
                         case SDLK_1:
@@ -246,7 +249,6 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
         }
     }
 
-    SDL_DestroyTexture(inventoryTexture);
     SDL_DestroyTexture(hotbarTexture);
 }
 
