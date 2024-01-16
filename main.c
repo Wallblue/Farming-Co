@@ -210,6 +210,15 @@ gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerT
                                 inputObject(x, y, mapObjects, mapFg, &zone);
                                 break;
                         }
+                    }else if(*pause == 1){
+                        switch (event.button.button) {
+                            case SDL_BUTTON_LEFT:
+                                SDL_GetMouseState(&x, &y);
+                                if(x>=300 && y>= screenHeight/3+16 && x<=500 && y<=screenHeight/3+66)*pause = 0;
+
+                                if(x>=300 && y>=screenHeight/2+16 && x<=500 && y<=screenHeight/2+66)endGame = 1;
+                                break;
+                        }
                     }
             }
         }

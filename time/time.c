@@ -118,7 +118,7 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
     SDL_RenderCopy(renderer, lightLayer, NULL, &bgRect);
 
     /* Création du carré du menu*/
-    SDL_Rect menuRect = {screenWidth/4, screenHeight/6, 400, 400};
+    SDL_Rect menuRect = {screenWidth/4+48, screenHeight/6+32, 300, 300};
 
     SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
     SDL_RenderFillRect(renderer, &menuRect);
@@ -127,19 +127,55 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
     TTF_Font* font = loadFont();
     SDL_Color color = {0,0,0};
 
-    SDL_Surface * surface = TTF_RenderText_Solid(font, "Pause", color);
-    if(!surface) exitWithError("Erreur d'initialisation de la surface");
+    SDL_Surface * pauseSurface = TTF_RenderText_Solid(font, "Pause", color);
+    if(!pauseSurface) exitWithError("Erreur d'initialisation de la surface");
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (!texture) exitWithError("Erreur de chargement de la texture");
+    SDL_Texture* pauseTexture = SDL_CreateTextureFromSurface(renderer, pauseSurface);
+    if (!pauseTexture) exitWithError("Erreur de chargement de la texture");
 
-    SDL_Rect textRect = {360, screenHeight/6 + 16, surface->w, surface->h};
+    SDL_Rect pauseRect = {360, screenHeight/6 + 48, pauseSurface->w, pauseSurface->h};
 
-    SDL_RenderCopy(renderer, texture, NULL, &textRect);
+    SDL_RenderCopy(renderer, pauseTexture, NULL, &pauseRect);
+
+    /*Boutton du menu*/
+    //Resume
+    SDL_Rect pauseButton = {300, screenHeight/3+16, 200, 50};
+
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+    SDL_RenderFillRect(renderer, &pauseButton);
+
+    SDL_Surface* resumeSurface = TTF_RenderText_Solid(font, "Resume", color);
+    if(!resumeSurface)exitWithError("Erreur d'initialisation de la surface");
+
+    SDL_Texture* resumeTexture = SDL_CreateTextureFromSurface(renderer, resumeSurface);
+    if(!resumeTexture)exitWithError("Erreur d'initialisation de la texture");
+
+    SDL_Rect resumeRect = {350, screenHeight/3+22, resumeSurface->w, resumeSurface->h};
+
+    SDL_RenderCopy(renderer, resumeTexture, NULL, &resumeRect);
+
+    //Quit
+    SDL_Rect quitButton = {300, screenHeight/2+16, 200, 50};
+
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
+    SDL_RenderFillRect(renderer, &quitButton);
+
+    SDL_Surface* quitSurface = TTF_RenderText_Solid(font, "Quit", color);
+    if(!quitSurface)exitWithError("Erreur d'initialisation de la surface");
+
+    SDL_Texture* quitTexture = SDL_CreateTextureFromSurface(renderer, quitSurface);
+    if(!quitTexture)exitWithError("Erreur d'initialisation de la texture");
+
+    SDL_Rect quitRect = {364 , screenHeight/2+22, quitSurface->w, quitSurface->h};
+
+    SDL_RenderCopy(renderer, quitTexture, NULL, &quitRect);
 
 
-    SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
+
+    SDL_DestroyTexture(pauseTexture);
+    SDL_FreeSurface(pauseSurface);
+    SDL_DestroyTexture(resumeTexture);
+    SDL_FreeSurface(resumeSurface);
     TTF_CloseFont(font);
 
 }
@@ -150,4 +186,3 @@ TTF_Font *loadFont(){
 
     return font;
 }
-
