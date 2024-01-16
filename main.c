@@ -102,7 +102,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
     char **mapFg;
     char **mapObjects;
 
-    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, HOTBAR_HEIGHT);
+    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -274,6 +274,31 @@ SDL_Texture* loadTexture(SDL_Renderer* renderer, const char* imagePath) {
         exitWithError("Erreur de création du tileset");
     }
 
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
+SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer){
+    int pitch = sizeof(Uint32) * gameWidth;
+    Uint32* pixels = malloc(pitch * gameHeight);
+    SDL_Surface* surface = NULL;
+    SDL_Texture* texture = NULL;
+
+    if(SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, pitch) < 0) {
+        free(pixels);
+        return NULL;
+    }
+
+    surface = SDL_CreateRGBSurfaceWithFormatFrom(pixels, gameWidth, gameHeight, 32, pitch, SDL_PIXELFORMAT_RGBA8888);
+    if(surface < 0){
+        free(pixels);
+        SDL_FreeSurface(surface);
+        return NULL;
+    }
+
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    free(pixels);
     SDL_FreeSurface(surface);
 
     return texture;

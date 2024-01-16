@@ -6,16 +6,16 @@
 
 unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory){
     SDL_Rect hotbarSlot;
-    SDL_Rect hotbarDest = {(gameWidth - HOTBAR_WIDTH) / 2, gameHeight - HOTBAR_HEIGHT - 10, HOTBAR_WIDTH, HOTBAR_HEIGHT};
+    SDL_Rect hotbarDest = {(gameWidth - HOTBAR_WIDTH) / 2, gameHeight - SLOT_SIDE - 10, HOTBAR_WIDTH, SLOT_SIDE};
     unsigned char i;
 
     if(SDL_SetRenderTarget(renderer, hotbarTexture) < 0) return FAILURE;
 
     SDL_SetRenderDrawColor(renderer, GREY, 128);
     for(i = 0; i < HOTBAR_LEN; i++){
-        hotbarSlot.w = HOTBAR_HEIGHT;
-        hotbarSlot.h = HOTBAR_HEIGHT;
-        hotbarSlot.x = (HOTBAR_HEIGHT + 10) * i;
+        hotbarSlot.w = SLOT_SIDE;
+        hotbarSlot.h = SLOT_SIDE;
+        hotbarSlot.x = (SLOT_SIDE + INV_SPACE_BTWN_SLOTS) * i;
         hotbarSlot.y = 0;
         SDL_RenderFillRect(renderer, &hotbarSlot);
 
@@ -37,7 +37,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
 
 unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTexture, Inventory inventory){
     SDL_Rect inventorySlot;
-    SDL_Rect hudLoc = {(gameWidth - INVENTORY_HUD_WIDTH) / 2, (gameHeight - INVENTORY_HUD_HEIGHT) / 2, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
+    SDL_Rect hudLoc = {INVENTORY_HUD_X, INVENTORY_HUD_Y, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
     unsigned char i, j;
 
     if(SDL_SetRenderTarget(renderer, inventoryTexture) < 0) return FAILURE;
@@ -48,10 +48,10 @@ unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTe
     SDL_SetRenderDrawColor(renderer, DARK_GREY, 128);
     for(i = 0; i < INVENTORY_MAX_SIZE / HOTBAR_LEN; i++){
         for(j = 0; j < HOTBAR_LEN; j++){
-            inventorySlot.w = HOTBAR_HEIGHT;
-            inventorySlot.h = HOTBAR_HEIGHT;
-            inventorySlot.x = INV_LEFT_RIGHT_PADDING + (HOTBAR_HEIGHT + 10) * j;
-            inventorySlot.y = INV_TOP_BOT_PADDING + i * (HOTBAR_HEIGHT + INV_BETWEEN_LINES);
+            inventorySlot.w = SLOT_SIDE;
+            inventorySlot.h = SLOT_SIDE;
+            inventorySlot.x = INV_LEFT_RIGHT_PADDING + (SLOT_SIDE + INV_SPACE_BTWN_SLOTS) * j;
+            inventorySlot.y = INV_TOP_BOT_PADDING + i * (SLOT_SIDE + INV_SPACE_BTWN_LINES);
             SDL_RenderFillRect(renderer, &inventorySlot);
 
             if(inventory[i*10+j].id != 0) //If there's an item in this slot we load the sprite
@@ -65,7 +65,7 @@ unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTe
     return SUCCESS;
 }
 
-SDL_Texture* loadTextureFromBMP(char* sprite, SDL_Renderer* renderer){
+SDL_Texture* loadItemTextureFromBMP(char* sprite, SDL_Renderer* renderer){
     SDL_Surface *surface = SDL_LoadBMP(sprite);
     if (surface == NULL) return NULL;
 
@@ -90,7 +90,7 @@ unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slo
     strcpy(spritePath, "../assets/sprites/");
     strcat(strcat(strcat(spritePath, item->type), "/"), item->sprite);
 
-    sprite = loadTextureFromBMP(spritePath, renderer);
+    sprite = loadItemTextureFromBMP(spritePath, renderer);
     free(spritePath);
     if(sprite == NULL) return FAILURE;
 
