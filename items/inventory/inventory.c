@@ -40,6 +40,13 @@ unsigned char setItem(int id, unsigned char quantity, Inventory inventory){
     return SUCCESS;
 }
 
+void swapItems(int srcSlot, int destSlot, Inventory inventory){
+    Item temp;
+    affectItem(&temp, inventory[srcSlot].id, inventory[srcSlot].name, inventory[srcSlot].quantity, inventory[srcSlot].type, inventory[srcSlot].description, inventory[srcSlot].energyBonus, inventory[srcSlot].ability, inventory[srcSlot].growTime, inventory[srcSlot].sprite);
+    affectItem(inventory + srcSlot, inventory[destSlot].id, inventory[destSlot].name, inventory[destSlot].quantity, inventory[destSlot].type, inventory[destSlot].description, inventory[destSlot].energyBonus, inventory[destSlot].ability, inventory[destSlot].growTime, inventory[destSlot].sprite);
+    affectItem(inventory + destSlot, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus, temp.ability, temp.growTime, temp.sprite);
+}
+
 unsigned char addItem(int id, unsigned char quantity, Inventory inventory){
     short index = findItem(id, inventory);
 

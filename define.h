@@ -18,14 +18,15 @@
 #define mapWidth 25
 #define mapHeight 20
 
-#define screenWidth 800
-#define screenHeight 640
+#define screenWidth (mapWidth*dstHeightWidth)
+#define screenHeight (mapHeight*dstHeightWidth)
 
 #define FAILURE 1
 #define SUCCESS 0
 
 //Functions
 size_t getFileSize(FILE* fp);
+SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer);
 
 //Structures
 struct ThreadData{

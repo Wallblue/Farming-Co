@@ -9,11 +9,11 @@
 #include "items/items.h"
 #include "items/inventory/inventory.h"
 #include <SDL_ttf.h>
+#include "menus/menu.h"
 
 SDL_Window *initWindow();
 
-void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, int *, SDL_Texture *, int *, int *);
-
+void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, int *, SDL_Texture *, int *, int *, Inventory inventory);
 
 SDL_Renderer *initRenderer(SDL_Window *);
 
@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
     }
 
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, &timeInGame, lightLayer, threadData.sleep,
-             threadData.pause);
+             threadData.pause, inventory);
 
     err = saveObjectMaps();
-    if (err == FAILURE || saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
+    if(saveInventory(inventory) == FAILURE || err == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
     TTF_Quit();
@@ -92,17 +92,18 @@ SDL_Window *initWindow() {
     return window;
 }
 
-void
-gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture,
-         int *timeInGame, SDL_Texture *lightLayer, int *sleep, int *pause) {
+void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, int *timeInGame, SDL_Texture *lightLayer, int *sleep, int *pause, Inventory inventory) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 18;
     int countY = 5;
     int zone = 0;
+    unsigned char currentSlot = 1;
     char **mapBg;
     char **mapFg;
     char **mapObjects;
+
+    SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
 
     SDL_Event event;
     SDL_Rect playerDst;
@@ -158,8 +159,10 @@ gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerT
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         seeTime(renderer, timeInGame);
         applyFilter(renderer, timeInGame, lightLayer);
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
+            exitWithError("Can't load hotbar");
 
-        if(*pause == 1)pauseMenu(renderer, lightLayer);
+        if (*pause == 1)pauseMenu(renderer, lightLayer);
 
         SDL_RenderPresent(renderer);
 
@@ -175,7 +178,7 @@ gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerT
                             case SDLK_ESCAPE:
                                 if (*pause == 0) {
                                     *pause = 1;
-                                }else
+                                } else
                                     *pause = 0;
                                 break;
 
@@ -199,30 +202,80 @@ gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerT
                                 *sleep = 1;
                                 break;
 
-                        }
-                    }
+                            case SDLK_e:
+                                if (inventoryEventLoop(renderer, inventory) == -1) endGame = 1;
+                                break;
 
-                case SDL_MOUSEBUTTONUP:
-                    if (*pause == 0) {
-                        switch (event.button.button) {
-                            case SDL_BUTTON_LEFT:
-                                SDL_GetMouseState(&x, &y);
-                                inputObject(x, y, mapObjects, mapFg, &zone);
+                            case SDLK_1:
+                                currentSlot = 1;
+                                break;
+                            case SDLK_2:
+                                currentSlot = 2;
+                                break;
+                            case SDLK_3:
+                                currentSlot = 3;
+                                break;
+                            case SDLK_4:
+                                currentSlot = 4;
+                                break;
+                            case SDLK_5:
+                                currentSlot = 5;
+                                break;
+                            case SDLK_6:
+                                currentSlot = 6;
+                                break;
+                            case SDLK_7:
+                                currentSlot = 7;
+                                break;
+                            case SDLK_8:
+                                currentSlot = 8;
+                                break;
+                            case SDLK_9:
+                                currentSlot = 9;
+                                break;
+                            case SDLK_0:
+                                currentSlot = 10;
                                 break;
                         }
-                    }else if(*pause == 1){
-                        switch (event.button.button) {
-                            case SDL_BUTTON_LEFT:
-                                SDL_GetMouseState(&x, &y);
-                                if(x>=300 && y>= screenHeight/3+16 && x<=500 && y<=screenHeight/3+66)*pause = 0;
+                        break;
 
-                                if(x>=300 && y>=screenHeight/2+16 && x<=500 && y<=screenHeight/2+66)endGame = 1;
-                                break;
-                        }
+                        case SDL_MOUSEBUTTONUP:
+                            if (*pause == 0) {
+                                switch (event.button.button) {
+                                    case SDL_BUTTON_LEFT:
+                                        SDL_GetMouseState(&x, &y);
+                                        inputObject(x, y, mapObjects, mapFg, &zone);
+                                        break;
+                                }
+                            } else if (*pause == 1) {
+                                switch (event.button.button) {
+                                    case SDL_BUTTON_LEFT:
+                                        SDL_GetMouseState(&x, &y);
+                                        if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
+                                            y <= screenHeight / 3 + 66)
+                                            *pause = 0;
+
+                                        if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 &&
+                                            y <= screenHeight / 2 + 66)
+                                            endGame = 1;
+                                        break;
+                                }
+                            }
+                        break;
+
+                        case SDL_MOUSEWHEEL:
+                            if (event.wheel.y > 0) ++currentSlot;
+                            if (event.wheel.y < 0) --currentSlot;
+                            if (event.wheel.x > 0) ++currentSlot;
+                            if (event.wheel.x < 0) --currentSlot;
+                            currentSlot = currentSlot == 0 ? 10 : currentSlot;
+                            currentSlot = currentSlot == 11 ? 1 : currentSlot;
+                            break;
                     }
             }
         }
     }
+    SDL_DestroyTexture(hotbarTexture);
 }
 
 SDL_Renderer *initRenderer(SDL_Window *window) {
@@ -252,7 +305,32 @@ SDL_Texture *loadTexture(SDL_Renderer *renderer, const char *imagePath) {
     return texture;
 }
 
-size_t getFileSize(FILE *fp) {
+SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer){
+    int pitch = sizeof(Uint32) * screenWidth;
+    Uint32* pixels = malloc(pitch * screenHeight);
+    SDL_Surface* surface = NULL;
+    SDL_Texture* texture = NULL;
+
+    if(SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, pitch) < 0) {
+        free(pixels);
+        return NULL;
+    }
+
+    surface = SDL_CreateRGBSurfaceWithFormatFrom(pixels, screenWidth, screenHeight, 32, pitch, SDL_PIXELFORMAT_RGBA8888);
+    if(surface < 0){
+        free(pixels);
+        SDL_FreeSurface(surface);
+        return NULL;
+    }
+
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    free(pixels);
+    SDL_FreeSurface(surface);
+
+    return texture;
+}
+
+size_t getFileSize(FILE* fp){
     size_t fileSize;
     fseek(fp, 0, SEEK_END);
     fileSize = ftell(fp);
