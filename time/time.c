@@ -31,7 +31,7 @@ int day(void* data) {
                 pauseTime = 0;
             }
             //remplacer 1000*60 par 1000 pour rester en secondes
-            if ((elapsedTime / (1000)) == *getHours + 1) {
+            if ((elapsedTime / (1000*60)) == *getHours + 1) {
                 (*getHours)++;
             }
 
@@ -169,8 +169,6 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
     SDL_Rect quitRect = {364 , screenHeight/2+22, quitSurface->w, quitSurface->h};
 
     SDL_RenderCopy(renderer, quitTexture, NULL, &quitRect);
-
-
 
     SDL_DestroyTexture(pauseTexture);
     SDL_FreeSurface(pauseSurface);
