@@ -156,7 +156,7 @@ void gameLoop(SDL_Renderer* renderer, SDL_Texture* grassTexture, SDL_Texture* fe
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
 
         applyFilter(renderer, timeInGame, lightLayer);
-        printHotbarHUD(renderer, hotbarTexture, currentSlot);
+        if(printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE) exitWithError("Can't load hotbar");
         printInventoryHUD(renderer, inventoryTexture, inventory);
         SDL_RenderPresent(renderer);
 

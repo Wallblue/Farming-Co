@@ -13,7 +13,9 @@
 #define INVENTORY_HUD_HEIGHT (3*HOTBAR_HEIGHT + 2*INV_BETWEEN_LINES + 2*INV_TOP_BOT_PADDING) //3 inventory bars + 2 between spaces of 5px + 2 padding of 20px
 #define INVENTORY_HUD_WIDTH (HOTBAR_WIDTH + 2*INV_LEFT_RIGHT_PADDING) //2 * padding of 20px
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot);
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory);
 unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTexture, Inventory inventory);
+SDL_Texture* loadTextureFromBMP(char* sprite, SDL_Renderer* renderer);
+unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slotRect);
 
 #endif

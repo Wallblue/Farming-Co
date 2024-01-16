@@ -7,7 +7,7 @@
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
-    "sprite": "pebble.png"
+    "sprite": "pebble.bmp"
   }, {
     "id": 2,
     "name": "grass",
@@ -16,7 +16,7 @@
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
-    "sprite": "grass.png"
+    "sprite": "grass.bmp"
   }, {
     "id": 3,
     "name": "stick",
@@ -25,7 +25,7 @@
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
-    "sprite": "stick.png"
+    "sprite": "stick.bmp"
   }, {
     "id": 4,
     "name": "stone",
@@ -34,7 +34,7 @@
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
-    "sprite": "stone.png"
+    "sprite": "stone.bmp"
   }, {
     "id": 5,
     "name": "wood",
@@ -43,7 +43,7 @@
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
-    "sprite": "wood.png"
+    "sprite": "wood.bmp"
   }, {
     "id": 6,
     "name": "axe",
@@ -52,7 +52,7 @@
     "energyBonus": 0,
     "ability": 1,
     "growTime": 0,
-    "sprite": "axe.png"
+    "sprite": "axe.bmp"
   }, {
     "id": 7,
     "name": "hoe",
@@ -61,7 +61,7 @@
     "energyBonus": 0,
     "ability": 2,
     "growTime": 0,
-    "sprite": "hoe.png"
+    "sprite": "hoe.bmp"
   }, {
     "id": 8,
     "name": "watering_can",
@@ -70,6 +70,6 @@
     "energyBonus": 0,
     "ability": 3,
     "growTime": 0,
-    "sprite": "watering_can.png"
+    "sprite": "watering_can.bmp"
   }
 ]
