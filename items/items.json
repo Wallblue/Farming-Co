@@ -64,12 +64,111 @@
     "sprite": "hoe.bmp"
   }, {
     "id": 8,
-    "name": "watering_can",
+    "name": "watering can",
     "type": "tool",
     "description": "A pocket rain maker.",
     "energyBonus": 0,
     "ability": 3,
     "growTime": 0,
     "sprite": "watering_can.bmp"
+  }, {
+  "id": 9,
+  "name": "chest",
+  "type": "furn",
+  "description": "A bigger pocket, lot bigger.",
+  "energyBonus": 0,
+  "ability": 0,
+  "growTime": 0,
+  "sprite": "chest.bmp"
+  }, {
+    "id": 10,
+    "name": "apple",
+    "type": "food",
+    "description": "Will you dare eat this forbidden fruit ?",
+    "energyBonus": 10,
+    "ability": 10,
+    "growTime": 0,
+    "sprite": "apple.bmp"
+  }, {
+    "id": 11,
+    "name": "berries",
+    "type": "food",
+    "description": "30 billions of these for the one who kill the straw hat pirate.",
+    "energyBonus": 5,
+    "ability": 10,
+    "growTime": 0,
+    "sprite": "berries.bmp"
+  }, {
+  "id": 12,
+  "name": "bottle",
+  "type": "misc",
+  "description": "You'd better see a not full at all bottle than a full empty bottle.",
+  "energyBonus": 0,
+  "ability": 0,
+  "growTime": 0,
+  "sprite": "bottle.bmp"
+  }, {
+    "id": 13,
+    "name": "egg",
+    "type": "food",
+    "description": "This is the origin of all life, and its god is a chicken.",
+    "energyBonus": 15,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "egg.bmp"
+  }, {
+    "id": 14,
+    "name": "Milk bottle",
+    "type": "food",
+    "description": "If you need a calcium boost, drink this.",
+    "energyBonus": 20,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "milk_bottle.bmp"
+  }, {
+    "id": 15,
+    "name": "Half milk bottle",
+    "type": "food",
+    "description": "It's a half full milk bottle.",
+    "energyBonus": 20,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "half_milk_bottle.bmp"
+  }, {
+    "id": 16,
+    "name": "Mushroom",
+    "type": "food",
+    "description": "Eat this to become a Super You.",
+    "energyBonus": 7,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "mushroom.bmp"
+  }, {
+    "id": 17,
+    "name": "Wheat",
+    "type": "food",
+    "description": "The most common thing to gather.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "wheat.bmp"
+  }, {
+    "id": 18,
+    "name": "Berry crops",
+    "type": "crops",
+    "description": "Can grow colorful and multiple berries.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 6,
+    "sprite": "berry_crops.bmp"
+  }, {
+    "id": 19,
+    "name": "Wheat crops",
+    "type": "crops",
+    "description": "Are they gold crops ?",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 8,
+    "sprite": "wheat_crops.bmp"
   }
 ]
