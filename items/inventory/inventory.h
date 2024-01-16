@@ -15,6 +15,7 @@
 
     short findItem(int id, const Inventory inventory); //Return a specified Item index in the inventory or -1
     unsigned char setItem(int id, unsigned char quantity, Inventory inventory); //Set a new item in the inventory and return 0 if it worked 1 else
+    void swapItems(int srcSlot, int destSlot, Inventory inventory);
     unsigned char addItem(int id, unsigned char quantity, Inventory inventory); //Add parameter item to existing items or set it if no existing ones
     short firstEmptySlot(const Inventory inventory); //Return the first slot's index without item, -1 if not anymore
 

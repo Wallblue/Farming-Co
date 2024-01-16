@@ -9,7 +9,6 @@
 #include "items/items.h"
 #include "items/inventory/inventory.h"
 #include "menus/menu.h"
-#include <SDL_ttf.h>
 
 SDL_Window* initWindow();
 
@@ -21,8 +20,6 @@ SDL_Texture* loadTexture(SDL_Renderer*, const char*);
 int main(int argc, char **argv){
     int timeInGame = 0;
     int sleep = 0;
-    TTF_Init();
-    TTF_Quit();
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;

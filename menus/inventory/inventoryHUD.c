@@ -35,7 +35,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
     return SUCCESS;
 }
 
-unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTexture, Inventory inventory){
+unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTexture, Inventory inventory, char draggedItemIndex){
     SDL_Rect inventorySlot;
     SDL_Rect hudLoc = {INVENTORY_HUD_X, INVENTORY_HUD_Y, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
     unsigned char i, j;
@@ -54,7 +54,7 @@ unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTe
             inventorySlot.y = INV_TOP_BOT_PADDING + i * (SLOT_SIDE + INV_SPACE_BTWN_LINES);
             SDL_RenderFillRect(renderer, &inventorySlot);
 
-            if(inventory[i*10+j].id != 0) //If there's an item in this slot we load the sprite
+            if(i*10+j != draggedItemIndex && inventory[i * 10 + j].id != 0) //If there's an item in this slot we load the sprite
                 if(insertItemInSlot(renderer, inventory + (i*10+j), &inventorySlot) == FAILURE) return FAILURE;
         }
     }
