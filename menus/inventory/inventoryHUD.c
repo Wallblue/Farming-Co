@@ -1,6 +1,6 @@
-#include "menu.h"
-#include "../colors.h"
-#include "../define.h"
+#include "../menu.h"
+#include "../../colors.h"
+#include "../../define.h"
 #include <SDL.h>
 #include <string.h>
 
