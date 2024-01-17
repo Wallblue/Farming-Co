@@ -16,6 +16,7 @@
 #define INVENTORY_HUD_WIDTH (HOTBAR_WIDTH + 2*INV_LEFT_RIGHT_PADDING) //2 * padding of 20px
 #define INVENTORY_HUD_X ((screenWidth - INVENTORY_HUD_WIDTH) / 2)
 #define INVENTORY_HUD_Y ((screenHeight - INVENTORY_HUD_HEIGHT) / 2)
+#define DESC_BOX_WIDTH (INVENTORY_HUD_WIDTH / 4)
 
 unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory);
 unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, char draggedItemIndex, int xHud, int yHud);
@@ -28,5 +29,6 @@ unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned c
 unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex);
 unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
+unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY);
 
 #endif

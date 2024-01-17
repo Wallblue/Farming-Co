@@ -1,7 +1,9 @@
 #include "../menu.h"
 #include "../../colors.h"
 #include "../../define.h"
+#include "../../time/time.h"
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory secondInventory){
     SDL_Event event;
@@ -68,40 +70,8 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory s
     return exit;
 }
 
-SDL_bool isMouseOnSlot(int xMouse, int yMouse, int xHud, int yHud){
-    xMouse -= (xHud + INV_LEFT_RIGHT_PADDING); //This simplifies conditions below
-    yMouse -= (yHud + INV_TOP_BOT_PADDING);
-    int xGap = SLOT_SIDE + INV_SPACE_BTWN_SLOTS; //These are the distance on x and y between slots upperleft corner
-    int yGap = SLOT_SIDE + INV_SPACE_BTWN_LINES;
-    int xMax = 10 * xGap - INV_SPACE_BTWN_SLOTS; //The max values of x and y for each slot range
-    int yMax = 3 * yGap - INV_SPACE_BTWN_LINES;
-
-    if(xMouse < 0 || yMouse < 0 || xMouse > xMax || yMouse > yMax || xMouse % xGap > SLOT_SIDE || yMouse % yGap > SLOT_SIDE){
-        return SDL_FALSE;
-    }
-    return SDL_TRUE;
-}
-
-unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int r, int g, int b, int xHud, int yHud){
-    int xFirstSlot = xHud + INV_LEFT_RIGHT_PADDING;
-    int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
-    SDL_Rect highlighting = {xFirstSlot + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS), yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES), SLOT_SIDE, SLOT_SIDE};
-
-    if(SDL_SetRenderTarget(renderer, NULL) < 0) return FAILURE;
-    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-    SDL_RenderDrawRect(renderer, &highlighting);
-
-    return SUCCESS;
-}
-
-unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex){
-    SDL_Rect destRect = {xMouse - SLOT_SIDE / 2, yMouse - SLOT_SIDE / 2, SLOT_SIDE, SLOT_SIDE};
-    if(insertItemInSlot(renderer, inventory + draggedItemIndex, &destRect) == FAILURE) return FAILURE;
-    return SUCCESS;
-}
-
 unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
-                 int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex) {
+                               int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex) {
     SDL_SetTextureBlendMode(rendererSave, SDL_BLENDMODE_BLEND);
 
     if(SDL_SetRenderTarget(renderer, NULL) < 0) return FAILURE;
@@ -136,4 +106,52 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
     SDL_Delay(FPS_LIMIT / 1000);
 
     return SUCCESS;
+}
+
+SDL_bool isMouseOnSlot(int xMouse, int yMouse, int xHud, int yHud){
+    xMouse -= (xHud + INV_LEFT_RIGHT_PADDING); //This simplifies conditions below
+    yMouse -= (yHud + INV_TOP_BOT_PADDING);
+    int xGap = SLOT_SIDE + INV_SPACE_BTWN_SLOTS; //These are the distance on x and y between slots upperleft corner
+    int yGap = SLOT_SIDE + INV_SPACE_BTWN_LINES;
+    int xMax = 10 * xGap - INV_SPACE_BTWN_SLOTS; //The max values of x and y for each slot range
+    int yMax = 3 * yGap - INV_SPACE_BTWN_LINES;
+
+    if(xMouse < 0 || yMouse < 0 || xMouse > xMax || yMouse > yMax || xMouse % xGap > SLOT_SIDE || yMouse % yGap > SLOT_SIDE){
+        return SDL_FALSE;
+    }
+    return SDL_TRUE;
+}
+
+unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int r, int g, int b, int xHud, int yHud){
+    int xFirstSlot = xHud + INV_LEFT_RIGHT_PADDING;
+    int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
+    SDL_Rect highlighting = {xFirstSlot + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS), yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES), SLOT_SIDE, SLOT_SIDE};
+
+    if(SDL_SetRenderTarget(renderer, NULL) < 0) return FAILURE;
+    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+    SDL_RenderDrawRect(renderer, &highlighting);
+
+    return SUCCESS;
+}
+
+unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex){
+    SDL_Rect destRect = {xMouse - SLOT_SIDE / 2, yMouse - SLOT_SIDE / 2, SLOT_SIDE, SLOT_SIDE};
+    if(insertItemInSlot(renderer, inventory + draggedItemIndex, &destRect) == FAILURE) return FAILURE;
+    return SUCCESS;
+}
+
+unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY){
+    int xFirstSlotEnd = INVENTORY_HUD_X + INV_LEFT_RIGHT_PADDING; //x and y coordinate of the first slot right upper corner except for last slots of range
+    xFirstSlotEnd += (nX+1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
+    int yFirstSlot = INVENTORY_HUD_Y + INV_TOP_BOT_PADDING;
+    SDL_Rect descriptionBox = {xFirstSlotEnd + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS), yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES), DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT};
+    SDL_Texture* boxTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT);
+    TTF_Font* font = loadFont(64);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, DARK_GREY, 200);
+    SDL_RenderFillRect(renderer, &descriptionBox);
+    SDL_SetRenderDrawColor(renderer, BLACK, 255);
+    SDL_RenderDrawRect(renderer, &descriptionBox);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
