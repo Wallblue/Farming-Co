@@ -282,29 +282,37 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
     char success = 0;
     yMouse = yMouse/32;
     xMouse = xMouse/32;
+    printf("%d", yMouse+1 );
 
     switch(zone){
         case 4:
             if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
+                if((char) heldItem->objectSpriteRef == 'J' && yMouse+1 != 14 || (char) heldItem->objectSpriteRef == 'I' && yMouse+1 != 14)
+                    tab[yMouse+1][xMouse] = (char) heldItem->objectSpriteRef + 10;
+                if(yMouse+1==14){
+                    success = 0;
+                    tab[yMouse][xMouse] = '/';
+                }
+
             }
             break;
         case 0:
-            if(houseRoof[yMouse][xMouse] == '/') {
+            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
             break;
         default:
-            if(mapFg[yMouse][xMouse] == '/') {
+            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
             break;
     }
 
-    if(success) {
+    if(success == 1) {
         affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime,
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;

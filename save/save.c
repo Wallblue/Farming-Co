@@ -97,6 +97,8 @@ unsigned char loadMapV2(){
                 break;
             case 4:
                 homeObjects[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
+                if((char) *sqlite3_column_text(res, 3)=='J' || (char) *sqlite3_column_text(res, 3)=='I')
+                    homeObjects[sqlite3_column_int(res, 1)+1][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3)+10;
                 break;
         }
         i++;

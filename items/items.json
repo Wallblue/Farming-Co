@@ -178,7 +178,7 @@
     "ability": 0,
     "growTime": 6,
     "sprite": "berry_crops.bmp",
-    "linkedSpriteRef" : ">"
+    "linkedSpriteRef" : "="
   }, {
     "id": 19,
     "name": "Wheat crops",
@@ -189,5 +189,156 @@
     "growTime": 8,
     "sprite": "wheat_crops.bmp",
     "linkedSpriteRef" : "3"
+  },{
+    "id": 20,
+    "name": "Sunflower",
+    "type": "furn",
+    "description": "Sorry, this one doesn't follow the sun.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "sunflower.bmp",
+    "linkedSpriteRef" : "0"
+  },{
+    "id": 21,
+    "name": "Pot",
+    "type": "furn",
+    "description": "A simple lovely pot.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "pot.bmp",
+    "linkedSpriteRef" : "1"
+  },{
+    "id": 22,
+    "name": "Blue flower",
+    "type": "furn",
+    "description": "I don't really know what flower it is.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "blue_pot.bmp",
+    "linkedSpriteRef" : "3"
+  },{
+    "id": 23,
+    "name": "Blue lamp",
+    "type": "furn",
+    "description": "That's a blue lamp.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "blue_lamp.bmp",
+    "linkedSpriteRef" : ";"
+    },{
+    "id": 24,
+    "name": "Red lamp",
+    "type": "furn",
+    "description": "Looks like a mushroom ! But it's a lamp.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "red_lamp.bmp",
+    "linkedSpriteRef" : "<"
+  },{
+    "id": 25,
+    "name": "Green lamp",
+    "type": "furn",
+    "description": "A green lamp",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "green_lamp.bmp",
+    "linkedSpriteRef" : ":"
+  },{
+    "id": 26,
+    "name": "Drawer",
+    "type": "furn",
+    "description": "To store all your deepest secrets..",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "drawer.bmp",
+    "linkedSpriteRef" : "D"
+  },{
+    "id": 27,
+    "name": "Chair (R)",
+    "type": "furn",
+    "description": "A simple old plain chair.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "right_chair.bmp",
+    "linkedSpriteRef" : "E"
+  },{
+    "id": 28,
+    "name": "Chair (L)",
+    "type": "furn",
+    "description": "A simple old plain chair.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "left_chair.bmp",
+    "linkedSpriteRef" : "F"
+  },{
+    "id": 29,
+    "name": "Chair (F)",
+    "type": "furn",
+    "description": "This chair is looking at you.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "front_chair.bmp",
+    "linkedSpriteRef" : "G"
+  },{
+    "id": 30,
+    "name": "Chair (B)",
+    "type": "furn",
+    "description": "This chair is mad at you.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "back_chair.bmp",
+    "linkedSpriteRef" : "H"
+  },{
+    "id": 31,
+    "name": "Bed (F)",
+    "type": "furn",
+    "description": "A so comfortable bed.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "front_bed.bmp",
+    "linkedSpriteRef" : "I"
+  },{
+    "id": 32,
+    "name": "Bed (B)",
+    "type": "furn",
+    "description": "A so comfortable bed.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "back_bed.bmp",
+    "linkedSpriteRef" : "J"
+  },{
+    "id": 33,
+    "name": "Table",
+    "type": "furn",
+    "description": "A big table to work on C.",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "table.bmp",
+    "linkedSpriteRef" : "N"
+  },{
+    "id": 34,
+    "name": "Stool",
+    "type": "furn",
+    "description": "A stool (or a mini mini table).",
+    "energyBonus": 0,
+    "ability": 0,
+    "growTime": 0,
+    "sprite": "stool.bmp",
+    "linkedSpriteRef" : "O"
   }
+
 ]
