@@ -23,7 +23,7 @@ SDL_Texture *loadTexture(SDL_Renderer *, const char *);
 int main(int argc, char **argv) {
     int timeInGame = 0;
     int sleep = 0;
-    int pause = 0;
+    char pause = 0;
     int todayDate;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
     if (addItemsToDatabase() == FAILURE) exitWithError("Items loading in database impossible");
 
     todayDate = getDateInGame();
+    //todayDate = 0;
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
@@ -52,10 +53,8 @@ int main(int argc, char **argv) {
 
     SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
-    if ((err = loadObjectsMaps()) != SUCCESS) {
-        if (err == 2) err = initObjectMaps();
-        if (err == FAILURE) exitWithError("Can't load map.");
-    }
+    if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
+    if (loadMapV2() == FAILURE) exitWithError("Can't load maps.");
 
     if ((err = loadInventory(inventory)) != SUCCESS) {
         if (err == 2) initInventory(inventory);
@@ -100,7 +99,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     int endGame = 0;
     int countX = 18;
     int countY = 5;
-    int zone = 0;
+    char zone = 0;
     unsigned char currentSlot = 1;
     char **mapBg;
     char **mapFg;

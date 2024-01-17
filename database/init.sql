@@ -25,13 +25,13 @@ CREATE TABLE IF NOT EXISTS object(
       w INTEGER,
       h INTEGER,
       zone INTEGER,
-      name VARCHAR(25),
       growTime INT,
       growDate INT,
-      spriteRef CHARACTER(1),
       state INTEGER,
       boosted BOOLEAN,
+      itemId INTEGER,
       playerId INTEGER,
+      FOREIGN KEY (itemId) REFERENCES item(itemId),
       FOREIGN KEY (playerId) REFERENCES player(playerId)
 );
 

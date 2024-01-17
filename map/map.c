@@ -6,9 +6,10 @@
 //
 
 #include "map.h"
-#include <sqlite3.h>
-#include "../database/database.h"
-#include "../items/items.h"
+#include "../save/save.h"
+#include "../define.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 //Création de la templates des maps qui  fonctionnent avec les caractères ascii & l'utilisation
 //d'une tilemap (ici tilemap de 16x16) -> se référencer sur map/sheets/utilisationSheets.txt
@@ -276,7 +277,8 @@ unsigned char** mapObjects3;
 unsigned char** mapObjects4;
 unsigned char** homeObjects;
 
-void inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, int zone, int todayDate, Item* heldItem){
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem){
+    Object newObject;
     yMouse = yMouse/32;
     xMouse = xMouse/32;
 
@@ -286,24 +288,9 @@ void inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, int 
     if(zone != 4 && mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
         tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
 
-    setObject(xMouse, yMouse, zone, todayDate, heldItem->growTime, heldItem->objectSpriteRef);
-}
+    affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime, heldItem->id);
+    if(saveObject(&newObject) == FAILURE) return FAILURE;
 
-unsigned char setObject(int x, int y, int zone, int todayDate, int growTime, unsigned char spriteRef){
-    sqlite3* db;
-    char* sqlReq;
-
-    openDb(&db);
-    sqlReq = malloc(454 * sizeof(char)); //Allocating max size bc we can't calculate it before
-    sqlReq[sprintf(sqlReq, "INSERT INTO object (x, y, zone, poseDate, growDate, sprite) VALUES (%d, %d, %d, %d, %d, \"%c\";",
-                   x, y, zone, todayDate, todayDate + growTime, spriteRef) + 1] = '\0';
-
-    if(executeSQL(db, sqlReq) == FAILURE){
-        free(sqlReq);
-        return FAILURE;
-    }
-    free(sqlReq);
-    sqlite3_close(db);
     return SUCCESS;
 }
 
@@ -366,4 +353,15 @@ void freeObjectMaps(){
     free(mapObjects3);
     free(mapObjects4);
     free(homeObjects);
+}
+
+void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId){
+    object->x = x;
+    object->y = y;
+    object->zone = zone;
+    object->growTime = growTime;
+    object->growDate = growDate;
+    object->state = 0;
+    object->boosted = 0;
+    object->itemId = itemId;
 }
