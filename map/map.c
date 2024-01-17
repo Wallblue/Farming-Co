@@ -309,7 +309,6 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;
     }
-
     return SUCCESS;
 }
 
