@@ -133,7 +133,7 @@ char* home[] = {
 
 //objets sur la map (ex: eau)
 char* firstZoneFg[] = {
-        "//////////////HIIIIIIIJ//",
+        "/////////////////////////",
         "//////////////NOOOOOOOP//",
         "//////////////X///////Z//",
         "//////////////X///////Z//",
@@ -157,7 +157,7 @@ char* firstZoneFg[] = {
 };
 
 char* houseRoof[] = {
-        "/////////////////////////",
+        "//////////////HIIIIIIIJ//",
         "//////////////RSSSSSSST//",
         "//////////////\\]]]]]]]^//",
         "//////////////fgggggggh//",
@@ -279,17 +279,36 @@ unsigned char** homeObjects;
 
 unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem){
     Object newObject;
+    char success = 0;
     yMouse = yMouse/32;
     xMouse = xMouse/32;
 
-    if(zone == 4 && yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20)
-        tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
+    switch(zone){
+        case 4:
+            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+        case 0:
+            if(houseRoof[yMouse][xMouse] == '/') {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+        default:
+            if(mapFg[yMouse][xMouse] == '/') {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+    }
 
-    if(zone != 4 && mapFg[yMouse][xMouse] == '/' && houseRoof[yMouse][xMouse] == '/')
-        tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
-
-    affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime, heldItem->id);
-    if(saveObject(&newObject) == FAILURE) return FAILURE;
+    if(success) {
+        affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime,
+                     heldItem->id);
+        if (saveObject(&newObject) == FAILURE) return FAILURE;
+    }
 
     return SUCCESS;
 }

@@ -247,7 +247,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch (event.button.button) {
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
-                                        if (*data->pause == 0 && inventory[currentSlot].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/') {
+                                        if (*data->pause == 0 && inventory[currentSlot].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y/32][x/32] == '/' && mapObjects[y/32][x/32] == '/') {
                                             inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + (currentSlot - 1));
                                         } else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
