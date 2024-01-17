@@ -69,7 +69,7 @@ void applyFilter(SDL_Renderer * renderer, const int * timeInGame, SDL_Texture *l
 }
 
 void seeTime(SDL_Renderer *renderer, const int* timeInGame) {
-    TTF_Font* font = loadFont();
+    TTF_Font* font = loadFont(64);
 
     SDL_Color textColor = {0, 0, 0};
     SDL_Rect bgRect = {696, 14, 93, 36};
@@ -122,8 +122,8 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
     SDL_RenderFillRect(renderer, &menuRect);
 
     /*Texte du menu*/
-    TTF_Font* font = loadFont();
-    SDL_Color color = {BLACK};
+    TTF_Font* font = loadFont(64);
+    SDL_Color color = {0,0,0};
 
     SDL_Surface * pauseSurface = TTF_RenderText_Solid(font, "Pause", color);
     if(!pauseSurface) exitWithError("Erreur d'initialisation de la surface");
@@ -176,8 +176,8 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
 
 }
 
-TTF_Font *loadFont(){
-    TTF_Font* font = TTF_OpenFont("../assets/font/game.ttf", 64);
+TTF_Font *loadFont(int size){
+    TTF_Font* font = TTF_OpenFont("../assets/font/game.ttf", size);
     if(!font) exitWithError("Erreur de chargement de la police");
 
     return font;
