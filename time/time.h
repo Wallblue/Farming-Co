@@ -19,5 +19,6 @@ void seeTime(SDL_Renderer*, const int*);
 void pauseMenu(SDL_Renderer *, SDL_Texture*);
 TTF_Font *loadFont();
 int getDateInGame();
+//void getSleep(struct ThreadData*);
 
 #endif //FARMINGCO_TIME_H

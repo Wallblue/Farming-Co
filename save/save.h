@@ -8,9 +8,16 @@
 #define FARMINGCO_SAVE_H
 
 #include <stdio.h>
+#include <SDL.h>
+#include <sqlite3.h>
+#include "../map/map.h"
+#include "../define.h"
+#include "../database/database.h"
 
 unsigned char saveObjectMaps();
 unsigned char loadObjectsMaps();
 unsigned char loadMapLine(unsigned char** line, FILE* fp);
+unsigned char loadMapV2();
+unsigned char saveObject(const Object* object);
 
 #endif //FARMINGCO_SAVE_H

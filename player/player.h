@@ -15,9 +15,9 @@
 #include "../define.h"
 #include "../error/error.h"
 
-void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, int*);
-void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, int*);
-void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, int*);
-void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, int*);
+void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, char*);
+void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, char*);
+void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
+void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
 
 #endif //FARMINGCO_PLAYER_H

@@ -32,7 +32,7 @@ SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer);
 struct ThreadData{
     int *timeInGame;
     int *sleep;
-    int *pause;
+    char *pause;
     int *todayDate;
 };
 

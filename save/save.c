@@ -12,13 +12,7 @@
  *  -> temps de pousse des plantes
  * */
 
-#include <SDL.h>
-#include <stdio.h>
-#include <sqlite3.h>
 #include "save.h"
-#include "../define.h"
-#include "../map/map.h"
-#include "../database/database.h"
 
 unsigned char saveObjectMaps(){
     FILE* fp;
@@ -81,44 +75,59 @@ unsigned char loadMapLine(unsigned char** line, FILE* fp){
 unsigned char loadMapV2(){
     sqlite3* db;
     sqlite3_stmt* res;
-    int rc;
     int i;
-
-    mapObjects1 = malloc(mapHeight * sizeof(char *));
-    if(mapObjects1 == NULL) return FAILURE;
-    mapObjects2 = malloc(mapHeight * sizeof(char *));
-    if(mapObjects2 == NULL) return FAILURE;
-    mapObjects3 = malloc(mapHeight * sizeof(char *));
-    if(mapObjects3 == NULL) return FAILURE;
-    mapObjects4 = malloc(mapHeight * sizeof(char *));
-    if(mapObjects4 == NULL) return FAILURE;
-    homeObjects = malloc(mapHeight * sizeof(char *));
-    if(homeObjects == NULL) return FAILURE;
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
-    if(prepareRequest(db, "SELECT * FROM object", &res) == FAILURE) return FAILURE;
+    if(prepareRequest(db, "SELECT object.x, object.y, object.zone, item.linkedObjectSpriteRef FROM object, item WHERE item.itemId = object.itemId", &res) == FAILURE) return FAILURE;
 
     while(sqlite3_step(res) == SQLITE_ROW){
-        switch(sqlite3_column_int(res, 5)){
+        switch(sqlite3_column_int(res, 2)){
             case 0:
-                mapObjects1[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char) *sqlite3_column_text(res, 9);
+                mapObjects1[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 1:
-                mapObjects2[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char) *sqlite3_column_text(res, 9);
+                mapObjects2[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 2:
-                mapObjects3[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char) *sqlite3_column_text(res, 9);
+                mapObjects3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 3:
-                mapObjects4[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char) *sqlite3_column_text(res, 9);
+                mapObjects4[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 4:
-                homeObjects[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char) *sqlite3_column_text(res, 9);
+                homeObjects[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
         }
         i++;
     }
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return SUCCESS;
+}
 
+unsigned char saveObject(const Object* object) {
+    sqlite3* db;
+    char* sqlReq;
+    if(openDb(&db) == FAILURE) return FAILURE;
+
+    sqlReq = malloc(160 * sizeof(char)); //Allocating max size bc we can't calculate it before
+    if(sqlReq == NULL){
+        free(sqlReq);
+        sqlite3_close(db);
+        return FAILURE;
+    }
+    sqlReq[sprintf(sqlReq,
+                   "INSERT INTO object (x, y, zone, growTime, growDate, state, boosted, itemID) VALUES (%d, %d, %hhd, %hhu, %d, %hhd, %hhu, %d);",
+                   object->x, object->y, object->zone, object->growTime, object->growDate, object->state, object->boosted, object->itemId) + 1] = '\0';
+
+    if (executeSQL(db, sqlReq) == FAILURE) {
+        free(sqlReq);
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    free(sqlReq);
+    sqlite3_close(db);
     return SUCCESS;
 }

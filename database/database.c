@@ -76,5 +76,6 @@ unsigned char startGame(){
     if(openDb(&db) == FAILURE) return FAILURE;
     char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 50, NULL)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlite3_close(db);
     return SUCCESS;
 }

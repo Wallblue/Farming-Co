@@ -12,8 +12,9 @@ int day(void* data) {
     struct ThreadData* threadData = (struct ThreadData*)data;
     int* getHours = threadData->timeInGame;
     int* sleep = threadData->sleep;
-    int* pause = threadData->pause;
+    char* pause = threadData->pause;
     int* todayDate = threadData->todayDate;
+
 
     Uint64 startTime = SDL_GetTicks64();
     Uint64 pauseTime = 0;
@@ -37,16 +38,13 @@ int day(void* data) {
             }
 
             if (*getHours == 24) {
-                startTime = currentTime;
-                (*todayDate)++;
-                *getHours = 0;
+                *sleep = 1;
             }
 
             if (*sleep == 1) {
-                startTime = currentTime;
+                *sleep=0;
                 (*todayDate)++;
                 *getHours = 0;
-                *sleep = 0;
             }
         }
 
@@ -192,13 +190,32 @@ int getDateInGame(){
     sqlite3_stmt* res;
     sqlite3* db;
     int rc;
-    if(openDb(&db) == FAILURE) return -1;
+    if(openDb(&db) == FAILURE){
+        sqlite3_close(db);
+        return -1;
+    }
 
-    if(prepareRequest(db, "SELECT timeInGame FROM player WHERE playerId = 1", &res) == FAILURE) return -1;
+    if(prepareRequest(db, "SELECT timeInGame FROM player WHERE playerId = 1", &res) == FAILURE){
+        sqlite3_close(db);
+        return -1;
+    }
     rc = sqlite3_step(res);
     if(rc != SQLITE_ROW){
         fprintf(stderr, "Can't get current day");
+        sqlite3_close(db);
         return -1;
     }
-    return sqlite3_column_int(res, 0);
+    rc = sqlite3_column_int(res, 0);
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return rc;
 }
+
+/*
+void getSleep(struct ThreadData* data){
+    *data->sleep=0;
+    (*data->todayDate)++;
+    *data->timeInGame = 0;
+
+}
+ */
