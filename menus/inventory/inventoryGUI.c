@@ -24,7 +24,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory){
 
                 case SDL_KEYDOWN: //détecte quand on appuie sur une touche
                     switch (event.key.keysym.sym) {
-                        case SDLK_e: case SDLK_ESCAPE: //quitte si la touche est la lettre H
+                        case SDLK_e: case SDLK_ESCAPE:
                             exit = 1;
                             break;
                     }

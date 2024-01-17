@@ -280,7 +280,6 @@ void inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, int 
     yMouse = yMouse/32;
     xMouse = xMouse/32;
 
-
     if(zone == 4 && yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20)
         tab[yMouse][xMouse] = (char)heldItem->objectSpriteRef;
 

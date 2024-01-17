@@ -44,10 +44,11 @@ unsigned char addItemsToDatabase(){
         cJSON* ability = cJSON_GetObjectItemCaseSensitive(jsonObject, "ability");
         cJSON* growTime = cJSON_GetObjectItemCaseSensitive(jsonObject, "growTime");
         cJSON* sprite = cJSON_GetObjectItemCaseSensitive(jsonObject, "sprite");
+        cJSON* linkedSpriteRef = cJSON_GetObjectItemCaseSensitive(jsonObject, "linkedSpriteRef");
 
         sqlReq = malloc(454 * sizeof(char)); //Allocating max size bc we can't calculate it before
-        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, NULL, \"%s\", %hhu, NULL, NULL);",
-                id->valueint, name->valuestring, type->valuestring, description->valuestring, energyBonus->valueint, ability->valueint, sprite->valuestring, growTime->valueint) + 1] = '\0';
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, NULL, \"%s\", %hhu, \"%c\", NULL, NULL);",
+                id->valueint, name->valuestring, type->valuestring, description->valuestring, energyBonus->valueint, ability->valueint, sprite->valuestring, growTime->valueint, *(linkedSpriteRef->valuestring)) + 1] = '\0';
 
         if(executeSQL(db, sqlReq) == FAILURE){
             free(sqlReq);
@@ -76,7 +77,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
     }
 
     affectItem(dest, id, (char*)sqlite3_column_text(res, 1), 0, (char*)sqlite3_column_text(res, 2), (char*)sqlite3_column_text(res, 3),
-               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6) ,(char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 8));
+               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 8) ,(char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 9));
 
     if(db == NULL) sqlite3_close(db);
     sqlite3_finalize(res);
@@ -85,7 +86,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
 
 void printItem(const Item* item){
     FILE* fp = fopen("print.txt", "w");
-    fprintf(fp, "id : %d\nname : %s\ntype : %s\ndescription : %s\nenergyBonus : %hu\nability : %hhu\ngrowTime : %hhu\nsprite : %s\nquantity : %hhu",
-            item->id, item->name, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite, item->quantity);
+    fprintf(fp, "id : %d\nname : %s\ntype : %s\ndescription : %s\nenergyBonus : %hu\nability : %hhu\ngrowTime : %hhu\nsprite : %s\nquantity : %hhu\nspriteRef : %c",
+            item->id, item->name, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite, item->quantity, item->objectSpriteRef);
     fclose(fp);
 }

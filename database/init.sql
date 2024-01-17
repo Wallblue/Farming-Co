@@ -61,10 +61,9 @@ CREATE TABLE IF NOT EXISTS item(
     quantity INTEGER,
     sprite VARCHAR(128),
     growTime INTEGER,
-    linkedObjectSprite CHARACTER(1),
+    linkedObjectSpriteRef CHARACTER(1),
     ownerId INTEGER,
     npcId INTEGER,
-    FOREIGN KEY (linkedObjectSprite) REFERENCES object(spriteRef),
     FOREIGN KEY (ownerId) REFERENCES player(playerId),
     FOREIGN KEY (npcId) REFERENCES npc(npcId)
 );

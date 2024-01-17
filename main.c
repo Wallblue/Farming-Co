@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
     if (createDatabase() == FAILURE) exitWithError("Database creation error.");
     if (startGame() == FAILURE) exitWithError("Couldn't start game.");
-    if (addItemsToDatabase() == FAILURE) exitWithError("Items loading on database impossible");
+    if (addItemsToDatabase() == FAILURE) exitWithError("Items loading in database impossible");
 
     todayDate = getDateInGame();
     struct ThreadData threadData;
@@ -187,23 +187,23 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                     *data->pause = 0;
                                 break;
 
-                            case SDLK_LEFT:
+                            case SDLK_LEFT: case SDLK_q:
                                 moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                                 break;
 
-                            case SDLK_RIGHT:
+                            case SDLK_RIGHT: case SDLK_d:
                                 moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                                 break;
 
-                            case SDLK_UP:
+                            case SDLK_UP: case SDLK_z:
                                 moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                                 break;
 
-                            case SDLK_DOWN:
+                            case SDLK_DOWN: case SDLK_s:
                                 moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
                                 break;
 
-                            case SDLK_s:
+                            case SDLK_p:
                                 *data->sleep = 1;
                                 break;
 
@@ -245,27 +245,22 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                         break;
 
                         case SDL_MOUSEBUTTONUP:
-                            if (*data->pause == 0) {
                                 switch (event.button.button) {
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
-                                        inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + currentSlot);
-                                        break;
-                                }
-                            } else if (*data->pause == 1) {
-                                switch (event.button.button) {
-                                    case SDL_BUTTON_LEFT:
-                                        SDL_GetMouseState(&x, &y);
-                                        if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
-                                            y <= screenHeight / 3 + 66)
-                                            *data->pause = 0;
+                                        if (*data->pause == 0 && inventory[currentSlot].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/') {
+                                            inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + (currentSlot - 1));
+                                        } else if (*data->pause == 1) {
+                                            if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
+                                                y <= screenHeight / 3 + 66)
+                                                *data->pause = 0;
 
-                                        if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 &&
-                                            y <= screenHeight / 2 + 66)
-                                            endGame = 1;
-                                        break;
+                                            if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 &&
+                                                y <= screenHeight / 2 + 66)
+                                                endGame = 1;
+                                        }
+                                    break;
                                 }
-                            }
                         break;
 
                         case SDL_MOUSEWHEEL:
