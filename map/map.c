@@ -286,16 +286,17 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
 
     switch(zone){
         case 4:
-            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20) {
+            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
-                success = 1;
-                if((char) heldItem->objectSpriteRef == 'J' && yMouse+1 != 14 || (char) heldItem->objectSpriteRef == 'I' && yMouse+1 != 14)
-                    tab[yMouse+1][xMouse] = (char) heldItem->objectSpriteRef + 10;
-                if(yMouse+1==14){
-                    success = 0;
-                    tab[yMouse][xMouse] = '/';
+                if((char) heldItem->objectSpriteRef == 'J' || (char) heldItem->objectSpriteRef == 'I') {
+                    if (yMouse + 1 == 14) {
+                        tab[yMouse][xMouse] = '/';
+                        success = 0;
+                        break;
+                    }
+                    tab[yMouse + 1][xMouse] = (char) heldItem->objectSpriteRef + 10;
                 }
-
+                success = 1;
             }
             break;
         case 0:
@@ -316,9 +317,9 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
         affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime,
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;
-    }
 
-    subtractItem(heldItem->id, 1, inventory);
+        subtractItem(heldItem->id, 1, inventory);
+    }
 
     return SUCCESS;
 }
