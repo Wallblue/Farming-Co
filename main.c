@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
-    if (loadMapV2() == FAILURE) exitWithError("Can't load maps.");
+    if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
 
     if ((err = loadInventory(inventory)) != SUCCESS) {
         if (err == 2) initInventory(inventory);
@@ -63,8 +63,7 @@ int main(int argc, char **argv) {
 
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, lightLayer, &threadData ,inventory);
 
-    err = saveObjectMaps();
-    if(saveInventory(inventory) == FAILURE || err == FAILURE) exitWithError("Couldn't save properly.");
+    if(saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
     TTF_Quit();
@@ -104,6 +103,8 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     char **mapBg;
     char **mapFg;
     unsigned char **mapObjects;
+    unsigned char lastMovement;
+    unsigned char interactedWith;
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
 
@@ -150,26 +151,6 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                 break;
         }
 
-        SDL_RenderClear(renderer);
-
-        printMap(renderer, floorTexture, mapBg);
-        printMap(renderer, floorTexture, mapFg);
-
-        if (zone == 0)printMap(renderer, floorTexture, houseRoof);
-
-        printMap(renderer, furnitureTexture, (char**)mapObjects);
-        SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
-        seeTime(renderer, data->timeInGame);
-        applyFilter(renderer,  data->timeInGame, lightLayer);
-        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
-            exitWithError("Can't load hotbar");
-
-        if(*data->pause == 1)pauseMenu(renderer, lightLayer);
-
-
-
-        SDL_RenderPresent(renderer);
-
         if (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
@@ -186,28 +167,57 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                     *data->pause = 0;
                                 break;
 
+                            //0: gauche, 1: droite, 2: haut, 3: bas
                             case SDLK_LEFT: case SDLK_q:
                                 moveLeft(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                lastMovement = 0;
                                 break;
 
                             case SDLK_RIGHT: case SDLK_d:
                                 moveRight(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                lastMovement = 1;
                                 break;
 
                             case SDLK_UP: case SDLK_z:
                                 moveUp(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                lastMovement = 2;
                                 break;
 
                             case SDLK_DOWN: case SDLK_s:
                                 moveDown(&playerSrc, &playerDst, &countX, &countY, mapFg, mapObjects, &zone);
+                                lastMovement = 3;
                                 break;
 
-                            case SDLK_p:
-                                *data->sleep = 1;
+                            case SDLK_f:
+                                switch(lastMovement){
+                                    case 0:
+                                        interactedWith = mapObjects[countY][countX-1];
+                                        break;
+                                    case 1:
+                                        interactedWith = mapObjects[countY][countX+1];
+                                        break;
+                                    case 2:
+                                        interactedWith = mapObjects[countY-1][countX];
+                                        break;
+                                    case 3:
+                                        interactedWith = mapObjects[countY+1][countX];
+                                        break;
+                                }
+
+                                switch(interactedWith){
+                                    case 'J' : case 'I' : case 'T': case 'S':
+                                        *data->sleep = 1;
+                                        break;
+
+                                    default:
+                                        break;
+
+                                }
                                 break;
 
                             case SDLK_e:
                                 if (inventoryEventLoop(renderer, inventory) == -1) endGame = 1;
+
                                 break;
 
                             case SDLK_1:
@@ -274,6 +284,24 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                     }
             }
         }
+
+        SDL_RenderClear(renderer);
+
+        printMap(renderer, floorTexture, mapBg);
+        printMap(renderer, floorTexture, mapFg);
+
+        if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+
+        printMap(renderer, furnitureTexture, (char**)mapObjects);
+        SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
+        seeTime(renderer, data->timeInGame);
+        applyFilter(renderer,  data->timeInGame, lightLayer);
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
+            exitWithError("Can't load hotbar");
+
+        if(*data->pause == 1)pauseMenu(renderer, lightLayer);
+
+        SDL_RenderPresent(renderer);
     }
     SDL_DestroyTexture(hotbarTexture);
 }

@@ -14,10 +14,7 @@
 #include "../define.h"
 #include "../database/database.h"
 
-unsigned char saveObjectMaps();
 unsigned char loadObjectsMaps();
-unsigned char loadMapLine(unsigned char** line, FILE* fp);
-unsigned char loadMapV2();
 unsigned char saveObject(const Object* object);
 
 #endif //FARMINGCO_SAVE_H

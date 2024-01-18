@@ -282,7 +282,6 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
     char success = 0;
     yMouse = yMouse/32;
     xMouse = xMouse/32;
-    printf("%d", yMouse+1 );
 
     switch(zone){
         case 4:

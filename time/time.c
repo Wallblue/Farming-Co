@@ -40,11 +40,10 @@ int day(void* data) {
             }
 
             if (*sleep == 1) {
+                if(getSleep(data)== FAILURE)exitWithError("Database couldn't update today's date.");
                 startTime = currentTime;
-                getSleep(data);
             }
         }
-
 
     } while (*getHours < 25);
 
@@ -208,10 +207,117 @@ int getDateInGame(){
     return rc;
 }
 
-
-void getSleep(struct ThreadData* data){
-    *data->sleep=0;
+unsigned char getSleep(struct ThreadData* data){
+    *data->sleep = 0;
     (*data->todayDate)++;
     *data->timeInGame = 0;
+    if(updateDate(*data->todayDate)== FAILURE) return FAILURE;
+    if(updatePlants(*data->todayDate)==FAILURE) return FAILURE;
+    return SUCCESS;
+}
 
+unsigned char updateDate(int todayDate){
+    sqlite3_stmt* res;
+    int rc;
+    sqlite3* db;
+
+    if(openDb(&db) == FAILURE) {
+        fprintf(stderr, "Couldn't open Database");
+        return FAILURE;
+    }
+
+    if(prepareRequest(db, "UPDATE player SET timeInGame = ?1", &res) == FAILURE) {
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    sqlite3_bind_int(res, 1, todayDate);
+    rc = sqlite3_step(res);
+
+    if(rc != SQLITE_DONE){
+        fprintf(stderr, "Couldn't update Database");
+        sqlite3_finalize(res);
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return SUCCESS;
+}
+unsigned char updatePlants(int todayDate) {
+    sqlite3* db;
+    sqlite3_stmt* res;
+
+    if (openDb(&db) == FAILURE) {
+        fprintf(stderr, "Couldn't open Database");
+        return FAILURE;
+    }
+
+    const char* query = "SELECT object.objectId, object.x, object.y, object.zone, object.growTime, object.growDate, object.state, item.linkedObjectSpriteRef FROM object, item WHERE object.growTime > 0 AND item.itemId = object.itemId";
+
+    if (prepareRequest(db, query, &res) == FAILURE) {
+        fprintf(stderr, "Couldn't prepare query: %s", query);
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    while (sqlite3_step(res) == SQLITE_ROW) {
+        int objectId = sqlite3_column_int(res, 0);
+        int state = sqlite3_column_int(res, 6) + 1;
+
+        printf("Updating objectId: %d, state: %d\n", objectId, state);
+
+        if (updateSprite(db, objectId, state) == FAILURE) {
+            fprintf(stderr, "Failed to updateSprite for objectId: %d\n", objectId);
+            sqlite3_finalize(res);
+            sqlite3_close(db);
+            return FAILURE;
+        }
+
+        switch (sqlite3_column_int(res, 3)) {
+            case 0:
+                mapObjects1[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                break;
+            case 1:
+                mapObjects2[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                break;
+            case 2:
+                mapObjects3[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                break;
+            case 3:
+                mapObjects4[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                break;
+        }
+    }
+
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return SUCCESS;
+}
+
+unsigned char updateSprite(sqlite3* db, int objectId, int state) {
+    sqlite3_stmt* res;
+    int rc;
+
+    const char* query = "UPDATE object SET state = ?1 WHERE objectId = ?2";
+
+    if (prepareRequest(db, query, &res) == FAILURE) {
+        fprintf(stderr, "Couldn't prepare query: %s", query);
+        return FAILURE;
+    }
+
+    sqlite3_bind_int(res, 1, state);
+    sqlite3_bind_int(res, 2, objectId);
+
+    rc = sqlite3_step(res);
+
+    if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Couldn't update object state in Database: %s", sqlite3_errmsg(db));
+        sqlite3_finalize(res);
+        return FAILURE;
+    }
+
+    sqlite3_finalize(res);
+    return SUCCESS;
 }
