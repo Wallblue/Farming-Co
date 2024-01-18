@@ -316,6 +316,9 @@ unsigned char destroyObject(unsigned char nX, unsigned char nY, char zone, unsig
         sqlite3_close(db);
         return FAILURE;
     }
+
+    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I')
+        objectMap[nY+1][nX] = '/';
     objectMap[nY][nX] = '/';
 
     sqlite3_finalize(res);
