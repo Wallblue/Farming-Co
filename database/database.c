@@ -5,8 +5,6 @@
 //
 
 #include "database.h"
-#include "../define.h"
-#include <stdlib.h>
 
 int createDatabase(){
     sqlite3 *db;

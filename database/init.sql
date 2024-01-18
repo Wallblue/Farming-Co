@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS object(
       itemId INTEGER,
       playerId INTEGER,
       FOREIGN KEY (itemId) REFERENCES item(itemId),
-      FOREIGN KEY (playerId) REFERENCES player(playerId)
+      FOREIGN KEY (playerId) REFERENCES player(playerId),
+      UNIQUE(x, y, zone)
 );
 
 CREATE TABLE IF NOT EXISTS place(
@@ -62,8 +63,10 @@ CREATE TABLE IF NOT EXISTS item(
     sprite VARCHAR(128),
     growTime INTEGER,
     linkedObjectSpriteRef CHARACTER(1),
+    linkedTool INTEGER,
     ownerId INTEGER,
     npcId INTEGER,
+    FOREIGN KEY (linkedTool) REFERENCES item(itemId),
     FOREIGN KEY (ownerId) REFERENCES player(playerId),
     FOREIGN KEY (npcId) REFERENCES npc(npcId)
 );

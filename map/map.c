@@ -277,7 +277,7 @@ unsigned char** mapObjects3;
 unsigned char** mapObjects4;
 unsigned char** homeObjects;
 
-unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem){
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem, Inventory inventory){
     Object newObject;
     char success = 0;
     yMouse = yMouse/32;
@@ -317,6 +317,9 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;
     }
+
+    subtractItem(heldItem->id, 1, inventory);
+
     return SUCCESS;
 }
 

@@ -1,14 +1,15 @@
 [
   {
     "id": 1,
-    "name": "pebble",
+    "name": "Pebble",
     "type": "misc",
     "description": "A little piece of a big rock.",
     "energyBonus": 0,
     "ability": 0,
     "growTime": 0,
     "sprite": "pebble.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 2,
     "name": "grass",
@@ -18,7 +19,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "grass.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 7
   }, {
     "id": 3,
     "name": "stick",
@@ -28,7 +30,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "stick.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 6
   }, {
     "id": 4,
     "name": "stone",
@@ -38,7 +41,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "stone.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 7
   }, {
     "id": 5,
     "name": "wood",
@@ -48,7 +52,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "wood.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 6
   }, {
     "id": 6,
     "name": "axe",
@@ -58,7 +63,8 @@
     "ability": 1,
     "growTime": 0,
     "sprite": "axe.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 7,
     "name": "hoe",
@@ -68,7 +74,8 @@
     "ability": 2,
     "growTime": 0,
     "sprite": "hoe.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 8,
     "name": "watering can",
@@ -78,7 +85,8 @@
     "ability": 3,
     "growTime": 0,
     "sprite": "watering_can.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 9,
     "name": "chest",
@@ -88,7 +96,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "chest.bmp",
-    "linkedSpriteRef" : "P"
+    "linkedSpriteRef" : "P",
+    "linkedTool" : 6
   }, {
     "id": 10,
     "name": "apple",
@@ -98,7 +107,8 @@
     "ability": 10,
     "growTime": 0,
     "sprite": "apple.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 11,
     "name": "berries",
@@ -108,7 +118,8 @@
     "ability": 10,
     "growTime": 0,
     "sprite": "berries.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 12,
     "name": "bottle",
@@ -118,7 +129,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "bottle.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 13,
     "name": "egg",
@@ -128,7 +140,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "egg.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 14,
     "name": "Milk bottle",
@@ -138,7 +151,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "milk_bottle.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 15,
     "name": "Half milk bottle",
@@ -148,7 +162,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "half_milk_bottle.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 16,
     "name": "Mushroom",
@@ -158,7 +173,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "mushroom.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 17,
     "name": "Wheat",
@@ -168,7 +184,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "wheat.bmp",
-    "linkedSpriteRef" : "/"
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }, {
     "id": 18,
     "name": "Berry crops",
@@ -178,7 +195,8 @@
     "ability": 0,
     "growTime": 6,
     "sprite": "berry_crops.bmp",
-    "linkedSpriteRef" : "="
+    "linkedSpriteRef" : "=",
+    "linkedTool" : 7
   }, {
     "id": 19,
     "name": "Wheat crops",
@@ -188,7 +206,8 @@
     "ability": 0,
     "growTime": 8,
     "sprite": "wheat_crops.bmp",
-    "linkedSpriteRef" : "3"
+    "linkedSpriteRef" : "3",
+    "linkedTool" : 7
   },{
     "id": 20,
     "name": "Sunflower",
@@ -198,7 +217,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "sunflower.bmp",
-    "linkedSpriteRef" : "0"
+    "linkedSpriteRef" : "0",
+    "linkedTool" : 6
   },{
     "id": 21,
     "name": "Pot",
@@ -208,7 +228,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "pot.bmp",
-    "linkedSpriteRef" : "1"
+    "linkedSpriteRef" : "1",
+    "linkedTool" : 6
   },{
     "id": 22,
     "name": "Blue flower",
@@ -218,7 +239,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "blue_pot.bmp",
-    "linkedSpriteRef" : "3"
+    "linkedSpriteRef" : "3",
+    "linkedTool" : 6
   },{
     "id": 23,
     "name": "Blue lamp",
@@ -228,7 +250,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "blue_lamp.bmp",
-    "linkedSpriteRef" : ";"
+    "linkedSpriteRef" : ";",
+    "linkedTool" : 6
     },{
     "id": 24,
     "name": "Red lamp",
@@ -238,7 +261,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "red_lamp.bmp",
-    "linkedSpriteRef" : "<"
+    "linkedSpriteRef" : "<",
+    "linkedTool" : 6
   },{
     "id": 25,
     "name": "Green lamp",
@@ -248,7 +272,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "green_lamp.bmp",
-    "linkedSpriteRef" : ":"
+    "linkedSpriteRef" : ":",
+    "linkedTool" : 6
   },{
     "id": 26,
     "name": "Drawer",
@@ -258,7 +283,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "drawer.bmp",
-    "linkedSpriteRef" : "D"
+    "linkedSpriteRef" : "D",
+    "linkedTool" : 6
   },{
     "id": 27,
     "name": "Chair (R)",
@@ -268,7 +294,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "right_chair.bmp",
-    "linkedSpriteRef" : "E"
+    "linkedSpriteRef" : "E",
+    "linkedTool" : 6
   },{
     "id": 28,
     "name": "Chair (L)",
@@ -278,7 +305,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "left_chair.bmp",
-    "linkedSpriteRef" : "F"
+    "linkedSpriteRef" : "F",
+    "linkedTool" : 6
   },{
     "id": 29,
     "name": "Chair (F)",
@@ -288,7 +316,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "front_chair.bmp",
-    "linkedSpriteRef" : "G"
+    "linkedSpriteRef" : "G",
+    "linkedTool" : 6
   },{
     "id": 30,
     "name": "Chair (B)",
@@ -298,7 +327,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "back_chair.bmp",
-    "linkedSpriteRef" : "H"
+    "linkedSpriteRef" : "H",
+    "linkedTool" : 6
   },{
     "id": 31,
     "name": "Bed (F)",
@@ -308,7 +338,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "front_bed.bmp",
-    "linkedSpriteRef" : "I"
+    "linkedSpriteRef" : "I",
+    "linkedTool" : 6
   },{
     "id": 32,
     "name": "Bed (B)",
@@ -318,7 +349,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "back_bed.bmp",
-    "linkedSpriteRef" : "J"
+    "linkedSpriteRef" : "J",
+    "linkedTool" : 6
   },{
     "id": 33,
     "name": "Table",
@@ -328,7 +360,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "table.bmp",
-    "linkedSpriteRef" : "N"
+    "linkedSpriteRef" : "N",
+    "linkedTool" : 6
   },{
     "id": 34,
     "name": "Stool",
@@ -338,7 +371,19 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "stool.bmp",
-    "linkedSpriteRef" : "O"
+    "linkedSpriteRef" : "O",
+    "linkedTool" : 6
+  },{
+    "id": 35,
+    "name": "Pickaxe",
+    "type": "tool",
+    "description": "An intrusive axe since it's a peeking axe.",
+    "energyBonus": 0,
+    "ability": 4,
+    "growTime": 0,
+    "sprite": "pickaxe.bmp",
+    "linkedSpriteRef" : "/",
+    "linkedTool" : 0
   }
 
 ]

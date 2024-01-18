@@ -10,6 +10,14 @@
 
     typedef Item Inventory[INVENTORY_MAX_SIZE];
 
+//Includes:
+    #include "../../define.h"
+    #include "../../database/database.h"
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <sqlite3.h>
+
 //Functions :
     void initInventory(Inventory inventory);
 
