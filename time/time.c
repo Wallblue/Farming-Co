@@ -13,8 +13,6 @@ int day(void* data) {
     int* getHours = threadData->timeInGame;
     int* sleep = threadData->sleep;
     char* pause = threadData->pause;
-    int* todayDate = threadData->todayDate;
-
 
     Uint64 startTime = SDL_GetTicks64();
     Uint64 pauseTime = 0;
@@ -42,9 +40,8 @@ int day(void* data) {
             }
 
             if (*sleep == 1) {
-                *sleep=0;
-                (*todayDate)++;
-                *getHours = 0;
+                startTime = currentTime;
+                getSleep(data);
             }
         }
 
@@ -54,7 +51,7 @@ int day(void* data) {
     return 0;
 }
 
-void applyFilter(SDL_Renderer * renderer, int * timeInGame, SDL_Texture *lightLayer){
+void applyFilter(SDL_Renderer * renderer, const int * timeInGame, SDL_Texture *lightLayer){
     SDL_Rect gameRect = {0, 0, screenWidth, screenHeight};
     int nightFilter = 0;
 
@@ -211,11 +208,10 @@ int getDateInGame(){
     return rc;
 }
 
-/*
+
 void getSleep(struct ThreadData* data){
     *data->sleep=0;
     (*data->todayDate)++;
     *data->timeInGame = 0;
 
 }
- */
