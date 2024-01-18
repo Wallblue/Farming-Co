@@ -51,6 +51,7 @@ unsigned char loadObjectsMaps(){
     homeObjects = malloc(mapHeight * sizeof(char *));
     if(homeObjects == NULL) return FAILURE;
 
+
     for (i = 0; i < mapHeight; i++) {
         if(loadMapLine(mapObjects1 + i, fp) == FAILURE) return FAILURE;
         if(loadMapLine(mapObjects2 + i, fp) == FAILURE) return FAILURE;
@@ -77,6 +78,9 @@ unsigned char loadMapV2(){
     sqlite3_stmt* res;
     int i;
 
+    srand(time(NULL));
+    int randomNum = rand() % 3;
+
     if(openDb(&db) == FAILURE) return FAILURE;
 
     if(prepareRequest(db, "SELECT object.x, object.y, object.zone, item.linkedObjectSpriteRef FROM object, item WHERE item.itemId = object.itemId", &res) == FAILURE) return FAILURE;
@@ -91,9 +95,11 @@ unsigned char loadMapV2(){
                 break;
             case 2:
                 mapObjects3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
+                soiledFloor3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = 'A' + randomNum;
                 break;
             case 3:
                 mapObjects4[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
+                soiledFloor4[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = 'A' + randomNum;
                 break;
             case 4:
                 homeObjects[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);

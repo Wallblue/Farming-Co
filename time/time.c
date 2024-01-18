@@ -212,5 +212,4 @@ void getSleep(struct ThreadData* data){
     *data->sleep=0;
     (*data->todayDate)++;
     *data->timeInGame = 0;
-
 }

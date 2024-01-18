@@ -322,3 +322,12 @@ unsigned char destroyObject(unsigned char nX, unsigned char nY, char zone, unsig
     sqlite3_close(db);
     return SUCCESS;
 }
+
+void soilFloor(unsigned char nX, unsigned char nY, unsigned char **tab, Item *heldItem){
+    srand(time(NULL));
+    int randomNum = rand() % 3;
+
+    if(heldItem->id == 7)
+        tab[nY][nX] = 'A' + randomNum;
+
+}

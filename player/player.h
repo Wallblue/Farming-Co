@@ -17,6 +17,7 @@
 #include "../error/error.h"
 #include "../items/items.h"
 #include "../database/database.h"
+#include <time.h>
 
 
 void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, char*);
@@ -24,5 +25,6 @@ void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned cha
 void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
 void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
 unsigned char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory inventory, Item *heldItem);
+void soilFloor(unsigned char, unsigned char, unsigned char **, Item *);
 
 #endif //FARMINGCO_PLAYER_H

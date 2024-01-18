@@ -104,6 +104,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     char **mapBg;
     char **mapFg;
     unsigned char **mapObjects;
+    unsigned char **soiledFloor;
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
 
@@ -137,11 +138,13 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                 mapBg = thirdZoneBg;
                 mapFg = thirdZoneFg;
                 mapObjects = mapObjects3;
+                soiledFloor = soiledFloor3;
                 break;
             case 3:
                 mapBg = fourthZoneBg;
                 mapFg = fourthZoneFg;
                 mapObjects = mapObjects4;
+                soiledFloor = soiledFloor4;
                 break;
             case 4:
                 mapBg = home;
@@ -156,6 +159,8 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         printMap(renderer, floorTexture, mapFg);
 
         if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+        if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
+        if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
 
         printMap(renderer, furnitureTexture, (char**)mapObjects);
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
@@ -248,11 +253,20 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
 
-                                        if(mapObjects[y/32][x/32] != '/')
-                                            destroyObject(x / 32, y / 32, zone, mapObjects, inventory, inventory + (currentSlot - 1));
-                                        else if (*data->pause == 0 && inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y/32][x/32] == '/')
-                                            inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + (currentSlot - 1), inventory);
-                                        else if (*data->pause == 1) {
+                                        if(*data->pause == 0) {
+                                            if (mapObjects[y / 32][x / 32] != '/')
+                                                destroyObject(x / 32, y / 32, zone, mapObjects, inventory,
+                                                              inventory + (currentSlot - 1));
+                                            else if (inventory[currentSlot - 1].id != 0 &&
+                                                     inventory[currentSlot - 1].objectSpriteRef != '/' &&
+                                                     mapFg[y / 32][x / 32] == '/')
+                                                inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,
+                                                            inventory + (currentSlot - 1), inventory);
+                                            else if (
+                                                    mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' &&
+                                                    zone == 2 || zone == 3)
+                                                soilFloor(x / 32, y / 32, soiledFloor, inventory + (currentSlot - 1));
+                                        }else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
                                                 y <= screenHeight / 3 + 66)
                                                 *data->pause = 0;
