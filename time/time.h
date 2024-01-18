@@ -10,9 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <sqlite3.h>
+#include "../database/database.h"
 #include "../define.h"
 #include "../error/error.h"
 #include "../map/map.h"
+#include "../colors.h"
 
 int day(void*);
 void applyFilter(SDL_Renderer *, const int *, SDL_Texture *);
