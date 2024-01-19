@@ -35,7 +35,7 @@ struct Object{
     int y;
     char zone;
     unsigned char growTime;
-    int growDate;
+    int poseDate;
     char state;
     unsigned char boosted;
     int itemId;

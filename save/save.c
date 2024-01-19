@@ -60,8 +60,8 @@ unsigned char saveObject(const Object* object) {
         return FAILURE;
     }
     sqlReq[sprintf(sqlReq,
-                   "INSERT INTO object (x, y, zone, growTime, growDate, state, boosted, itemID) VALUES (%d, %d, %hhd, %hhu, %d, %hhd, %hhu, %d);",
-                   object->x, object->y, object->zone, object->growTime, object->growDate, object->state, object->boosted, object->itemId) + 1] = '\0';
+                   "INSERT INTO object (x, y, zone, growTime, poseDate, state, boosted, itemID) VALUES (%d, %d, %hhd, %hhu, %d, %hhd, %hhu, %d);",
+                   object->x, object->y, object->zone, object->growTime, object->poseDate, object->state, object->boosted, object->itemId) + 1] = '\0';
 
     if (executeSQL(db, sqlReq) == FAILURE) {
         free(sqlReq);

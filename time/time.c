@@ -245,16 +245,18 @@ unsigned char updateDate(int todayDate){
     sqlite3_close(db);
     return SUCCESS;
 }
+
 unsigned char updatePlants(int todayDate) {
     sqlite3* db;
     sqlite3_stmt* res;
+    int objectId, nextState, poseDate, growTime;
 
     if (openDb(&db) == FAILURE) {
         fprintf(stderr, "Couldn't open Database");
         return FAILURE;
     }
 
-    const char* query = "SELECT object.objectId, object.x, object.y, object.zone, object.growTime, object.growDate, object.state, item.linkedObjectSpriteRef FROM object, item WHERE object.growTime > 0 AND item.itemId = object.itemId";
+    const char* query = "SELECT object.objectId, object.x, object.y, object.zone, object.growTime, object.poseDate, object.state, item.linkedObjectSpriteRef FROM object, item WHERE object.growTime > 0 AND item.itemId = object.itemId";
 
     if (prepareRequest(db, query, &res) == FAILURE) {
         fprintf(stderr, "Couldn't prepare query: %s", query);
@@ -263,12 +265,17 @@ unsigned char updatePlants(int todayDate) {
     }
 
     while (sqlite3_step(res) == SQLITE_ROW) {
-        int objectId = sqlite3_column_int(res, 0);
-        int state = sqlite3_column_int(res, 6) + 1;
+        nextState = sqlite3_column_int(res, 6) + 1;
+        poseDate = sqlite3_column_int(res, 5);
+        growTime = sqlite3_column_int(res, 4);
 
-        printf("Updating objectId: %d, state: %d\n", objectId, state);
+        if(sqlite3_column_int(res, 6) == 3 || //If the plant is already on final nextState we skip it or
+        ((todayDate - poseDate) * 3 < nextState * growTime)) // if the plant has not reached the next state
+            continue;
 
-        if (updateSprite(db, objectId, state) == FAILURE) {
+        objectId = sqlite3_column_int(res, 0);
+
+        if (updateSprite(db, objectId, nextState) == FAILURE) {
             fprintf(stderr, "Failed to updateSprite for objectId: %d\n", objectId);
             sqlite3_finalize(res);
             sqlite3_close(db);
@@ -277,16 +284,16 @@ unsigned char updatePlants(int todayDate) {
 
         switch (sqlite3_column_int(res, 3)) {
             case 0:
-                mapObjects1[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                mapObjects1[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
                 break;
             case 1:
-                mapObjects2[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                mapObjects2[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
                 break;
             case 2:
-                mapObjects3[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                mapObjects3[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
                 break;
             case 3:
-                mapObjects4[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + state);
+                mapObjects4[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
                 break;
         }
     }

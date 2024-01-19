@@ -312,7 +312,7 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
     }
 
     if(success == 1) {
-        affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate + heldItem->growTime,
+        affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate,
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;
     }
@@ -380,12 +380,12 @@ void freeObjectMaps(){
     free(homeObjects);
 }
 
-void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId){
+void affectObject(Object* object, int x, int y, char zone, int growTime, int poseDate, int itemId){
     object->x = x;
     object->y = y;
     object->zone = zone;
     object->growTime = growTime;
-    object->growDate = growDate;
+    object->poseDate = poseDate;
     object->state = 0;
     object->boosted = 0;
     object->itemId = itemId;

@@ -36,15 +36,23 @@ unsigned char setItem(int id, unsigned char quantity, Inventory inventory){
     if(index == -1) return FAILURE; //If inventory is full
 
     getItem(id, &item, NULL);
-    affectItem(inventory + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus, item.ability, item.growTime, item.sprite, item.objectSpriteRef);
+    affectItem(inventory + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus,
+               item.ability, item.growTime, item.sprite, item.objectSpriteRef, 0);
     return SUCCESS;
 }
 
 void swapItems(int srcSlot, int destSlot, Inventory inventory){
     Item temp;
-    affectItem(&temp, inventory[srcSlot].id, inventory[srcSlot].name, inventory[srcSlot].quantity, inventory[srcSlot].type, inventory[srcSlot].description, inventory[srcSlot].energyBonus, inventory[srcSlot].ability, inventory[srcSlot].growTime, inventory[srcSlot].sprite, inventory[srcSlot].objectSpriteRef);
-    affectItem(inventory + srcSlot, inventory[destSlot].id, inventory[destSlot].name, inventory[destSlot].quantity, inventory[destSlot].type, inventory[destSlot].description, inventory[destSlot].energyBonus, inventory[destSlot].ability, inventory[destSlot].growTime, inventory[destSlot].sprite, inventory[destSlot].objectSpriteRef);
-    affectItem(inventory + destSlot, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus, temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef);
+    affectItem(&temp, inventory[srcSlot].id, inventory[srcSlot].name, inventory[srcSlot].quantity,
+               inventory[srcSlot].type, inventory[srcSlot].description, inventory[srcSlot].energyBonus,
+               inventory[srcSlot].ability, inventory[srcSlot].growTime, inventory[srcSlot].sprite,
+               inventory[srcSlot].objectSpriteRef, 0);
+    affectItem(inventory + srcSlot, inventory[destSlot].id, inventory[destSlot].name, inventory[destSlot].quantity,
+               inventory[destSlot].type, inventory[destSlot].description, inventory[destSlot].energyBonus,
+               inventory[destSlot].ability, inventory[destSlot].growTime, inventory[destSlot].sprite,
+               inventory[destSlot].objectSpriteRef, 0);
+    affectItem(inventory + destSlot, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus,
+               temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef, 0);
 }
 
 unsigned char addItem(int id, unsigned char quantity, Inventory inventory){

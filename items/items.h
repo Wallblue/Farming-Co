@@ -18,11 +18,14 @@ struct Item{
     char sprite[MAX_SPRITE_LEN];
     unsigned char quantity;
     unsigned char objectSpriteRef;
+    int evolution;
 };
 typedef struct Item Item;
 
 //Functions :
-void affectItem(Item* item, int id, const char* name, unsigned char quantity, const char* type, const char* description, unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char* sprite, unsigned char objectSpriteRef);
+void affectItem(Item *item, int id, const char *name, unsigned char quantity, const char *type, const char *description,
+                unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char *sprite,
+                unsigned char objectSpriteRef, int evolution);
 void resetItem(Item* item);
 unsigned char addItemsToDatabase();
 unsigned char getItem(int id, Item* dest, sqlite3* db);

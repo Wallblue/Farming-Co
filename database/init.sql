@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS object(
       w INTEGER,
       h INTEGER,
       zone INTEGER,
-      growTime INT,
-      growDate INT,
+      growTime INTEGER,
+      poseDate INTEGER,
       state INTEGER,
       boosted BOOLEAN,
       itemId INTEGER,
@@ -62,8 +62,10 @@ CREATE TABLE IF NOT EXISTS item(
     sprite VARCHAR(128),
     growTime INTEGER,
     linkedObjectSpriteRef CHARACTER(1),
+    evolution INTEGER,
     ownerId INTEGER,
     npcId INTEGER,
+    FOREIGN KEY (evolution) REFERENCES item(itemId),
     FOREIGN KEY (ownerId) REFERENCES player(playerId),
     FOREIGN KEY (npcId) REFERENCES npc(npcId)
 );
