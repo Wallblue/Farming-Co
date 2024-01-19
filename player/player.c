@@ -305,28 +305,20 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     objectLinkedItemId = sqlite3_column_int(res, 1);
 
     if(objectLinkedToolAbility != heldItem->ability) return 2;
-
+    rc = 0;
     if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
-        if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) return 3;
-        if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) return 3;
+        if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) rc = 3;
+        if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) rc = 3;
     }else //Classic loot
-        if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) return 3;
+        if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) rc = 3;
 
     sqlite3_finalize(res);
-    //delete object in db if()
-    if(prepareRequest(db, "DELETE FROM object WHERE x = ?1 AND y = ?2 AND zone = ?3", &res) == FAILURE){
+    if(rc == 3){
         sqlite3_close(db);
-        return FAILURE;
+        return 3;
     }
-    sqlite3_bind_int(res, 1, nX);
-    sqlite3_bind_int(res, 2, nY);
-    sqlite3_bind_int(res, 3, zone);
-    rc = sqlite3_step(res);
-    if(rc != SQLITE_DONE){
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return FAILURE;
-    }
+
+    if(deleteObjectByCoordinates(nX, nY, zone, db) == FAILURE) return FAILURE;
 
     if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I')
         objectMap[nY+1][nX] = '/';
@@ -334,5 +326,51 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
 
     sqlite3_finalize(res);
     sqlite3_close(db);
+    return SUCCESS;
+}
+
+
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem, Inventory inventory){
+    Object newObject;
+    char success = 0;
+    yMouse = yMouse/32;
+    xMouse = xMouse/32;
+
+    switch(zone){
+        case 4:
+            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+                if((char) heldItem->objectSpriteRef == 'J' && yMouse+1 != 14 || (char) heldItem->objectSpriteRef == 'I' && yMouse+1 != 14)
+                    tab[yMouse+1][xMouse] = (char) heldItem->objectSpriteRef + 10;
+                if(yMouse+1==14){
+                    success = 0;
+                    tab[yMouse][xMouse] = '/';
+                }
+
+            }
+            break;
+        case 0:
+            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+        default:
+            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+    }
+
+    if(success == 1) {
+        affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate,
+                     heldItem->id);
+        if (saveObject(&newObject) == FAILURE) return FAILURE;
+    }
+
+    subtractItem(heldItem->id, 1, inventory);
+
     return SUCCESS;
 }

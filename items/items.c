@@ -73,10 +73,12 @@ unsigned char addItemsToDatabase(){
 unsigned char getItem(int id, Item* dest, sqlite3* db){
     sqlite3_stmt* res;
     int rc;
+    char homeMadeDb = 0;
 
-    if(db == NULL)
-        if(openDb(&db) == FAILURE) return FAILURE;
-
+    if(db == NULL) {
+        if (openDb(&db) == FAILURE) return FAILURE;
+        homeMadeDb = 1;
+    }
     if(prepareRequest(db, "SELECT * FROM item WHERE itemId = ?1;", &res) == FAILURE) return FAILURE;
     sqlite3_bind_int(res, 1, id);
     rc = sqlite3_step(res);
@@ -90,7 +92,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
                sqlite3_column_int(res, 5), sqlite3_column_int(res, 8),(char *) sqlite3_column_text(res, 7),
                *sqlite3_column_text(res, 9), sqlite3_column_int(res, 10), sqlite3_column_int(res, 11));
 
-    if(db == NULL) sqlite3_close(db);
+    if(homeMadeDb == 1) sqlite3_close(db);
     sqlite3_finalize(res);
     return SUCCESS;
 }
