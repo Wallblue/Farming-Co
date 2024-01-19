@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 #include <sqlite3.h>
+#include "../define.h"
+#include <stdlib.h>
 
 int createDatabase();
 unsigned char openDb(sqlite3** db);

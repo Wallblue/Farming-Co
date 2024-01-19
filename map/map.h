@@ -10,6 +10,7 @@
 
 #include <SDL.h>
 #include "../items/items.h"
+#include "../items/inventory/inventory.h"
 
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
 extern char* firstZoneBg[];
@@ -44,7 +45,7 @@ typedef struct Object Object;
 
 //Functions
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
-unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, char zone, int todayDate, Item *heldItem);
+unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, char zone, int todayDate, Item *heldItem, Inventory inventory);
 unsigned char initObjectMaps();
 unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();

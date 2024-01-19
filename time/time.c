@@ -5,8 +5,7 @@
 //
 
 #include "time.h"
-#include <sqlite3.h>
-#include "../database/database.h"
+
 
 int day(void* data) {
     struct ThreadData* threadData = (struct ThreadData*)data;
@@ -122,7 +121,7 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
 
     /*Texte du menu*/
     TTF_Font* font = loadFont();
-    SDL_Color color = {0,0,0};
+    SDL_Color color = {BLACK};
 
     SDL_Surface * pauseSurface = TTF_RenderText_Solid(font, "Pause", color);
     if(!pauseSurface) exitWithError("Erreur d'initialisation de la surface");
