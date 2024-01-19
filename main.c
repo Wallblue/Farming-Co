@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <SDL.h>
 #include "database/database.h"
 #include "map/map.h"
@@ -25,6 +26,7 @@ int main(int argc, char **argv) {
     int sleep = 0;
     char pause = 0;
     int todayDate;
+    srand(time(NULL));
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)exitWithError("Erreur d'initialisation");
     if (TTF_Init() != 0)exitWithError("Erreur d'initialisation");
@@ -99,6 +101,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     int countX = 18;
     int countY = 5;
     char zone = 0;
+    char err;
     unsigned char currentSlot = 1;
     char **mapBg;
     char **mapFg;
@@ -258,9 +261,15 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
 
-                                        if(mapObjects[y/32][x/32] != '/')
-                                            destroyObject(x / 32, y / 32, zone, mapObjects, inventory, inventory + (currentSlot - 1));
-                                        else if (*data->pause == 0 && inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y/32][x/32] == '/')
+                                        if(mapObjects[y/32][x/32] != '/') {
+                                            err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory + (currentSlot - 1));
+                                            if(err == 3)
+                                                fprintf(stderr, "Inventory full !\n");
+                                            else if(err == 2)
+                                                fprintf(stderr, "Wrong tool !\n");
+                                            else if(err == FAILURE)
+                                                exitWithError("Error while trying to break object.");
+                                        }else if (*data->pause == 0 && inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y/32][x/32] == '/')
                                             inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + (currentSlot - 1), inventory);
                                         else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&

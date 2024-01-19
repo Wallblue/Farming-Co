@@ -196,7 +196,8 @@
     "growTime": 6,
     "sprite": "berry_crops.bmp",
     "linkedSpriteRef" : "=",
-    "linkedTool" : 7
+    "linkedTool" : 7,
+    "evolution" : 11
   }, {
     "id": 19,
     "name": "Wheat crops",
@@ -207,7 +208,8 @@
     "growTime": 8,
     "sprite": "wheat_crops.bmp",
     "linkedSpriteRef" : "3",
-    "linkedTool" : 7
+    "linkedTool" : 7,
+    "evolution" : 17
   },{
     "id": 20,
     "name": "Sunflower",

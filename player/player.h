@@ -23,6 +23,6 @@ void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char
 void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, char*);
 void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
 void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
-unsigned char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory inventory, Item *heldItem);
+char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory inventory, Item *heldItem);
 
 #endif //FARMINGCO_PLAYER_H
