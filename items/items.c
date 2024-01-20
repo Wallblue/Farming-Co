@@ -103,3 +103,16 @@ void printItem(const Item* item){
             item->id, item->name, item->type, item->description, item->energyBonus, item->ability, item->growTime, item->sprite, item->quantity, item->objectSpriteRef, item->evolution, item->linkedTool);
     fclose(fp);
 }
+
+void swapItems(Item* srcItem, Item* destItem){
+    Item temp;
+
+    affectItem(&temp, srcItem->id, srcItem->name, srcItem->quantity, srcItem->type, srcItem->description, srcItem->energyBonus,
+               srcItem->ability, srcItem->growTime, srcItem->sprite, srcItem->objectSpriteRef, srcItem->evolution, srcItem->linkedTool);
+
+    affectItem(srcItem, destItem->id, destItem->name, destItem->quantity, destItem->type, destItem->description, destItem->energyBonus,
+               destItem->ability, destItem->growTime, destItem->sprite, destItem->objectSpriteRef, destItem->evolution, destItem->linkedTool);
+
+    affectItem(destItem, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus,
+               temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef, temp.evolution, temp.linkedTool);
+}

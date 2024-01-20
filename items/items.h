@@ -38,6 +38,7 @@ void affectItem(Item *item, int id, const char *name, unsigned char quantity, co
 void resetItem(Item* item);
 unsigned char addItemsToDatabase();
 unsigned char getItem(int id, Item* dest, sqlite3* db);
+void swapItems(Item* src, Item* dst);
 void printItem(const Item* item);
 
 #endif
