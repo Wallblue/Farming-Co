@@ -298,13 +298,14 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     if(rc != SQLITE_ROW){
         sqlite3_close(db);
         sqlite3_finalize(res);
-        fprintf(stderr, "Can't get tool.");
+        fprintf(stderr, "Can't get tool. %s", sqlite3_errmsg(db));
         return FAILURE;
     }
     objectLinkedToolAbility = sqlite3_column_int(res, 0);
     objectLinkedItemId = sqlite3_column_int(res, 1);
 
-    if(objectLinkedToolAbility != heldItem->ability) return 2;
+    if(objectLinkedToolAbility != heldItem->ability)return 2;
+
     rc = 0;
     if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
         if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) rc = 3;
@@ -324,7 +325,6 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
         objectMap[nY+1][nX] = '/';
     objectMap[nY][nX] = '/';
 
-    sqlite3_finalize(res);
     sqlite3_close(db);
     return SUCCESS;
 }

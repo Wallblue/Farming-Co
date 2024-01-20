@@ -11,7 +11,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
 
     if(SDL_SetRenderTarget(renderer, hotbarTexture) < 0) return FAILURE;
 
-    SDL_SetRenderDrawColor(renderer, GREY, 128);
+    SDL_SetRenderDrawColor(renderer, GREY, 160);
     for(i = 0; i < HOTBAR_LEN; i++){
         hotbarSlot.w = SLOT_SIDE;
         hotbarSlot.h = SLOT_SIDE;
@@ -25,7 +25,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
         if(i == selectedSlot - 1){
             SDL_SetRenderDrawColor(renderer, RED, 255);
             SDL_RenderDrawRect(renderer, &hotbarSlot);
-            SDL_SetRenderDrawColor(renderer, GREY, 128);
+            SDL_SetRenderDrawColor(renderer, GREY, 160);
         }
     }
 
@@ -35,17 +35,18 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
     return SUCCESS;
 }
 
-unsigned char printInventoryHUD(SDL_Renderer* renderer, SDL_Texture* inventoryTexture, Inventory inventory, char draggedItemIndex){
+unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, char draggedItemIndex, int xDest, int yDest){
     SDL_Rect inventorySlot;
-    SDL_Rect hudLoc = {INVENTORY_HUD_X, INVENTORY_HUD_Y, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
+    SDL_Rect hudLoc = {xDest, yDest, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
     unsigned char i, j;
+    SDL_Texture* inventoryTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT);
 
     if(SDL_SetRenderTarget(renderer, inventoryTexture) < 0) return FAILURE;
 
-    SDL_SetRenderDrawColor(renderer, GREY, 128);
+    SDL_SetRenderDrawColor(renderer, GREY, 160);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, DARK_GREY, 128);
+    SDL_SetRenderDrawColor(renderer, DARK_GREY, 160);
     for(i = 0; i < INVENTORY_MAX_SIZE / HOTBAR_LEN; i++){
         for(j = 0; j < HOTBAR_LEN; j++){
             inventorySlot.w = SLOT_SIDE;
