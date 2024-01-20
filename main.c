@@ -165,7 +165,6 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         if (zone == 0)printMap(renderer, floorTexture, houseRoof);
         if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
         if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
-
         printMap(renderer, furnitureTexture, (char**)mapObjects);
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         seeTime(renderer, data->timeInGame);
@@ -233,6 +232,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(interactedWith){
                                     case 'J' : case 'I' : case 'T': case 'S':
                                         *data->sleep = 1;
+                                        updateSoil();
                                         break;
 
                                     default:
