@@ -107,6 +107,8 @@ void printItem(const Item* item){
 void swapItems(Item* srcItem, Item* destItem){
     Item temp;
 
+    if(srcItem == destItem) return;
+
     affectItem(&temp, srcItem->id, srcItem->name, srcItem->quantity, srcItem->type, srcItem->description, srcItem->energyBonus,
                srcItem->ability, srcItem->growTime, srcItem->sprite, srcItem->objectSpriteRef, srcItem->evolution, srcItem->linkedTool);
 

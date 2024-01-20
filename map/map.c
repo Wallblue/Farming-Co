@@ -279,7 +279,7 @@ unsigned char** homeObjects;
 unsigned char** soiledFloor3;
 unsigned char** soiledFloor4;
 
-//affichage d'une map
+//affichage d'une mapdz
 void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
     SDL_Rect dst;
     SDL_Rect src;
