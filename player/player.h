@@ -17,6 +17,7 @@
 #include "../error/error.h"
 #include "../items/items.h"
 #include "../database/database.h"
+#include "../map/map.h"
 #include <time.h>
 
 

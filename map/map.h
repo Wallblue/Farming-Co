@@ -52,5 +52,6 @@ unsigned char initObjectMaps();
 unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();
 void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId);
+unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db);
 
 #endif //FARMINGCO_MAP_H

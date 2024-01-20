@@ -286,6 +286,18 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
     xMouse = xMouse/32;
 
     switch(zone){
+        case 0:
+            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+        case 2: case 3:
+            if(strcmp(heldItem->type, "furn") != 0 && soiledFloor[yMouse][xMouse] != '/') {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
         case 4:
             if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
@@ -297,12 +309,6 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
                     }
                     tab[yMouse + 1][xMouse] = (char) heldItem->objectSpriteRef + 10;
                 }
-                success = 1;
-            }
-            break;
-        case 2: case 3:
-            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0 && soiledFloor[yMouse][xMouse] != '/') {
-                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
             break;
@@ -403,4 +409,34 @@ void affectObject(Object* object, int x, int y, char zone, int growTime, int pos
     object->state = 0;
     object->boosted = 0;
     object->itemId = itemId;
+}
+
+unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db){
+    sqlite3_stmt* res;
+    int rc;
+    char homemadeDb = 0;
+
+    if(db == NULL) {
+        if (openDb(&db) == FAILURE) return FAILURE;
+        homemadeDb = 1;
+    }
+    if(prepareRequest(db, "DELETE FROM object WHERE x = ?1 AND y = ?2 AND zone = ?3", &res) == FAILURE){
+        sqlite3_close(db);
+        return FAILURE;
+    }
+    sqlite3_bind_int(res, 1, x);
+    sqlite3_bind_int(res, 2, y);
+    sqlite3_bind_int(res, 3, zone);
+    rc = sqlite3_step(res);
+    sqlite3_finalize(res);
+
+    if(rc != SQLITE_DONE){
+        fprintf(stderr, "Erreur : %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    if(homemadeDb == 1) sqlite3_close(db);
+
+    return SUCCESS;
 }

@@ -19,7 +19,7 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "grass.bmp",
-    "linkedSpriteRef" : "/",
+    "linkedSpriteRef" : "X",
     "linkedTool" : 7
   }, {
     "id": 3,
@@ -30,7 +30,7 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "stick.bmp",
-    "linkedSpriteRef" : "/",
+    "linkedSpriteRef" : "Y",
     "linkedTool" : 6
   }, {
     "id": 4,
@@ -41,8 +41,8 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "stone.bmp",
-    "linkedSpriteRef" : "/",
-    "linkedTool" : 7
+    "linkedSpriteRef" : "Z",
+    "linkedTool" : 35
   }, {
     "id": 5,
     "name": "wood",
@@ -52,7 +52,7 @@
     "ability": 0,
     "growTime": 0,
     "sprite": "wood.bmp",
-    "linkedSpriteRef" : "/",
+    "linkedSpriteRef" : "[",
     "linkedTool" : 6
   }, {
     "id": 6,

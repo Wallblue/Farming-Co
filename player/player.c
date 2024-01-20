@@ -294,6 +294,7 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
         nY--;
     }
 
+
     if(prepareRequest(db,
                       "SELECT tool.ability, objectItem.itemId, objectItem.evolution, object.state FROM object, item as objectItem, item as tool "
                       "WHERE object.x = ?1 AND object.y = ?2 AND object.zone = ?3 AND object.itemId = objectItem.itemId "
@@ -309,39 +310,37 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     if(rc != SQLITE_ROW){
         sqlite3_close(db);
         sqlite3_finalize(res);
-        fprintf(stderr, "Can't get tool.");
+        fprintf(stderr, "Can't get tool. %s", sqlite3_errmsg(db));
         return FAILURE;
     }
     objectLinkedToolAbility = sqlite3_column_int(res, 0);
     objectLinkedItemId = sqlite3_column_int(res, 1);
 
-    if(objectLinkedToolAbility != heldItem->ability) return 2;
-
-    if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
-        if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) return 3;
-        if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) return 3;
-    }else //Classic loot
-        if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) return 3;
-
-    sqlite3_finalize(res);
-    //delete object in db if()
-    if(prepareRequest(db, "DELETE FROM object WHERE x = ?1 AND y = ?2 AND zone = ?3", &res) == FAILURE){
+    if(objectLinkedToolAbility != heldItem->ability) {
         sqlite3_close(db);
-        return FAILURE;
-    }
-    sqlite3_bind_int(res, 1, nX);
-    sqlite3_bind_int(res, 2, nY);
-    sqlite3_bind_int(res, 3, zone);
-    rc = sqlite3_step(res);
-    if(rc != SQLITE_DONE){
         sqlite3_finalize(res);
-        sqlite3_close(db);
-        return FAILURE;
+        return 2;
     }
-
-
+    rc = 0;
+    if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
+        if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) rc = 3;
+        if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) rc = 3;
+    }else //Classic loot
+    if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) rc = 3;
 
     sqlite3_finalize(res);
+    if(rc == 3){
+
+        sqlite3_close(db);
+        return 3;
+    }
+
+    if(deleteObjectByCoordinates(nX, nY, zone, db) == FAILURE) return FAILURE;
+
+    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I')
+        objectMap[nY+1][nX] = '/';
+    objectMap[nY][nX] = '/';
+
     sqlite3_close(db);
     return SUCCESS;
 }
