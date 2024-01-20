@@ -123,7 +123,7 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
 
     /*Texte du menu*/
     TTF_Font* font = loadFont(64);
-    SDL_Color color = {0,0,0};
+    SDL_Color color = {BLACK};
 
     SDL_Surface * pauseSurface = TTF_RenderText_Solid(font, "Pause", color);
     if(!pauseSurface) exitWithError("Erreur d'initialisation de la surface");

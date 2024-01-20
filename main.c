@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     threadData.pause = &pause;
     threadData.todayDate = &todayDate;
 
-    //SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
+    SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");

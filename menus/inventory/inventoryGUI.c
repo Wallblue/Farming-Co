@@ -93,13 +93,25 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
         nX = (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS);
         nY = (yMouse - yHud - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES);
         highlightSlot(renderer, nX, nY, YELLOW, xHud, yHud);
-        if(inventory[nY * 10 + nX].id != 0) displayDescriptionBox(renderer, nX, nY, xHud, yHud);
+        if(inventory[nY * 10 + nX].id != 0) {
+            displayDescriptionBox(renderer, nX, nY, xHud, yHud);
+            seeItemData(renderer,  &inventory[nY * 10 + nX],  nX, nY, xHud, yHud);
+        }
     }
     if(secondInventory != NULL && isMouseOnSlot(xMouse, yMouse, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == SDL_TRUE) {
         nX = (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS);
         nY = (yMouse - (2 * yHud + INVENTORY_HUD_HEIGHT) - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES);
         highlightSlot(renderer, nX, nY, YELLOW, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
-        if(secondInventory[nY * 10 + nX].id != 0) displayDescriptionBox(renderer, nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+        if(secondInventory[nY * 10 + nX].id != 0) {
+            if(nY == 2) {
+                displayDescriptionBox(renderer, nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT - 80);
+                seeItemData(renderer,  &secondInventory[nY * 10 + nX],  nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT - 80);
+            }else {
+                displayDescriptionBox(renderer, nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+                seeItemData(renderer,  &secondInventory[nY * 10 + nX],  nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+            }
+
+        }
     }
 
     if(draggedItemIndex != -1)
@@ -148,8 +160,6 @@ unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, un
     xFirstSlotEnd += (nX+1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
     int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
     SDL_Rect descriptionBox = {xFirstSlotEnd + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS), yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES), DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT};
-    SDL_Texture* boxTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT);
-    TTF_Font* font = loadFont(64);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, DARK_GREY, 200);
@@ -157,4 +167,132 @@ unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, un
     SDL_SetRenderDrawColor(renderer, BLACK, 255);
     SDL_RenderDrawRect(renderer, &descriptionBox);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+}
+
+void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char nX, unsigned char nY, int xHud, int yHud){
+    int xFirstSlotEnd = xHud + INV_LEFT_RIGHT_PADDING;
+    xFirstSlotEnd += (nX + 1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
+    int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
+    int ySpace = 15;
+
+    int x = xFirstSlotEnd + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS) + 10;
+    int y = yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES);
+
+    //Texte pour le nom
+    SDL_Surface* nameSurface = loadItemSurface(nameSurface, heldInventory->name, 42);
+    SDL_Texture* nameTexture = loadItemTexture(nameTexture, renderer, nameSurface);
+    SDL_Rect nameRect = { x,y + ySpace,nameSurface->w, nameSurface->h };
+
+    //Texte s'il y'a bonus d'énergie
+    SDL_Surface* energySurface;
+    SDL_Texture* energyTexture;
+    SDL_Rect energyRect;
+
+    if (heldInventory->energyBonus != 0) {
+        ySpace += 35;
+        char energyText[20];
+
+        sprintf(energyText, "Energy Bonus +%d", heldInventory->energyBonus);
+
+        energySurface = loadItemSurface(energySurface, energyText, 32);
+        energyTexture = loadItemTexture(energyTexture, renderer, energySurface);
+        energyRect.x = x;
+        energyRect.y = y + ySpace;
+        energyRect.w = energySurface->w;
+        energyRect.h = energySurface->h;
+    }
+
+    //Texte s'il y a growTime
+    SDL_Surface* growSurface;
+    SDL_Texture* growTexture;
+    SDL_Rect growRect;
+
+    if (heldInventory->growTime != 0) {
+        if(heldInventory->energyBonus > 99) ySpace += 45;
+        else ySpace += 35;
+        char growText[20];
+
+        sprintf(growText, "Grow Time : %d days", heldInventory->growTime);
+
+        growSurface = loadItemSurface(growSurface, growText, 32);
+        growTexture = loadItemTexture(growTexture, renderer, growSurface);
+        growRect.x = x;
+        growRect.y = y + ySpace;
+        growRect.w = growSurface->w;
+        growRect.h = growSurface->h;
+    }
+
+
+    //Texte s'il y a prix
+    /*
+    SDL_Surface* priceSurface;
+    SDL_Texture* priceTexture;
+    SDL_Rect priceRect;
+
+    if(heldInventory->price != 0){
+        if(heldInventory->growTime > 9)ySpace += 50;
+        if(heldInventory->energyBonus > 99)ySpace += 50;
+        else ySpace += 25;
+        char priceText[20];
+
+        sprintf(priceText, "Price : %d", heldInventory->price);
+
+        priceSurface = loadItemSurface(priceSurface, priceText, 32);
+        priceTexture = loadItemTexture(priceTexture, renderer, priceSurface);
+        priceRect.x = x;
+        priceRect.y = y + ySpace;
+        priceRect.w = priceSurface->w;
+        priceRect.h = priceSurface->h;
+    }
+     */
+
+
+    //Texte pour la description
+    if(heldInventory->growTime > 9 || heldInventory->energyBonus > 99)ySpace += 50;
+    else ySpace += 35;
+    SDL_Surface* descSurface = loadItemSurface(descSurface, heldInventory->description, 32);
+    SDL_Texture* descTexture = loadItemTexture(descTexture, renderer, descSurface);
+    SDL_Rect descRect = { x,y + ySpace,descSurface->w, descSurface->h};
+
+
+    SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
+    if(heldInventory->energyBonus != 0)SDL_RenderCopy(renderer, energyTexture, NULL, &energyRect);
+    if(heldInventory->growTime != 0)SDL_RenderCopy(renderer, growTexture, NULL, &growRect);
+    //if(heldInventory->priceTime != 0)SDL_RenderCopy(renderer, priceTexture, NULL, &priceRect);
+    SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
+
+    SDL_FreeSurface(nameSurface);
+    SDL_DestroyTexture(nameTexture);
+    if(heldInventory->energyBonus != 0){
+        SDL_FreeSurface(energySurface);
+        SDL_DestroyTexture(energyTexture);
+    }
+    if(heldInventory->growTime != 0){
+        SDL_FreeSurface(growSurface);
+        SDL_DestroyTexture(growTexture);
+    }
+    /*if(heldInventory->price != 0){
+        SDL_FreeSurface(priceSurface);
+        SDL_DestroyTexture(priceTexture);
+    }*/
+    SDL_FreeSurface(descSurface);
+    SDL_DestroyTexture(descTexture);
+
+}
+
+SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size){
+    TTF_Font* font = loadFont(size);
+    SDL_Color color = { WHITE };
+
+    surface = TTF_RenderText_Blended_Wrapped(font, text, color, DESC_BOX_WIDTH-10);
+    if (!surface) exitWithError("Erreur d'initialisation de la surface");
+
+    return surface;
+}
+
+SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface){
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) exitWithError("Erreur de chargement de la texture");
+
+    return texture;
 }

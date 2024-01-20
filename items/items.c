@@ -118,3 +118,4 @@ void swapItems(Item* srcItem, Item* destItem){
     affectItem(destItem, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus,
                temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef, temp.evolution, temp.linkedTool);
 }
+
