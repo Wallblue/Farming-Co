@@ -283,6 +283,17 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
+    //if it's a bed (because takes 2 tiles)
+    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I') {
+        objectMap[nY + 1][nX] = '/';
+        objectMap[nY][nX] = '/';
+    }
+    if(objectMap[nY][nX] == 'T' || objectMap[nY][nX] == 'S') {
+        objectMap[nY - 1][nX] = '/';
+        objectMap[nY][nX] = '/';
+        nY--;
+    }
+
     if(prepareRequest(db,
                       "SELECT tool.ability, objectItem.itemId, objectItem.evolution, object.state FROM object, item as objectItem, item as tool "
                       "WHERE object.x = ?1 AND object.y = ?2 AND object.zone = ?3 AND object.itemId = objectItem.itemId "
@@ -328,9 +339,7 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
         return FAILURE;
     }
 
-    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I')
-        objectMap[nY+1][nX] = '/';
-    objectMap[nY][nX] = '/';
+
 
     sqlite3_finalize(res);
     sqlite3_close(db);
