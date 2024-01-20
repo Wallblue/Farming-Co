@@ -16,6 +16,8 @@ int day(void* data) {
     Uint64 startTime = SDL_GetTicks64();
     Uint64 pauseTime = 0;
     do {
+        SDL_Delay(1); //For CPU's sake
+
         Uint64 currentTime = SDL_GetTicks64();
         Uint64 elapsedTime = currentTime - startTime;
 
