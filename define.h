@@ -24,6 +24,8 @@
 #define FAILURE 1
 #define SUCCESS 0
 
+#define FPS_LIMIT 60
+
 //Functions
 size_t getFileSize(FILE* fp);
 SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer);

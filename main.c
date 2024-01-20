@@ -318,6 +318,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
 
         SDL_RenderPresent(renderer);
+        SDL_Delay(FPS_LIMIT / 1000);
     }
     SDL_DestroyTexture(hotbarTexture);
 }
