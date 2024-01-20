@@ -20,6 +20,8 @@ SDL_Renderer *initRenderer(SDL_Window *);
 
 SDL_Texture *loadTexture(SDL_Renderer *, const char *);
 
+void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
+                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone);
 
 int main(int argc, char **argv) {
     int timeInGame = 0;
@@ -46,7 +48,6 @@ int main(int argc, char **argv) {
     if (addItemsToDatabase() == FAILURE) exitWithError("Items loading in database impossible");
 
     todayDate = getDateInGame();
-    //todayDate = 0;
     struct ThreadData threadData;
     threadData.timeInGame = &timeInGame;
     threadData.sleep = &sleep;
@@ -212,15 +213,17 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         *data->sleep = 1;
                                         break;
 
-                                    default:
-                                        break;
-
+                                  /*case 'P':
+                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
+                                        if(inventoryEventLoop(renderer, inventory, tempInventory) == -1) endGame = 1;
+                                        break;*/
                                 }
                                 break;
 
                             case SDLK_e:
-                                if (inventoryEventLoop(renderer, inventory) == -1) endGame = 1;
+                                makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
 
+                                if (inventoryEventLoop(renderer, inventory, NULL) == -1) endGame = 1;
                                 break;
 
                             case SDLK_1:
@@ -367,6 +370,19 @@ SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer){
     SDL_FreeSurface(surface);
 
     return texture;
+}
+
+void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
+                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone){
+    SDL_RenderClear(renderer);
+
+    printMap(renderer, floorTexture, mapBg);
+    printMap(renderer, floorTexture, mapFg);
+
+    if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+
+    printMap(renderer, furnitureTexture, (char**)mapObjects);
+    SDL_RenderCopy(renderer, playerTexture, playerSrc, playerDst);
 }
 
 size_t getFileSize(FILE* fp){
