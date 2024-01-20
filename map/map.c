@@ -388,3 +388,76 @@ unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db){
 
     return SUCCESS;
 }
+
+void updateSoil(){
+    int i;
+    int j;
+    for(i = 0; i < mapHeight; i++){
+        for(j = 0; j < mapWidth; j++){
+            if(mapObjects3[i][j] == '/' && soiledFloor3[i][j] != '/')
+                soiledFloor3[i][j] = '/';
+            if(mapObjects4[i][j] == '/' && soiledFloor4[i][j] != '/')
+                soiledFloor4[i][j] = '/';
+        }
+    }
+}
+
+unsigned char updateMisc(int todayDate){
+    int i;
+    int j;
+    int count = 0;
+    int id;
+    Object newObject;
+    for(i = 0; i<mapHeight; i++){
+        for(j = 0; j < mapWidth; j++){
+            if(mapObjects1[i][j] == 'X' || mapObjects1[i][j] == 'Y' || mapObjects1[i][j] == 'Z' || mapObjects1[i][j] == '[') count++;
+        }
+    }
+
+    if(count < 15){
+        srand(time(NULL));
+        int randomNum = rand() % 15 + 1;
+        int randomMisc;
+        int randomHeight;
+        int randomWidth;
+
+        while(randomNum != 0) {
+            randomMisc = rand() % 3;
+
+            randomHeight = rand() % mapHeight;
+            randomWidth = rand() % mapWidth;
+
+            while (!(mapObjects1[randomHeight][randomWidth] == '/' && firstZoneFg[randomHeight][randomWidth] == '/' && houseRoof[randomHeight][randomWidth] == '/')){
+                randomHeight = rand() % mapHeight;
+                randomWidth = rand() % mapWidth;
+            }
+
+            unsigned char randomChar = 'X' + randomMisc;
+            mapObjects1[randomHeight][randomWidth] = randomChar;
+
+            switch(randomChar){
+                case 'X':
+                    id = 2;
+                    break;
+                case 'Y':
+                    id = 3;
+                    break;
+                case 'Z':
+                    id = 4;
+                    break;
+                case '[':
+                    id = 5;
+                    break;
+            }
+
+
+            affectObject(&newObject, randomWidth, randomHeight, 0, 0, todayDate,id);
+            if (saveObject(&newObject) == FAILURE) return FAILURE;
+
+            randomNum--;
+        }
+    }
+
+    return SUCCESS;
+
+}

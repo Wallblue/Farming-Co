@@ -166,6 +166,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         printMap(renderer, floorTexture, mapFg);
 
         if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+
         if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
         if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
         printMap(renderer, furnitureTexture, (char**)mapObjects);

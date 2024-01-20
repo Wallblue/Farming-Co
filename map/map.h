@@ -9,8 +9,11 @@
 #define FARMINGCO_MAP_H
 
 #include <SDL.h>
+#include <stdlib.h>
+#include <time.h>
 #include "../items/items.h"
 #include "../items/inventory/inventory.h"
+
 
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
 extern char* firstZoneBg[];
@@ -45,6 +48,8 @@ struct Object{
 };
 typedef struct Object Object;
 
+#include "../player/player.h"
+
 //Functions
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
 unsigned char initObjectMaps();
@@ -53,5 +58,6 @@ void freeObjectMaps();
 void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId);
 unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db);
 void updateSoil();
+unsigned char updateMisc(int todayDate);
 
 #endif //FARMINGCO_MAP_H

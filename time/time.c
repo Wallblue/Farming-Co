@@ -214,6 +214,7 @@ unsigned char getSleep(struct ThreadData* data){
     *data->timeInGame = 0;
     if(updateDate(*data->todayDate)== FAILURE) return FAILURE;
     if(updatePlants(*data->todayDate)==FAILURE) return FAILURE;
+    if(updateMisc(*data->todayDate) == FAILURE) return FAILURE;
     return SUCCESS;
 }
 
@@ -306,6 +307,8 @@ unsigned char updateSprite(sqlite3* db, int objectId, int state) {
 
     if (prepareRequest(db, query, &res) == FAILURE) {
         fprintf(stderr, "Couldn't prepare query: %s", query);
+        sqlite3_finalize(res);
+        sqlite3_close(db);
         return FAILURE;
     }
 
@@ -317,22 +320,12 @@ unsigned char updateSprite(sqlite3* db, int objectId, int state) {
     if (rc != SQLITE_DONE) {
         fprintf(stderr, "Couldn't update object state in Database: %s", sqlite3_errmsg(db));
         sqlite3_finalize(res);
+        sqlite3_close(db);
         return FAILURE;
     }
 
     sqlite3_finalize(res);
+    sqlite3_close(db);
     return SUCCESS;
 }
 
-void updateSoil(){
-    int i;
-    int j;
-    for(i = 0; i < mapHeight; i++){
-        for(j = 0; j < mapWidth; j++){
-            if(mapObjects3[i][j] == '/' && soiledFloor3[i][j] != '/')
-                soiledFloor3[i][j] = '/';
-            if(mapObjects4[i][j] == '/' && soiledFloor4[i][j] != '/')
-                soiledFloor4[i][j] = '/';
-        }
-    }
-}
