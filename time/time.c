@@ -284,13 +284,7 @@ unsigned char updatePlants(int todayDate) {
         }
 
         switch (sqlite3_column_int(res, 3)) {
-            case 0:
-                mapObjects1[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
-                break;
-            case 1:
-                mapObjects2[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
-                break;
-            case 2:
+           case 2:
                 mapObjects3[sqlite3_column_int(res, 2)][sqlite3_column_int(res, 1)] = (char)(*sqlite3_column_text(res, 7) + nextState);
                 break;
             case 3:
@@ -328,4 +322,17 @@ unsigned char updateSprite(sqlite3* db, int objectId, int state) {
 
     sqlite3_finalize(res);
     return SUCCESS;
+}
+
+void updateSoil(){
+    int i;
+    int j;
+    for(i = 0; i < mapHeight; i++){
+        for(j = 0; j < mapWidth; j++){
+            if(mapObjects3[i][j] == '/' && soiledFloor3[i][j] != '/')
+                soiledFloor3[i][j] = '/';
+            if(mapObjects4[i][j] == '/' && soiledFloor4[i][j] != '/')
+                soiledFloor4[i][j] = '/';
+        }
+    }
 }

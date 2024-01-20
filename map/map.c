@@ -276,6 +276,8 @@ unsigned char** mapObjects2;
 unsigned char** mapObjects3;
 unsigned char** mapObjects4;
 unsigned char** homeObjects;
+unsigned char** soiledFloor3;
+unsigned char** soiledFloor4;
 
 //affichage d'une map
 void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
@@ -308,6 +310,10 @@ unsigned char initObjectMaps(){
     if(mapObjects4 == NULL) return FAILURE;
     homeObjects = malloc(mapHeight * sizeof(char *));
     if(homeObjects == NULL) return FAILURE;
+    soiledFloor3 = malloc(mapHeight * sizeof(char *));
+    if(soiledFloor3 == NULL) return FAILURE;
+    soiledFloor4 = malloc(mapHeight * sizeof(char *));
+    if(soiledFloor4 == NULL) return FAILURE;
 
     char* defaultLine = "//////////////////////////";
 
@@ -317,6 +323,8 @@ unsigned char initObjectMaps(){
         if(initLine(mapObjects3 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(mapObjects4 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(homeObjects + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(soiledFloor3 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(soiledFloor4 + i, defaultLine) == FAILURE) return FAILURE;
     }
 
     return SUCCESS;
@@ -336,6 +344,8 @@ void freeObjectMaps(){
     free(mapObjects3);
     free(mapObjects4);
     free(homeObjects);
+    free(soiledFloor3);
+    free(soiledFloor4);
 }
 
 void affectObject(Object* object, int x, int y, char zone, int growTime, int poseDate, int itemId){

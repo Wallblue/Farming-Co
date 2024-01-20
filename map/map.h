@@ -29,6 +29,8 @@ extern unsigned char** mapObjects2;
 extern unsigned char** mapObjects3;
 extern unsigned char** mapObjects4;
 extern unsigned char** homeObjects;
+extern unsigned char** soiledFloor3;
+extern unsigned char** soiledFloor4;
 
 //Structures
 struct Object{
@@ -50,5 +52,6 @@ unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();
 void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId);
 unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db);
+void updateSoil();
 
 #endif //FARMINGCO_MAP_H

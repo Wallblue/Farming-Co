@@ -18,6 +18,9 @@ unsigned char loadObjectsMaps(){
     sqlite3* db;
     sqlite3_stmt* res;
 
+    srand(time(NULL));
+    int randomNum = rand() % 3;
+
     if(openDb(&db) == FAILURE) return FAILURE;
 
     if(prepareRequest(db, "SELECT object.x, object.y, object.zone, item.linkedObjectSpriteRef, object.state FROM object, item WHERE item.itemId = object.itemId", &res) == FAILURE) return FAILURE;
@@ -25,19 +28,21 @@ unsigned char loadObjectsMaps(){
     while(sqlite3_step(res) == SQLITE_ROW){
         switch(sqlite3_column_int(res, 2)){
             case 0:
-                mapObjects1[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4) ;
+                mapObjects1[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 1:
-                mapObjects2[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4);
+                mapObjects2[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 break;
             case 2:
-                mapObjects3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4);
+                mapObjects3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4) ;
+                soiledFloor3[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = 'A' + randomNum;
                 break;
             case 3:
                 mapObjects4[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4);
+                soiledFloor4[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = 'A' + randomNum;
                 break;
             case 4:
-                homeObjects[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3) + (int) sqlite3_column_int(res, 4);
+                homeObjects[sqlite3_column_int(res, 1)][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3);
                 if((char) *sqlite3_column_text(res, 3)=='J' || (char) *sqlite3_column_text(res, 3)=='I')
                     homeObjects[sqlite3_column_int(res, 1)+1][sqlite3_column_int(res, 0)] = (char) *sqlite3_column_text(res, 3)+10;
                 break;

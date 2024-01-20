@@ -283,6 +283,18 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
+    //if it's a bed (because takes 2 tiles)
+    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I') {
+        objectMap[nY + 1][nX] = '/';
+        objectMap[nY][nX] = '/';
+    }
+    if(objectMap[nY][nX] == 'T' || objectMap[nY][nX] == 'S') {
+        objectMap[nY - 1][nX] = '/';
+        objectMap[nY][nX] = '/';
+        nY--;
+    }
+
+
     if(prepareRequest(db,
                       "SELECT tool.ability, objectItem.itemId, objectItem.evolution, object.state FROM object, item as objectItem, item as tool "
                       "WHERE object.x = ?1 AND object.y = ?2 AND object.zone = ?3 AND object.itemId = objectItem.itemId "
@@ -304,7 +316,11 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     objectLinkedToolAbility = sqlite3_column_int(res, 0);
     objectLinkedItemId = sqlite3_column_int(res, 1);
 
-    if(objectLinkedToolAbility != heldItem->ability)return 2;
+    if(objectLinkedToolAbility != heldItem->ability) {
+        sqlite3_close(db);
+        sqlite3_finalize(res);
+        return 2;
+    }
 
     rc = 0;
     if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
@@ -329,35 +345,41 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     return SUCCESS;
 }
 
-
-unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem, Inventory inventory){
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, unsigned char **soiledFloor, char zone, int todayDate, Item* heldItem, Inventory inventory){
     Object newObject;
     char success = 0;
     yMouse = yMouse/32;
     xMouse = xMouse/32;
 
     switch(zone){
-        case 4:
-            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20) {
+        case 0:
+            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
-                if((char) heldItem->objectSpriteRef == 'J' && yMouse+1 != 14 || (char) heldItem->objectSpriteRef == 'I' && yMouse+1 != 14)
-                    tab[yMouse+1][xMouse] = (char) heldItem->objectSpriteRef + 10;
-                if(yMouse+1==14){
-                    success = 0;
-                    tab[yMouse][xMouse] = '/';
-                }
-
             }
             break;
-        case 0:
-            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0) {
+        case 2: case 3:
+            if(strcmp(heldItem->type, "furn") != 0 && soiledFloor[yMouse][xMouse] != '/') {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                success = 1;
+            }
+            break;
+        case 4:
+            if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20 && strcmp(heldItem->type, "crops") != 0) {
+                tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
+                if((char) heldItem->objectSpriteRef == 'J' || (char) heldItem->objectSpriteRef == 'I') {
+                    if (yMouse + 1 == 14) {
+                        tab[yMouse][xMouse] = '/';
+                        success = 0;
+                        break;
+                    }
+                    tab[yMouse + 1][xMouse] = (char) heldItem->objectSpriteRef + 10;
+                }
                 success = 1;
             }
             break;
         default:
-            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0) {
+            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
@@ -368,9 +390,17 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
         affectObject(&newObject, xMouse, yMouse, zone, heldItem->growTime, todayDate,
                      heldItem->id);
         if (saveObject(&newObject) == FAILURE) return FAILURE;
+
+        subtractItem(heldItem->id, 1, inventory);
     }
 
-    subtractItem(heldItem->id, 1, inventory);
-
     return SUCCESS;
+}
+
+void soilFloor(unsigned char nX, unsigned char nY, unsigned char **tab, Item *heldItem){
+    srand(time(NULL));
+    int randomNum = rand() % 3;
+
+    if(heldItem->id == 7)
+        tab[nY][nX] = 'A' + randomNum;
 }
