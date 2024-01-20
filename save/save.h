@@ -8,7 +8,9 @@
 #define FARMINGCO_SAVE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL.h>
+#include <time.h>
 #include <sqlite3.h>
 #include "../map/map.h"
 #include "../define.h"

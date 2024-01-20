@@ -29,6 +29,8 @@ extern unsigned char** mapObjects2;
 extern unsigned char** mapObjects3;
 extern unsigned char** mapObjects4;
 extern unsigned char** homeObjects;
+extern unsigned char** soiledFloor3;
+extern unsigned char** soiledFloor4;
 
 //Structures
 struct Object{
@@ -45,7 +47,7 @@ typedef struct Object Object;
 
 //Functions
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
-unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, char zone, int todayDate, Item *heldItem, Inventory inventory);
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, unsigned char **soiledFloor, char zone, int todayDate, Item* heldItem, Inventory inventory);
 unsigned char initObjectMaps();
 unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();

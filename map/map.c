@@ -276,8 +276,10 @@ unsigned char** mapObjects2;
 unsigned char** mapObjects3;
 unsigned char** mapObjects4;
 unsigned char** homeObjects;
+unsigned char** soiledFloor3;
+unsigned char** soiledFloor4;
 
-unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, char zone, int todayDate, Item* heldItem, Inventory inventory){
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, unsigned char **soiledFloor, char zone, int todayDate, Item* heldItem, Inventory inventory){
     Object newObject;
     char success = 0;
     yMouse = yMouse/32;
@@ -298,14 +300,14 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
                 success = 1;
             }
             break;
-        case 0:
-            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0) {
+        case 2: case 3:
+            if(houseRoof[yMouse][xMouse] == '/' && strcmp(heldItem->type, "furn") != 0 && soiledFloor[yMouse][xMouse] != '/') {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
             break;
         default:
-            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0) {
+            if(mapFg[yMouse][xMouse] == '/'  && strcmp(heldItem->type, "furn") != 0 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 success = 1;
             }
@@ -354,6 +356,10 @@ unsigned char initObjectMaps(){
     if(mapObjects4 == NULL) return FAILURE;
     homeObjects = malloc(mapHeight * sizeof(char *));
     if(homeObjects == NULL) return FAILURE;
+    soiledFloor3 = malloc(mapHeight * sizeof(char *));
+    if(soiledFloor3 == NULL) return FAILURE;
+    soiledFloor4 = malloc(mapHeight * sizeof(char *));
+    if(soiledFloor4 == NULL) return FAILURE;
 
     char* defaultLine = "//////////////////////////";
 
@@ -363,6 +369,8 @@ unsigned char initObjectMaps(){
         if(initLine(mapObjects3 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(mapObjects4 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(homeObjects + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(soiledFloor3 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(soiledFloor4 + i, defaultLine) == FAILURE) return FAILURE;
     }
 
     return SUCCESS;
@@ -382,6 +390,8 @@ void freeObjectMaps(){
     free(mapObjects3);
     free(mapObjects4);
     free(homeObjects);
+    free(soiledFloor3);
+    free(soiledFloor4);
 }
 
 void affectObject(Object* object, int x, int y, char zone, int growTime, int poseDate, int itemId){

@@ -108,6 +108,8 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     unsigned char **mapObjects;
     unsigned char lastMovement;
     unsigned char interactedWith;
+    unsigned char **soiledFloor;
+
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
     SDL_Event event;
@@ -140,11 +142,13 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                 mapBg = thirdZoneBg;
                 mapFg = thirdZoneFg;
                 mapObjects = mapObjects3;
+                soiledFloor = soiledFloor3;
                 break;
             case 3:
                 mapBg = fourthZoneBg;
                 mapFg = fourthZoneFg;
                 mapObjects = mapObjects4;
+                soiledFloor = soiledFloor4;
                 break;
             case 4:
                 mapBg = home;
@@ -152,6 +156,26 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                 mapObjects = homeObjects;
                 break;
         }
+
+        SDL_RenderClear(renderer);
+
+        printMap(renderer, floorTexture, mapBg);
+        printMap(renderer, floorTexture, mapFg);
+
+        if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+        if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
+        if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
+
+        printMap(renderer, furnitureTexture, (char**)mapObjects);
+        SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
+        seeTime(renderer, data->timeInGame);
+        applyFilter(renderer,  data->timeInGame, lightLayer);
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
+            exitWithError("Can't load hotbar");
+
+        if(*data->pause == 1)pauseMenu(renderer, lightLayer);
+
+        SDL_RenderPresent(renderer);
 
         if (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -259,24 +283,24 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch (event.button.button) {
                                     case SDL_BUTTON_LEFT:
                                         SDL_GetMouseState(&x, &y);
-
-                                        if(mapObjects[y/32][x/32] != '/') {
-                                            err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory + (currentSlot - 1));
-                                            if(err == 3)
-                                                fprintf(stderr, "Inventory full !\n");
-                                            else if(err == 2)
-                                                fprintf(stderr, "Wrong tool !\n");
-                                            else if(err == FAILURE)
-                                                exitWithError("Error while trying to break object.");
-                                        }else if (*data->pause == 0 && inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y/32][x/32] == '/')
-                                            inputObject(x, y, mapObjects, mapFg, zone, *data->todayDate, inventory + (currentSlot - 1), inventory);
-                                        else if (*data->pause == 1) {
-                                            if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 &&
-                                                y <= screenHeight / 3 + 66)
+                                        if(*data->pause == 0) {
+                                            if(mapObjects[y/32][x/32] != '/') {
+                                                err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory + (currentSlot - 1));
+                                                if (err == 3)
+                                                    fprintf(stderr, "Inventory full !\n");
+                                                else if (err == 2)
+                                                    fprintf(stderr, "Wrong tool !\n");
+                                                else if (err == FAILURE)
+                                                    exitWithError("Error while trying to break object.");
+                                            }else if (inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' &&
+                                                     mapFg[y / 32][x / 32] == '/')
+                                                inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,inventory + (currentSlot - 1), inventory);
+                                            else if (mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' && zone == 2 || zone == 3)
+                                                soilFloor(x / 32, y / 32, soiledFloor, inventory + (currentSlot - 1));
+                                        }else if (*data->pause == 1) {
+                                            if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 && y <= screenHeight / 3 + 66)
                                                 *data->pause = 0;
-
-                                            if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 &&
-                                                y <= screenHeight / 2 + 66)
+                                            if (x >= 300 && y >= screenHeight / 2 + 16 && x <= 500 && y <= screenHeight / 2 + 66)
                                                 endGame = 1;
                                         }
                                     break;
@@ -294,24 +318,6 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                     }
             }
         }
-
-        SDL_RenderClear(renderer);
-
-        printMap(renderer, floorTexture, mapBg);
-        printMap(renderer, floorTexture, mapFg);
-
-        if (zone == 0)printMap(renderer, floorTexture, houseRoof);
-
-        printMap(renderer, furnitureTexture, (char**)mapObjects);
-        SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
-        seeTime(renderer, data->timeInGame);
-        applyFilter(renderer,  data->timeInGame, lightLayer);
-        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
-            exitWithError("Can't load hotbar");
-
-        if(*data->pause == 1)pauseMenu(renderer, lightLayer);
-
-        SDL_RenderPresent(renderer);
     }
     SDL_DestroyTexture(hotbarTexture);
 }
