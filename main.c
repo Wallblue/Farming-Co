@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     threadData.pause = &pause;
     threadData.todayDate = &todayDate;
 
-    SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
+    //SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
@@ -115,6 +115,8 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     SDL_Event event;
     SDL_Rect playerDst;
     SDL_Rect playerSrc;
+
+    Inventory tempInventory = {0};
 
     playerSrc.w = tileHeightWidth;
     playerSrc.h = tileHeightWidth;
@@ -213,10 +215,10 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         *data->sleep = 1;
                                         break;
 
-                                  /*case 'P':
+                                    case 'P':
                                         makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
                                         if(inventoryEventLoop(renderer, inventory, tempInventory) == -1) endGame = 1;
-                                        break;*/
+                                        break;
                                 }
                                 break;
 

@@ -63,6 +63,7 @@ unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, cha
     if(SDL_SetRenderTarget(renderer, NULL) < 0) return FAILURE;
     if(SDL_SetTextureBlendMode(inventoryTexture, SDL_BLENDMODE_BLEND) < 0) return FAILURE;
     if(SDL_RenderCopy(renderer, inventoryTexture, NULL, &hudLoc) < 0) return FAILURE;
+    SDL_DestroyTexture(inventoryTexture);
     return SUCCESS;
 }
 
