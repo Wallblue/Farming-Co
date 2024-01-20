@@ -9,7 +9,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory s
     SDL_Event event;
     char exit = 0;
 
-    int xMouse, yMouse, xHud = INVENTORY_HUD_X, yHud = INVENTORY_HUD_Y, temp;
+    int xMouse, yMouse, xHud = (screenWidth - INVENTORY_HUD_WIDTH) / 2, yHud = (screenHeight - INVENTORY_HUD_HEIGHT) / 2, temp;
     char draggedItem = -1;
     char index;
     Item* heldInventory = inventory, * inventoryPointer;
@@ -72,6 +72,8 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory s
 
 unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
                                int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex) {
+    int nX, nY;
+
     SDL_SetTextureBlendMode(rendererSave, SDL_BLENDMODE_BLEND);
 
     if(SDL_SetRenderTarget(renderer, NULL) < 0) return FAILURE;
@@ -87,17 +89,18 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
         if (printInventoryHUD(renderer, secondInventory, draggedItemIndex, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == FAILURE) return FAILURE;
     }
 
-    if(isMouseOnSlot(xMouse, yMouse, xHud, yHud) == SDL_TRUE)
-        highlightSlot(renderer,
-                      (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS),
-                      (yMouse - yHud - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES),
-                      YELLOW, xHud, yHud);
-
-    if(secondInventory != NULL && isMouseOnSlot(xMouse, yMouse, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == SDL_TRUE)
-        highlightSlot(renderer,
-                      (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS),
-                      (yMouse - (2 * yHud + INVENTORY_HUD_HEIGHT) - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES),
-                      YELLOW, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+    if(isMouseOnSlot(xMouse, yMouse, xHud, yHud) == SDL_TRUE) {
+        nX = (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS);
+        nY = (yMouse - yHud - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES);
+        highlightSlot(renderer, nX, nY, YELLOW, xHud, yHud);
+        if(inventory[nY * 10 + nX].id != 0) displayDescriptionBox(renderer, nX, nY, xHud, yHud);
+    }
+    if(secondInventory != NULL && isMouseOnSlot(xMouse, yMouse, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == SDL_TRUE) {
+        nX = (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS);
+        nY = (yMouse - (2 * yHud + INVENTORY_HUD_HEIGHT) - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES);
+        highlightSlot(renderer, nX, nY, YELLOW, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+        if(secondInventory[nY * 10 + nX].id != 0) displayDescriptionBox(renderer, nX, nY, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
+    }
 
     if(draggedItemIndex != -1)
         if (dragItem(renderer, xMouse, yMouse, heldInventory, draggedItemIndex) == FAILURE) return FAILURE;
@@ -140,10 +143,10 @@ unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory
     return SUCCESS;
 }
 
-unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY){
-    int xFirstSlotEnd = INVENTORY_HUD_X + INV_LEFT_RIGHT_PADDING; //x and y coordinate of the first slot right upper corner except for last slots of range
+unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud){
+    int xFirstSlotEnd = xHud + INV_LEFT_RIGHT_PADDING; //x and y coordinate of the first slot right upper corner except for last slots of range
     xFirstSlotEnd += (nX+1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
-    int yFirstSlot = INVENTORY_HUD_Y + INV_TOP_BOT_PADDING;
+    int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
     SDL_Rect descriptionBox = {xFirstSlotEnd + nX * (SLOT_SIDE + INV_SPACE_BTWN_SLOTS), yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES), DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT};
     SDL_Texture* boxTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DESC_BOX_WIDTH, INVENTORY_HUD_HEIGHT);
     TTF_Font* font = loadFont(64);
