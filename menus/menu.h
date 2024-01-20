@@ -26,7 +26,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory s
 SDL_bool isMouseOnSlot(int xMouse, int yMouse, int xHud, int yHud);
 unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int r, int g, int b, int xHud, int yHud);
 unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex);
-unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory,
+unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
 
 #endif

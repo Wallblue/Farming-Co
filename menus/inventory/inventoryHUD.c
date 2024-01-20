@@ -94,10 +94,19 @@ unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slo
 
     sprite = loadItemTextureFromBMP(spritePath, renderer);
     free(spritePath);
-    if(sprite == NULL) return FAILURE;
+    if(sprite == NULL){
+        fprintf(stderr, "Can't load sprite\n");
+        return FAILURE;
+    }
 
-    if(SDL_SetTextureBlendMode(sprite, SDL_BLENDMODE_BLEND) < 0) return FAILURE;
-    if (SDL_RenderCopy(renderer, sprite, NULL, slotRect) < 0) return FAILURE;
+    if(SDL_SetTextureBlendMode(sprite, SDL_BLENDMODE_BLEND) < 0){
+        fprintf(stderr, "Can't set blend mode\n");
+        return FAILURE;
+    }
+    if (SDL_RenderCopy(renderer, sprite, NULL, slotRect) < 0){
+        fprintf(stderr, "Can't copy texture\n");
+        return FAILURE;
+    }
 
     SDL_DestroyTexture(sprite);
     return SUCCESS;
