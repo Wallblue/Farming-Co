@@ -162,10 +162,9 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         printMap(renderer, furnitureTexture, (char**)mapObjects);
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         seeTime(renderer, data->timeInGame);
-        seeWallet(renderer, lightLayer);
+        if(seeWallet(renderer, lightLayer) == FAILURE)exitWithError("Can't load wallet");
         applyFilter(renderer,  data->timeInGame, lightLayer);
-        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)
-            exitWithError("Can't load hotbar");
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)exitWithError("Can't load hotbar");
 
         if(npcInteract == 1)chat(renderer, interactedWith, lightLayer);
 

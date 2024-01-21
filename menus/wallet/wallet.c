@@ -47,4 +47,5 @@ unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
     SDL_FreeSurface(moneySurface);
     SDL_DestroyTexture(moneyTexture);
 
+    return SUCCESS;
 }
