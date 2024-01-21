@@ -59,6 +59,12 @@ int main(int argc, char **argv) {
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
 
+    addItem(6, 1, &inventory);
+    addItem(7, 1, &inventory);
+    addItem(9, 1, &inventory);
+    addItem(18, 1, &inventory);
+    addItem(31, 1, &inventory);
+
     inventory.ownerType = 0;
     inventory.ownerId = 1;
     initInventory(inventory.slots);
@@ -67,6 +73,7 @@ int main(int argc, char **argv) {
 
     updateNPC();
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, npcTexture, lightLayer, &threadData, &inventory);
+
 
     //if(saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
@@ -132,6 +139,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     playerDst.x = 576;
     playerDst.y = 160;
     int x, y;
+
 
     while (!endGame) {
         switch (zone) {

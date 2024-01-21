@@ -70,16 +70,16 @@ unsigned char loadInventory(Inventory* inventory){
     openDb(&db);
     switch(inventory->ownerType){
         case 1:
-            if(prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, OBJECT_OWN.quantity, "
-                                  "linkedObjectSpriteRef, evolution, linkedTool, OBJECT_OWN.slot FROM item, OBJECT_OWN WHERE OBJECT_OWN.itemId = item.itemId AND OBJECT_OWN.objectId = ?1", &res) == FAILURE) rc= FAILURE;
+            rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, OBJECT_OWN.quantity, "
+                                    "linkedObjectSpriteRef, evolution, linkedTool, OBJECT_OWN.slot FROM item, OBJECT_OWN WHERE OBJECT_OWN.itemId = item.itemId AND OBJECT_OWN.objectId = ?1", &res);
             break;
         case 2:
-            if(prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity, "
-                                  "linkedObjectSpriteRef, evolution, linkedTool FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res) == FAILURE) rc = FAILURE;
+            rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity, "
+                                    "linkedObjectSpriteRef, evolution, linkedTool FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res);
             break;
         default:
-            if(prepareRequest(db,"SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, PLAYER_OWN.quantity, "
-                              "linkedObjectSpriteRef, evolution, linkedTool, PLAYER_OWN.slot FROM item, PLAYER_OWN WHERE PLAYER_OWN.itemId = item.itemId AND PLAYER_OWN.playerId = ?1", &res) == FAILURE) rc = FAILURE;
+            rc = prepareRequest(db,"SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, PLAYER_OWN.quantity, "
+                                   "linkedObjectSpriteRef, evolution, linkedTool, PLAYER_OWN.slot FROM item, PLAYER_OWN WHERE PLAYER_OWN.itemId = item.itemId AND PLAYER_OWN.playerId = ?1", &res);
             break;
     }
 
