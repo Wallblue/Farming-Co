@@ -102,11 +102,7 @@ unsigned char saveNewItem(Inventory* inventory, int slot, sqlite3* db){
             sqlite3_bind_int(res, 4, slot);
             break;
     }
-    if(rc == FAILURE){
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return FAILURE;
-    }
+    if(rc == FAILURE) returnProperlyM(db, res, "SQL Error : %s\n", FAILURE);
     sqlite3_bind_int(res, 1, inventory->slots[slot].id);
     sqlite3_bind_int(res, 2, inventory->ownerId);
     sqlite3_bind_int(res, 3, inventory->slots[slot].quantity);
@@ -141,11 +137,7 @@ unsigned char deleteSavedItem(Inventory* inventory, char slot, sqlite3* db){
             rc = prepareRequest(db, "DELETE FROM PLAYER_OWN WHERE itemId = ?1 AND playerId = ?2 AND slot = ?3", &res);
             sqlite3_bind_int(res, 3, slot);
     }
-    if(rc == FAILURE){
-        sqlite3_finalize(res);
-        if(homeMadeDb == 1) sqlite3_close(db);
-        return FAILURE;
-    }
+    if(rc == FAILURE)returnProperlyM(db, res, "SQL Error : %s\n", FAILURE);
     sqlite3_bind_int(res, 1, inventory->slots[slot].id);
     sqlite3_bind_int(res, 2, inventory->ownerId);
 
@@ -178,11 +170,7 @@ unsigned char alterItemQuantity(Inventory* inventory, char slot, unsigned char q
             rc = prepareRequest(db, "UPDATE PLAYER_OWN SET quantity = quantity  + ?1 WHERE itemId = ?2 AND playerId = ?3 AND slot = ?4", &res);
             sqlite3_bind_int(res, 4, slot);
     }
-    if(rc == FAILURE){
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return FAILURE;
-    }
+    if(rc == FAILURE) returnProperlyM(db, res, "SQL Error : %s\n", FAILURE);
     sqlite3_bind_int(res, 1, computeQuantity);
     sqlite3_bind_int(res, 2, inventory->slots[slot].id);
     sqlite3_bind_int(res, 3, inventory->ownerId);
@@ -211,16 +199,12 @@ unsigned char updateItemSlot(Inventory* inventory, char srcSlot, char destSlot, 
             break;
         case 2:
             if(homeMadeDb == 1) sqlite3_close(db);
-            fprintf(stderr, "No slots management with NPC's inventory.");
+            fprintf(stderr, "No slots management with NPC's inventory.\n");
             return FAILURE;
         default:
             rc = prepareRequest(db, "UPDATE PLAYER_OWN SET slot = ?1 WHERE itemId = ?2 AND playerId = ?3 AND slot = ?4", &res);
     }
-    if(rc == FAILURE){
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return FAILURE;
-    }
+    if(rc == FAILURE) returnProperlyM(db, res, "SQL Error : %s\n", FAILURE);
     sqlite3_bind_int(res, 1, destSlot);
     sqlite3_bind_int(res, 2, inventory->slots[srcSlot].id);
     sqlite3_bind_int(res, 3, inventory->ownerId);

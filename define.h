@@ -51,6 +51,10 @@
 #define NPC5_LOC3 {17, 4}
 #define NPC5_NAME "Cosmos"
 
+#define returnProperlyM return returnProperly
+
+extern int playerId;
+
 //Functions
 size_t getFileSize(FILE* fp);
 SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer);

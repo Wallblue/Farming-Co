@@ -1,5 +1,7 @@
 #include "main.h"
 
+int playerId = 1;
+
 int main(int argc, char **argv) {
     int timeInGame = 0;
     int sleep = 0;
@@ -36,17 +38,17 @@ int main(int argc, char **argv) {
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
 
-    addItem(6, 1, &inventory);
-    addItem(7, 1, &inventory);
-    addItem(9, 1, &inventory);
-    addItem(18, 1, &inventory);
-    addItem(31, 1, &inventory);
-
     inventory.ownerType = 0;
     inventory.ownerId = 1;
     initInventory(inventory.slots);
     if (loadInventory(&inventory) == FAILURE)
         exitWithError("Can't load saved inventory.");
+
+    addItem(6, 1, &inventory);
+    addItem(7, 1, &inventory);
+    addItem(9, 1, &inventory);
+    addItem(18, 1, &inventory);
+    addItem(31, 1, &inventory);
 
     updateNPC();
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, npcTexture, lightLayer, &threadData, &inventory);

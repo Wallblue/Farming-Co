@@ -132,28 +132,37 @@ unsigned char swapInventoryItems(Inventory* srcInventory, char srcSlot, Inventor
 
     if(destInventory->slots[destSlot].id != 0 && srcInventory->slots[srcSlot].id == destInventory->slots[destSlot].id){
         if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE)
-            return returnProperly(db, NULL, FAILURE);
+            return returnProperly(db, NULL, "SQL Error : %s", FAILURE);
         if(alterItemQuantity(destInventory, destSlot, srcInventory->slots[srcSlot].quantity, 0) == FAILURE)
-            return returnProperly(db, NULL, FAILURE);
+            return returnProperly(db, NULL, "SQL Error : %s", FAILURE);
         resetItem(srcInventory->slots + srcSlot);
 
     } else if(srcInventory == destInventory) {
-        if(updateItemSlot(srcInventory, srcSlot, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+        if(updateItemSlot(srcInventory, srcSlot, destSlot, db) == FAILURE) return returnProperly(db, NULL,
+                                                                                                 "SQL Error : %s",
+                                                                                                 FAILURE);
 
         if(destInventory->slots[destSlot].id != 0)
-            if(updateItemSlot(destInventory, destSlot, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+            if(updateItemSlot(destInventory, destSlot, srcSlot, db) == FAILURE) return returnProperly(db, NULL,
+                                                                                                      "SQL Error : %s",
+                                                                                                      FAILURE);
 
         swapItems(srcInventory->slots + srcSlot, destInventory->slots + destSlot);
     }else {
-        if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+        if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, "SQL Error : %s",
+                                                                                        FAILURE);
         if(destInventory->slots[destSlot].id != 0)
-            if(deleteSavedItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+            if(deleteSavedItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL,
+                                                                                              "SQL Error : %s",
+                                                                                              FAILURE);
 
         swapItems(srcInventory->slots + srcSlot, destInventory->slots + destSlot);
 
         if(srcInventory->slots[srcSlot].id != 0)
-            if(saveNewItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
-        if(saveNewItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+            if(saveNewItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, "SQL Error : %s",
+                                                                                        FAILURE);
+        if(saveNewItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL, "SQL Error : %s",
+                                                                                      FAILURE);
     }
 
     sqlite3_close(db);
