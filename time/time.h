@@ -16,12 +16,12 @@
 #include "../error/error.h"
 #include "../map/map.h"
 #include "../colors.h"
+#include "../main.h"
 
 int day(void*);
 void applyFilter(SDL_Renderer *, const int *, SDL_Texture *);
 void seeTime(SDL_Renderer*, const int*);
 void pauseMenu(SDL_Renderer *, SDL_Texture*);
-TTF_Font *loadFont(int size);
 int getDateInGame();
 unsigned char  getSleep(struct ThreadData*);
 unsigned char updateDate(int);

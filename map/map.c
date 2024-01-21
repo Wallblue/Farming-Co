@@ -504,7 +504,6 @@ unsigned char updateMisc(int todayDate){
 void updateNPC() {
     int i;
     int j;
-    int count;
 
     for (i = 0; i < mapHeight; i++) {
         for (j = 0; j < mapWidth; j++) {
