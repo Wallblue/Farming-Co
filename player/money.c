@@ -34,11 +34,11 @@ int getWallet(sqlite3* db){
     if(prepareRequest(db, "SELECT money FROM player WHERE playerId = ?1;", &res) == FAILURE) returnProperlyM(db, res, "SQL error : %s\n", FAILURE);
     sqlite3_bind_int(res, 1, playerId);
     rc = sqlite3_step(res);
-    if(rc != SQLITE_DONE) returnProperlyM(db, res,"SQL error : %s\n", FAILURE);
-
+    if(rc != SQLITE_ROW) returnProperlyM(db, res,"SQL error : %s\n", FAILURE);
+    rc = sqlite3_column_int(res, 0);
     sqlite3_finalize(res);
     if(homeMadeDb == 1) sqlite3_close(db);
-    return sqlite3_column_int(res, 0);
+    return rc;
 }
 
 char isWalletFilledEnough(int quantity, sqlite3* db){

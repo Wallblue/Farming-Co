@@ -433,6 +433,7 @@ SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size, int wra
     surface = TTF_RenderText_Blended_Wrapped(font, text, color, wrapLength);
     if (!surface) exitWithError("Erreur d'initialisation de la surface");
 
+    TTF_CloseFont(font);
     return surface;
 }
 
