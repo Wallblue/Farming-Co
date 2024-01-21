@@ -21,13 +21,15 @@ unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
         return -1;
     }
     if(prepareRequest(db, "SELECT money FROM player WHERE playerId = 1", &res) == FAILURE){
+        sqlite3_finalize(res);
         sqlite3_close(db);
         return -1;
     }
 
     rc = sqlite3_step(res);
     if(rc != SQLITE_ROW){
-        fprintf(stderr, "Can't get current day");
+        fprintf(stderr, "Can't get current money");
+        sqlite3_finalize(res);
         sqlite3_close(db);
         return -1;
     }

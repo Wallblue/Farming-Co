@@ -36,17 +36,18 @@ int main(int argc, char **argv) {
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
 
-    addItem(6, 1, &inventory);
-    addItem(7, 1, &inventory);
-    addItem(9, 1, &inventory);
-    addItem(18, 1, &inventory);
-    addItem(31, 1, &inventory);
 
     inventory.ownerType = 0;
     inventory.ownerId = 1;
     initInventory(inventory.slots);
     if (loadInventory(&inventory) == FAILURE)
         exitWithError("Can't load saved inventory.");
+
+    addItem(6, 1, &inventory);
+    addItem(7, 1, &inventory);
+    addItem(9, 1, &inventory);
+    addItem(18, 1, &inventory);
+    addItem(31, 1, &inventory);
 
     updateNPC();
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, npcTexture, lightLayer, &threadData, &inventory);
@@ -234,6 +235,9 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(interactedWith){
                                     case 'J' : case 'I' : case 'T': case 'S':
                                         *data->sleep = 1;
+                                        if(updateDate(*data->todayDate)== FAILURE)exitWithError("couldn't update today's date");
+                                        if(updatePlants(*data->todayDate)==FAILURE)exitWithError("couldn't update today's date");
+                                        if(updateMisc(*data->todayDate) == FAILURE)exitWithError("couldn't update today's date");
                                         updateNPC();
                                         updateSoil();
                                         break;
