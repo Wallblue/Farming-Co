@@ -72,7 +72,7 @@ unsigned char prepareRequest(sqlite3* db, const char* request, sqlite3_stmt** re
 unsigned char startGame(){
     sqlite3* db;
     if(openDb(&db) == FAILURE) return FAILURE;
-    char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 50, NULL)";
+    char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 100)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
     sqlite3_close(db);
     return SUCCESS;

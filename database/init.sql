@@ -1,21 +1,10 @@
-CREATE TABLE IF NOT EXISTS cooperative(
-           coopId INTEGER PRIMARY KEY AUTOINCREMENT,
-           coopName VARCHAR(25),
-           startTime DATETIME,
-           maxMembers INTEGER,
-           level INTEGER,
-           money INTEGER
-);
-
 CREATE TABLE IF NOT EXISTS player(
-      playerId INTEGER PRIMARY KEY AUTOINCREMENT,
-      pseudo VARCHAR(25),
-      startDate DATE,
-      farmName VARCHAR(25),
-      timeInGame INTEGER,
-      maxEnergy INTEGER,
-      coopId INTEGER,
-      FOREIGN KEY (coopId) REFERENCES cooperative(coopId)
+    playerId INTEGER PRIMARY KEY AUTOINCREMENT,
+    pseudo VARCHAR(25),
+    startDate DATE,
+    farmName VARCHAR(25),
+    timeInGame INTEGER,
+    money INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS object(
@@ -36,20 +25,14 @@ CREATE TABLE IF NOT EXISTS object(
       UNIQUE(x, y, zone)
 );
 
-CREATE TABLE IF NOT EXISTS place(
-     placeId INTEGER PRIMARY KEY AUTOINCREMENT,
-     name VARCHAR(50),
-     type INTEGER
-);
-
 CREATE TABLE IF NOT EXISTS npc(
-   npcId INTEGER PRIMARY KEY AUTOINCREMENT,
-   firstName VARCHAR(25),
-   lastName VARCHAR(25),
-   skin VARCHAR(128),
-   tradable BOOLEAN,
-   placeId INTEGER,
-   FOREIGN KEY (placeId) REFERENCES place(placeId)
+    npcId INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(25),
+    sprite VARCHAR(128),
+    trader BOOLEAN,
+    x INTEGER,
+    y INTEGER,
+    zone INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS item(
@@ -64,6 +47,7 @@ CREATE TABLE IF NOT EXISTS item(
     linkedObjectSpriteRef CHARACTER(1),
     evolution INTEGER,
     linkedTool INTEGER,
+    sellingPrice INTEGER,
     FOREIGN KEY (evolution) REFERENCES item(itemId),
     FOREIGN KEY (linkedTool) REFERENCES item(itemId)
 );
@@ -88,7 +72,9 @@ CREATE TABLE IF NOT EXISTS PLAYER_OWN(
 CREATE TABLE IF NOT EXISTS NPC_OWN(
         itemId INTEGER,
         npcId INTEGER,
+        buyingPrice INTEGER,
         quantity INTEGER DEFAULT 0,
+        sold INTEGER DEFAULT 0,
         FOREIGN KEY (npcId) REFERENCES npc(npcId),
         FOREIGN KEY (itemId) REFERENCES item(itemId),
         CONSTRAINT pk PRIMARY KEY (itemId, npcId)
