@@ -30,4 +30,5 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
 unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, unsigned char** soiledFloor, char zone, int todayDate, Item *heldItem, Inventory* inventory);
 void soilFloor(unsigned char, unsigned char, unsigned char **, Item *);
 
+unsigned char alterMoneyAmount(int quantity, sqlite3* db);
 #endif //FARMINGCO_PLAYER_H
