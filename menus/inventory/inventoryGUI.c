@@ -3,15 +3,14 @@
 #include "../../define.h"
 #include <SDL.h>
 
-char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory secondInventory){
+char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory* secondInventory){
     SDL_Event event;
     char exit = 0;
 
     int xMouse, yMouse, xHud = INVENTORY_HUD_X, yHud = INVENTORY_HUD_Y, temp;
     char draggedItem = -1;
     char index;
-    Item* heldInventory = inventory, * inventoryPointer;
-    char partOfScreen;
+    Inventory* heldInventory = inventory, * inventoryPointer;
 
     SDL_Texture* rendererSave = saveRendererToTexture(renderer);
 
@@ -53,9 +52,10 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory s
                     if(isMouseOnSlot(xMouse, yMouse, xHud, temp) == SDL_TRUE){
                         index = (char) ((yMouse - temp - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES) * 10 + (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS));
                         if(draggedItem != -1){
-                            swapItems(heldInventory + draggedItem, inventoryPointer + index);
+                            if(draggedItem != index || heldInventory != inventoryPointer)
+                                swapInventoryItems(heldInventory, draggedItem, inventoryPointer, index);
                             draggedItem = -1;
-                        } else if(inventoryPointer[index].id != 0) {
+                        } else if(inventoryPointer->slots[index].id != 0) {
                             draggedItem = index;
                             heldInventory = inventoryPointer;
                         }
@@ -94,13 +94,13 @@ unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned c
     return SUCCESS;
 }
 
-unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex){
+unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Item inventory[30], char draggedItemIndex){
     SDL_Rect destRect = {xMouse - SLOT_SIDE / 2, yMouse - SLOT_SIDE / 2, SLOT_SIDE, SLOT_SIDE};
     if(insertItemInSlot(renderer, inventory + draggedItemIndex, &destRect) == FAILURE) return FAILURE;
     return SUCCESS;
 }
 
-unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
+unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory* inventory, Inventory* secondInventory, Inventory* heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex) {
     SDL_SetTextureBlendMode(rendererSave, SDL_BLENDMODE_BLEND);
 
@@ -108,13 +108,13 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
     if(SDL_RenderCopy(renderer, rendererSave, NULL, NULL) < 0) return FAILURE;
 
     if(secondInventory == NULL){
-        if(printInventoryHUD(renderer, inventory, draggedItemIndex, xHud, yHud) == FAILURE) return FAILURE;
+        if(printInventoryHUD(renderer, inventory->slots, draggedItemIndex, xHud, yHud) == FAILURE) return FAILURE;
     }else if(heldInventory == inventory) {
-        if (printInventoryHUD(renderer, inventory, draggedItemIndex, xHud, yHud) == FAILURE) return FAILURE;
-        if(printInventoryHUD(renderer, secondInventory, -1, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == FAILURE) return FAILURE;
+        if (printInventoryHUD(renderer, inventory->slots, draggedItemIndex, xHud, yHud) == FAILURE) return FAILURE;
+        if(printInventoryHUD(renderer, secondInventory->slots, -1, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == FAILURE) return FAILURE;
     }else{
-        if (printInventoryHUD(renderer, inventory, -1, xHud, yHud) == FAILURE) return FAILURE;
-        if (printInventoryHUD(renderer, secondInventory, draggedItemIndex, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == FAILURE) return FAILURE;
+        if (printInventoryHUD(renderer, inventory->slots, -1, xHud, yHud) == FAILURE) return FAILURE;
+        if (printInventoryHUD(renderer, secondInventory->slots, draggedItemIndex, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT) == FAILURE) return FAILURE;
     }
 
     if(isMouseOnSlot(xMouse, yMouse, xHud, yHud) == SDL_TRUE)
@@ -130,7 +130,7 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
                       YELLOW, xHud, 2 * yHud + INVENTORY_HUD_HEIGHT);
 
     if(draggedItemIndex != -1)
-        if (dragItem(renderer, xMouse, yMouse, heldInventory, draggedItemIndex) == FAILURE) return FAILURE;
+        if (dragItem(renderer, xMouse, yMouse, heldInventory->slots, draggedItemIndex) == FAILURE) return FAILURE;
 
     SDL_RenderPresent(renderer);
     SDL_Delay(FPS_LIMIT / 1000);

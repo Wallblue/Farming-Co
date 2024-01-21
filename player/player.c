@@ -276,7 +276,7 @@ void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY
     }
 }
 
-char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory inventory, Item *heldItem) {
+char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory* inventory, Item *heldItem) {
     sqlite3* db;
     sqlite3_stmt* res;
     int rc, objectLinkedToolAbility, objectLinkedItemId;
@@ -345,7 +345,7 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     return SUCCESS;
 }
 
-unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, unsigned char **soiledFloor, char zone, int todayDate, Item* heldItem, Inventory inventory){
+unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **mapFg, unsigned char **soiledFloor, char zone, int todayDate, Item* heldItem, Inventory* inventory){
     Object newObject;
     char success = 0;
     yMouse = yMouse/32;

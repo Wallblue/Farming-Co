@@ -17,16 +17,16 @@
 #define INVENTORY_HUD_X ((screenWidth - INVENTORY_HUD_WIDTH) / 2)
 #define INVENTORY_HUD_Y ((screenHeight - INVENTORY_HUD_HEIGHT) / 2)
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory);
-unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, char draggedItemIndex, int xHud, int yHud);
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30]);
+unsigned char printInventoryHUD(SDL_Renderer* renderer, Item inventory[30], char draggedItemIndex, int xHud, int yHud);
 SDL_Texture* loadItemTextureFromBMP(char* sprite, SDL_Renderer* renderer);
 unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slotRect);
 
-char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory secondInventory);
+char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory* secondInventory);
 SDL_bool isMouseOnSlot(int xMouse, int yMouse, int xHud, int yHud);
 unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int r, int g, int b, int xHud, int yHud);
-unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex);
-unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
+unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Item inventory[30], char draggedItemIndex);
+unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory* inventory, Inventory* secondInventory, Inventory* heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
 
 #endif
