@@ -6,6 +6,7 @@
 #include "../../define.h"
 #include "../items/inventory/inventory.h"
 #include "../main.h"
+#include "../player/player.h"
 
 #define HOTBAR_LEN 10
 #define SLOT_SIDE 50

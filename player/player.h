@@ -31,4 +31,6 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **ma
 void soilFloor(unsigned char, unsigned char, unsigned char **, Item *);
 
 unsigned char alterMoneyAmount(int quantity, sqlite3* db);
+int getWallet(sqlite3* db);
+char isWalletFilledEnough(int quantity, sqlite3* db);
 #endif //FARMINGCO_PLAYER_H

@@ -1,8 +1,6 @@
 #include "../menu.h"
 
 unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
-    sqlite3_stmt* res;
-    sqlite3* db;
     int rc;
 
     SDL_Rect walletRect = {696, 64, 93, 36};
@@ -16,24 +14,7 @@ unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
     SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_BLEND);
     SDL_RenderCopy(renderer, lightLayer, NULL, &walletRect);
 
-    if(openDb(&db) == FAILURE){
-        sqlite3_close(db);
-        return -1;
-    }
-    if(prepareRequest(db, "SELECT money FROM player WHERE playerId = 1", &res) == FAILURE){
-        sqlite3_close(db);
-        return -1;
-    }
-
-    rc = sqlite3_step(res);
-    if(rc != SQLITE_ROW){
-        fprintf(stderr, "Can't get current day");
-        sqlite3_close(db);
-        return -1;
-    }
-    rc = sqlite3_column_int(res, 0);
-    sqlite3_finalize(res);
-    sqlite3_close(db);
+    rc = getWallet(NULL);
 
     char moneyText[20];
     sprintf(moneyText, "%d$", rc);
