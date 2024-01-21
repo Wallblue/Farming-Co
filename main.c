@@ -236,6 +236,9 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(interactedWith){
                                     case 'J' : case 'I' : case 'T': case 'S':
                                         *data->sleep = 1;
+                                        if(updateDate(*data->todayDate)== FAILURE)exitWithError("couldn't update today's date");
+                                        if(updatePlants(*data->todayDate)==FAILURE)exitWithError("couldn't update today's date");
+                                        if(updateMisc(*data->todayDate) == FAILURE)exitWithError("couldn't update today's date");
                                         updateNPC();
                                         updateSoil();
                                         break;
