@@ -13,6 +13,7 @@
 #include <time.h>
 #include "../items/items.h"
 #include "../items/inventory/inventory.h"
+#include "../define.h"
 
 
 //références les deux tableaux qui sont utilisé sur le main (pour l'instant possible que ça change)
@@ -34,6 +35,7 @@ extern unsigned char** mapObjects4;
 extern unsigned char** homeObjects;
 extern unsigned char** soiledFloor3;
 extern unsigned char** soiledFloor4;
+extern unsigned char** npcMap;
 
 //Structures
 struct Object{
@@ -48,6 +50,18 @@ struct Object{
 };
 typedef struct Object Object;
 
+struct npcLocation{
+    int* loc[3];
+};
+
+typedef struct npcLocation npcLocation;
+
+extern npcLocation npc1;
+extern npcLocation npc2;
+extern npcLocation npc3;
+extern npcLocation npc4;
+extern npcLocation npc5;
+
 #include "../player/player.h"
 
 //Functions
@@ -59,5 +73,6 @@ void affectObject(Object* object, int x, int y, char zone, int growTime, int gro
 unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db);
 void updateSoil();
 unsigned char updateMisc(int todayDate);
+void updateNPC();
 
 #endif //FARMINGCO_MAP_H

@@ -26,6 +26,26 @@
 
 #define FPS_LIMIT 60
 
+#define NPC1_LOC1 {1, 4}
+#define NPC1_LOC2 {2, 10}
+#define NPC1_LOC3 {2, 6}
+
+#define NPC2_LOC1 {3, 20}
+#define NPC2_LOC2 {4, 21}
+#define NPC2_LOC3 {1, 17}
+
+#define NPC3_LOC1 {9, 4}
+#define NPC3_LOC2 {7, 7}
+#define NPC3_LOC3 {8, 8}
+
+#define NPC4_LOC1 {12, 18}
+#define NPC4_LOC2 {9, 19}
+#define NPC4_LOC3 {13, 22}
+
+#define NPC5_LOC1 {13, 6}
+#define NPC5_LOC2 {15, 8}
+#define NPC5_LOC3 {17, 4}
+
 //Functions
 size_t getFileSize(FILE* fp);
 SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer);

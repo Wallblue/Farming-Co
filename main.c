@@ -14,8 +14,8 @@
 
 SDL_Window *initWindow();
 
-void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, SDL_Texture *, struct ThreadData* , Inventory inventory);
 
+void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture* npcTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory);
 SDL_Renderer *initRenderer(SDL_Window *);
 
 SDL_Texture *loadTexture(SDL_Renderer *, const char *);
@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     SDL_Texture *floorTexture = loadTexture(renderer, "../assets/sheets/floors.bmp");
     SDL_Texture *playerTexture = loadTexture(renderer, "../assets/sheets/player.bmp");
     SDL_Texture *furnitureTexture = loadTexture(renderer, "../assets/sheets/furniture.bmp");
+    SDL_Texture *npcTexture = loadTexture(renderer, "../assets/npcs/npcs.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
     unsigned char err;
     Inventory inventory;
@@ -64,7 +65,8 @@ int main(int argc, char **argv) {
         else exitWithError("Can't load saved inventory.");
     }
 
-    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, lightLayer, &threadData ,inventory);
+    updateNPC();
+    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, npcTexture, lightLayer, &threadData ,inventory);
 
     if(saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
@@ -72,6 +74,8 @@ int main(int argc, char **argv) {
     TTF_Quit();
     SDL_DestroyTexture(floorTexture);
     SDL_DestroyTexture(playerTexture);
+    SDL_DestroyTexture(furnitureTexture);
+    SDL_DestroyTexture(npcTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -96,7 +100,7 @@ SDL_Window *initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory) {
+void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture* npcTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 18;
@@ -166,7 +170,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         printMap(renderer, floorTexture, mapFg);
 
         if (zone == 0)printMap(renderer, floorTexture, houseRoof);
-
+        if(zone == 1)printMap(renderer, npcTexture, (char**) npcMap);
         if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
         if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
         printMap(renderer, furnitureTexture, (char**)mapObjects);
@@ -237,6 +241,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(interactedWith){
                                     case 'J' : case 'I' : case 'T': case 'S':
                                         *data->sleep = 1;
+                                        updateNPC();
                                         updateSoil();
                                         break;
 

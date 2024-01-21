@@ -180,23 +180,23 @@ char* houseRoof[] = {
 };
 
 char* secondZoneFg[] = {
+        "//{}~}///////////////////",
+        "/}//////x/////////|xyy///",
+        "///////////////////Uyz///",
+        "/////////////////{/z/xV//",
+        "///////////////////////~/",
+        "//////////////////_{/////",
+        "///////{_////////////////",
+        "/////z///{y//////////////",
+        "////~//////xz////////////",
         "/////////////////////////",
+        "/////////////////////{}//",
+        "///////////////////xy|/_",
+        "///////////////////Uzy///",
         "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
-        "/////////////////////////",
+        "////y}///////////////////",
+        "///zy|x//////////////////",
+        "///yz////////////////////",
         "/////////////////////////",
         "/////////////////////////",
         "/////////////////////////",
@@ -278,6 +278,40 @@ unsigned char** mapObjects4;
 unsigned char** homeObjects;
 unsigned char** soiledFloor3;
 unsigned char** soiledFloor4;
+unsigned char** npcMap;
+
+//Création de la localisation des NPC
+int npc1loc1[] = NPC1_LOC1;
+int npc1loc2[] = NPC1_LOC2;
+int npc1loc3[] = NPC1_LOC3;
+
+npcLocation npc1 = {npc1loc1, npc1loc2, npc1loc3};
+
+int npc2loc1[] = NPC2_LOC1;
+int npc2loc2[] = NPC2_LOC2;
+int npc2loc3[] = NPC2_LOC3;
+
+npcLocation npc2 = {npc2loc1, npc2loc2, npc2loc3};
+
+int npc3loc1[] = NPC3_LOC1;
+int npc3loc2[] = NPC3_LOC2;
+int npc3loc3[] = NPC3_LOC3;
+
+npcLocation npc3 = {npc3loc1, npc3loc2, npc3loc3};
+
+int npc4loc1[] = NPC4_LOC1;
+int npc4loc2[] = NPC4_LOC2;
+int npc4loc3[] = NPC4_LOC3;
+
+npcLocation npc4 = {npc4loc1, npc4loc2, npc4loc3};
+
+int npc5loc1[] = NPC5_LOC1;
+int npc5loc2[] = NPC5_LOC2;
+int npc5loc3[] = NPC5_LOC3;
+
+npcLocation npc5 = {npc5loc1, npc5loc2, npc5loc3};
+
+
 
 //affichage d'une mapdz
 void printMap(SDL_Renderer *renderer, SDL_Texture *tileset, char **tab) {
@@ -314,6 +348,8 @@ unsigned char initObjectMaps(){
     if(soiledFloor3 == NULL) return FAILURE;
     soiledFloor4 = malloc(mapHeight * sizeof(char *));
     if(soiledFloor4 == NULL) return FAILURE;
+    npcMap = malloc(mapHeight * sizeof(char *));
+    if(npcMap == NULL) return FAILURE;
 
     char* defaultLine = "//////////////////////////";
 
@@ -325,6 +361,7 @@ unsigned char initObjectMaps(){
         if(initLine(homeObjects + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(soiledFloor3 + i, defaultLine) == FAILURE) return FAILURE;
         if(initLine(soiledFloor4 + i, defaultLine) == FAILURE) return FAILURE;
+        if(initLine(npcMap + i, defaultLine) == FAILURE) return FAILURE;
     }
 
     return SUCCESS;
@@ -346,6 +383,7 @@ void freeObjectMaps(){
     free(homeObjects);
     free(soiledFloor3);
     free(soiledFloor4);
+    free(npcMap);
 }
 
 void affectObject(Object* object, int x, int y, char zone, int growTime, int poseDate, int itemId){
@@ -459,5 +497,31 @@ unsigned char updateMisc(int todayDate){
     }
 
     return SUCCESS;
+}
 
+
+
+void updateNPC(){
+    int i;
+    int j;
+    int count;
+
+    for(i = 0; i<mapHeight; i++){
+        for(j = 0; j<mapWidth; j++){
+            if(npcMap[i][j] != '/')npcMap[i][j] = '/';
+        }
+    }
+
+    srand(time(NULL));
+    int npc1Loc = rand() % 3;
+    int npc2Loc = rand() % 3;
+    int npc3Loc = rand() % 3;
+    int npc4Loc = rand() % 3;
+    int npc5Loc = rand() % 3;
+
+    npcMap[npc1.loc[npc1Loc][0]][npc1.loc[npc1Loc][1]] = '0';
+    npcMap[npc2.loc[npc2Loc][0]][npc2.loc[npc2Loc][1]] = '1';
+    npcMap[npc3.loc[npc3Loc][0]][npc3.loc[npc3Loc][1]] = '2';
+    npcMap[npc4.loc[npc4Loc][0]][npc4.loc[npc4Loc][1]] = '3';
+    npcMap[npc5.loc[npc5Loc][0]][npc5.loc[npc5Loc][1]] = '4';
 }
