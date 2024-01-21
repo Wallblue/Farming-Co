@@ -179,7 +179,7 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
     int y = yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES);
 
     //Texte pour le nom
-    SDL_Surface* nameSurface = loadItemSurface(nameSurface, heldInventory->name, 42);
+    SDL_Surface* nameSurface = loadItemSurface(nameSurface, heldInventory->name, 42, DESC_BOX_WIDTH-10);
     SDL_Texture* nameTexture = loadItemTexture(nameTexture, renderer, nameSurface);
     SDL_Rect nameRect = { x,y + ySpace,nameSurface->w, nameSurface->h };
 
@@ -194,7 +194,7 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
 
         sprintf(energyText, "Energy Bonus +%d", heldInventory->energyBonus);
 
-        energySurface = loadItemSurface(energySurface, energyText, 32);
+        energySurface = loadItemSurface(energySurface, energyText, 32, DESC_BOX_WIDTH-10);
         energyTexture = loadItemTexture(energyTexture, renderer, energySurface);
         energyRect.x = x;
         energyRect.y = y + ySpace;
@@ -214,7 +214,7 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
 
         sprintf(growText, "Grow Time : %d days", heldInventory->growTime);
 
-        growSurface = loadItemSurface(growSurface, growText, 32);
+        growSurface = loadItemSurface(growSurface, growText, 32, DESC_BOX_WIDTH-10);
         growTexture = loadItemTexture(growTexture, renderer, growSurface);
         growRect.x = x;
         growRect.y = y + ySpace;
@@ -237,7 +237,7 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
 
         sprintf(priceText, "Price : %d", heldInventory->price);
 
-        priceSurface = loadItemSurface(priceSurface, priceText, 32);
+        priceSurface = loadItemSurface(priceSurface, priceText, 32, DESC_BOX_WIDTH-10);
         priceTexture = loadItemTexture(priceTexture, renderer, priceSurface);
         priceRect.x = x;
         priceRect.y = y + ySpace;
@@ -250,7 +250,7 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
     //Texte pour la description
     if(heldInventory->growTime > 9 || heldInventory->energyBonus > 99)ySpace += 50;
     else ySpace += 35;
-    SDL_Surface* descSurface = loadItemSurface(descSurface, heldInventory->description, 32);
+    SDL_Surface* descSurface = loadItemSurface(descSurface, heldInventory->description, 32, DESC_BOX_WIDTH-10);
     SDL_Texture* descTexture = loadItemTexture(descTexture, renderer, descSurface);
     SDL_Rect descRect = { x,y + ySpace,descSurface->w, descSurface->h};
 
@@ -280,19 +280,5 @@ void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char 
 
 }
 
-SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size){
-    TTF_Font* font = loadFont(size);
-    SDL_Color color = { WHITE };
 
-    surface = TTF_RenderText_Blended_Wrapped(font, text, color, DESC_BOX_WIDTH-10);
-    if (!surface) exitWithError("Erreur d'initialisation de la surface");
 
-    return surface;
-}
-
-SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface){
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (!texture) exitWithError("Erreur de chargement de la texture");
-
-    return texture;
-}

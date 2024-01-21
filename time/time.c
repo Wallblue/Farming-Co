@@ -176,12 +176,6 @@ void pauseMenu(SDL_Renderer *renderer, SDL_Texture* lightLayer){
 
 }
 
-TTF_Font *loadFont(int size){
-    TTF_Font* font = TTF_OpenFont("../assets/font/game.ttf", size);
-    if(!font) exitWithError("Erreur de chargement de la police");
-
-    return font;
-}
 
 int getDateInGame(){
     sqlite3_stmt* res;

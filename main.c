@@ -1,27 +1,4 @@
-#include <stdio.h>
-#include <time.h>
-#include <SDL.h>
-#include "database/database.h"
-#include "map/map.h"
-#include "player/player.h"
-#include "error/error.h"
-#include "save/save.h"
-#include "time/time.h"
-#include "items/items.h"
-#include "items/inventory/inventory.h"
-#include <SDL_ttf.h>
-#include "menus/menu.h"
-
-SDL_Window *initWindow();
-
-
-void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture* npcTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory);
-SDL_Renderer *initRenderer(SDL_Window *);
-
-SDL_Texture *loadTexture(SDL_Renderer *, const char *);
-
-void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
-                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone);
+#include "main.h"
 
 int main(int argc, char **argv) {
     int timeInGame = 0;
@@ -114,6 +91,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     unsigned char lastMovement;
     unsigned char interactedWith;
     unsigned char **soiledFloor;
+    char npcInteract = 0;
 
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
@@ -180,6 +158,8 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
             exitWithError("Can't load hotbar");
 
+        if(npcInteract == 1)chat(renderer, interactedWith, lightLayer);
+
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
 
         SDL_RenderPresent(renderer);
@@ -192,7 +172,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                     break;
 
                 case SDL_KEYDOWN: //détecte quand on appuie sur une touche
-                    if (*data->pause == 0 || event.key.keysym.sym == SDLK_ESCAPE) {
+                    if (*data->pause == 0 && npcInteract == 0 || event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_f) {
                         switch (event.key.keysym.sym) {
                             case SDLK_ESCAPE:
                                 if (*data->pause == 0) {
@@ -232,6 +212,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         break;
                                     case 2:
                                         interactedWith = mapObjects[countY-1][countX];
+                                        if(zone==1)interactedWith = npcMap[countY-1][countX];
                                         break;
                                     case 3:
                                         interactedWith = mapObjects[countY+1][countX];
@@ -246,15 +227,20 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         break;
 
                                     case 'P':
-                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
+                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone, soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
                                         if(inventoryEventLoop(renderer, inventory, tempInventory) == -1) endGame = 1;
                                         break;
+                                    case '0': case '1': case '2': case '3': case '4':
+                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
+                                        if(npcInteract == 0) npcInteract = 1;
+                                        else npcInteract = 0;
+                                        break;
+
                                 }
                                 break;
 
                             case SDLK_e:
-                                makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
-
+                                makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
                                 if (inventoryEventLoop(renderer, inventory, NULL) == -1) endGame = 1;
                                 break;
 
@@ -387,16 +373,22 @@ SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer){
 }
 
 void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
-                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone){
+                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone, unsigned char** soiledFloor, SDL_Texture* npcTexture, int npcInteract, unsigned char interactedWith, SDL_Texture* lightLayer){
     SDL_RenderClear(renderer);
 
     printMap(renderer, floorTexture, mapBg);
     printMap(renderer, floorTexture, mapFg);
-
+    if(zone == 1)printMap(renderer, npcTexture, (char**) npcMap);
+    if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
+    if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
     if (zone == 0)printMap(renderer, floorTexture, houseRoof);
+    if(npcInteract == 1)chat(renderer, interactedWith, lightLayer);
+
 
     printMap(renderer, furnitureTexture, (char**)mapObjects);
     SDL_RenderCopy(renderer, playerTexture, playerSrc, playerDst);
+
+
 }
 
 size_t getFileSize(FILE* fp){
@@ -407,4 +399,26 @@ size_t getFileSize(FILE* fp){
     return fileSize;
 }
 
+TTF_Font *loadFont(int size){
+    TTF_Font* font = TTF_OpenFont("../assets/font/game.ttf", size);
+    if(!font) exitWithError("Erreur de chargement de la police");
 
+    return font;
+}
+
+SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size, int wrapLength){
+    TTF_Font* font = loadFont(size);
+    SDL_Color color = { WHITE };
+
+    surface = TTF_RenderText_Blended_Wrapped(font, text, color, wrapLength);
+    if (!surface) exitWithError("Erreur d'initialisation de la surface");
+
+    return surface;
+}
+
+SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface){
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) exitWithError("Erreur de chargement de la texture");
+
+    return texture;
+}

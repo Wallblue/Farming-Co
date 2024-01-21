@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "../../define.h"
 #include "../items/inventory/inventory.h"
+#include "../main.h"
 
 #define HOTBAR_LEN 10
 #define SLOT_SIDE 50
@@ -29,7 +30,5 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
 unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud);
 void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char nX, unsigned char nY, int xHud, int yHud);
-SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size);
-SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface);
 
 #endif
