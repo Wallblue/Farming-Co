@@ -16,19 +16,19 @@
 #define INVENTORY_HUD_WIDTH (HOTBAR_WIDTH + 2*INV_LEFT_RIGHT_PADDING) //2 * padding of 20px
 #define DESC_BOX_WIDTH (INVENTORY_HUD_WIDTH / 4)
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory);
-unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, char draggedItemIndex, int xHud, int yHud);
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30]);
+unsigned char printInventoryHUD(SDL_Renderer* renderer, Item inventory[30], char draggedItemIndex, int xHud, int yHud);
 SDL_Texture* loadItemTextureFromBMP(char* sprite, SDL_Renderer* renderer);
 unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slotRect);
 
-char inventoryEventLoop(SDL_Renderer* renderer, Inventory inventory, Inventory secondInventory);
+char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory* secondInventory);
 SDL_bool isMouseOnSlot(int xMouse, int yMouse, int xHud, int yHud);
 unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int r, int g, int b, int xHud, int yHud);
-unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Inventory inventory, char draggedItemIndex);
-unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory inventory, Inventory secondInventory, Inventory heldInventory,
+unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Item inventory[30], char draggedItemIndex);
+unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory* inventory, Inventory* secondInventory, Inventory* heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
 unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud);
-void seeItemData(SDL_Renderer* renderer, Inventory heldInventory, unsigned char nX, unsigned char nY, int xHud, int yHud);
+void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char nX, unsigned char nY, int xHud, int yHud);
 SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size);
 SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface);
 

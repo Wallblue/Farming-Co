@@ -50,12 +50,13 @@ unsigned char addItemsToDatabase(){
         cJSON* evolution = cJSON_GetObjectItemCaseSensitive(jsonObject, "evolution");
         cJSON* linkedTool = cJSON_GetObjectItemCaseSensitive(jsonObject, "linkedTool");
 
-        sqlReq = malloc(700 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        sqlReq = malloc(460 * sizeof(char)); //Allocating max size bc we can't calculate it before
         if(sqlReq == NULL) {
             free(sqlReq);
             return FAILURE;
         }
-        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, NULL, \"%s\", %hhu, \"%c\", %d, %d, NULL, NULL);",
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM (itemId, name, type, description, energyBonus, ability, sprite, growTime, linkedObjectSpriteRef, evolution, linkedTool)"
+                                          " VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, \"%s\", %hhu, \"%c\", %d, %d);",
                 id->valueint, name->valuestring, type->valuestring, description->valuestring, energyBonus->valueint, ability->valueint, sprite->valuestring,
                 growTime->valueint, *(linkedSpriteRef->valuestring), evolution == NULL ? 0 : evolution->valueint, linkedTool->valueint) + 1] = '\0';
 
@@ -79,7 +80,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
         if (openDb(&db) == FAILURE) return FAILURE;
         homeMadeDb = 1;
     }
-    if(prepareRequest(db, "SELECT * FROM item WHERE itemId = ?1;", &res) == FAILURE) return FAILURE;
+    if(prepareRequest(db, "SELECT name, type, description, energyBonus, ability, growTime, sprite, linkedObjectSpriteRef, evolution, linkedTool FROM item WHERE itemId = ?1;", &res) == FAILURE) return FAILURE;
     sqlite3_bind_int(res, 1, id);
     rc = sqlite3_step(res);
     if(rc != SQLITE_ROW){
@@ -87,10 +88,10 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
         return FAILURE;
     }
 
-    affectItem(dest, id, (char *) sqlite3_column_text(res, 1), 0, (char *) sqlite3_column_text(res, 2),
-               (char *) sqlite3_column_text(res, 3),sqlite3_column_int(res, 4),
-               sqlite3_column_int(res, 5), sqlite3_column_int(res, 8),(char *) sqlite3_column_text(res, 7),
-               *sqlite3_column_text(res, 9), sqlite3_column_int(res, 10), sqlite3_column_int(res, 11));
+    affectItem(dest, id, (char *) sqlite3_column_text(res, 0), 0, (char *) sqlite3_column_text(res, 1),
+               (char *) sqlite3_column_text(res, 2),sqlite3_column_int(res, 3),
+               sqlite3_column_int(res, 4), sqlite3_column_int(res, 5),(char *) sqlite3_column_text(res, 6),
+               *sqlite3_column_text(res, 7), sqlite3_column_int(res, 8), sqlite3_column_int(res, 9));
 
     if(homeMadeDb == 1) sqlite3_close(db);
     sqlite3_finalize(res);

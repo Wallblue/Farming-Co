@@ -59,18 +59,13 @@ CREATE TABLE IF NOT EXISTS item(
     description TEXT,
     energyBonus INTEGER,
     ability INTEGER,
-    quantity INTEGER,
     sprite VARCHAR(128),
     growTime INTEGER,
     linkedObjectSpriteRef CHARACTER(1),
     evolution INTEGER,
     linkedTool INTEGER,
-    ownerId INTEGER,
-    npcId INTEGER,
     FOREIGN KEY (evolution) REFERENCES item(itemId),
-    FOREIGN KEY (linkedTool) REFERENCES item(itemId),
-    FOREIGN KEY (ownerId) REFERENCES player(playerId),
-    FOREIGN KEY (npcId) REFERENCES npc(npcId)
+    FOREIGN KEY (linkedTool) REFERENCES item(itemId)
 );
 
 CREATE TABLE IF NOT EXISTS dialog(
@@ -78,4 +73,33 @@ CREATE TABLE IF NOT EXISTS dialog(
       content TEXT,
       npcId INTEGER,
       FOREIGN KEY (npcId) REFERENCES npc(npcId)
+);
+
+CREATE TABLE IF NOT EXISTS PLAYER_OWN(
+        itemId INTEGER,
+        playerId INTEGER,
+        quantity INTEGER DEFAULT 0,
+        slot INTEGER,
+        FOREIGN KEY (playerId) REFERENCES player(playerId),
+        FOREIGN KEY (itemId) REFERENCES item(itemId),
+        CONSTRAINT pk PRIMARY KEY (itemId, playerId, slot)
+);
+
+CREATE TABLE IF NOT EXISTS NPC_OWN(
+        itemId INTEGER,
+        npcId INTEGER,
+        quantity INTEGER DEFAULT 0,
+        FOREIGN KEY (npcId) REFERENCES npc(npcId),
+        FOREIGN KEY (itemId) REFERENCES item(itemId),
+        CONSTRAINT pk PRIMARY KEY (itemId, npcId)
+);
+
+CREATE TABLE IF NOT EXISTS OBJECT_OWN(
+        itemId INTEGER,
+        objectId INTEGER,
+        quantity INTEGER DEFAULT 0,
+        slot INTEGER,
+        FOREIGN KEY (itemId) REFERENCES item(itemId),
+        FOREIGN KEY (objectId) REFERENCES npc(npcId),
+        CONSTRAINT pk PRIMARY KEY (itemId, objectId, slot)
 );

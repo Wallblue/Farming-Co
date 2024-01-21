@@ -8,28 +8,32 @@
 //Structures :
     #include "../items.h"
 
-    typedef Item Inventory[INVENTORY_MAX_SIZE];
+    struct Inventory{ //Owner type : 1 - Object | 2 - NPC | else Player
+        char ownerType;
+        int ownerId;
+        Item slots[INVENTORY_MAX_SIZE];
+    };
+    typedef struct Inventory Inventory;
 
 //Includes:
     #include "../../define.h"
     #include "../../database/database.h"
+    #include "../../save/save.h"
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
     #include <sqlite3.h>
 
 //Functions :
-    void initInventory(Inventory inventory);
+    void initInventory(Item inventory[INVENTORY_MAX_SIZE]);
 
-    short findItem(int id, const Inventory inventory); //Return a specified Item index in the inventory or -1
-    unsigned char setItem(int id, unsigned char quantity, Inventory inventory); //Set a new item in the inventory and return 0 if it worked 1 else
-    unsigned char addItem(int id, unsigned char quantity, Inventory inventory); //Add parameter item to existing items or set it if no existing ones
-    short firstEmptySlot(const Inventory inventory); //Return the first slot's index without item, -1 if not anymore
+    char findItem(int id, const Item inventory[30]); //Return a specified Item index in the inventory or -1
+    unsigned char setItem(int id, unsigned char quantity, Inventory* inventory); //Set a new item in the inventory and return 0 if it worked 1 else
+    unsigned char addItem(int id, unsigned char quantity, Inventory* inventory); //Add parameter item to existing items or set it if no existing ones
+    short firstEmptySlot(const Item inventory[INVENTORY_MAX_SIZE]); //Return the first slot's index without item, -1 if not anymore
+    unsigned char subtractItem(int id, unsigned char quantity, Inventory* inventory); //Subtract a given quantity of an item
 
-    unsigned char subtractItem(int id, unsigned char quantity, Inventory inventory); //Subtract a given quantity of an item
-
-    unsigned char saveInventory(Inventory inventory); //Save inventory into a json file
-    unsigned char loadInventory(Inventory inventory);
-    char* jsonifyInventory(Inventory inventory); //Convert inventory in a json string
+    unsigned char loadInventory(Inventory* inventory);
     unsigned char parseJsonFile(const char* fileName, cJSON** dest);
+    unsigned char swapInventoryItems(Inventory* srcInventory, char srcSlot, Inventory* destInventory, char destSlot);
 #endif

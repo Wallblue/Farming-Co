@@ -18,5 +18,8 @@
 
 unsigned char loadObjectsMaps();
 unsigned char saveObject(const Object* object);
-
+unsigned char saveNewItem(Inventory* inventory, int slot, sqlite3* db); //Owner type : 1 - Object | 2 - NPC | else Player
+unsigned char deleteSavedItem(Inventory* inventory, char slot, sqlite3* db);
+unsigned char alterItemQuantity(Inventory* inventory, char slot, unsigned char quantity, char mode);
+unsigned char updateItemSlot(Inventory* inventory, char srcSlot, char destSlot, sqlite3* db);
 #endif //FARMINGCO_SAVE_H

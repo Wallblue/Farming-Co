@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <string.h>
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Inventory inventory){
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30]){
     SDL_Rect hotbarSlot;
     SDL_Rect hotbarDest = {(screenWidth - HOTBAR_WIDTH) / 2, screenHeight - SLOT_SIDE - 10, HOTBAR_WIDTH, SLOT_SIDE};
     unsigned char i;
@@ -35,7 +35,7 @@ unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture,
     return SUCCESS;
 }
 
-unsigned char printInventoryHUD(SDL_Renderer* renderer, Inventory inventory, char draggedItemIndex, int xDest, int yDest){
+unsigned char printInventoryHUD(SDL_Renderer* renderer, Item inventory[30], char draggedItemIndex, int xDest, int yDest){
     SDL_Rect inventorySlot;
     SDL_Rect hudLoc = {xDest, yDest, INVENTORY_HUD_WIDTH, INVENTORY_HUD_HEIGHT};
     unsigned char i, j;

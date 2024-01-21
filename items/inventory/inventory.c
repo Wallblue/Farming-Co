@@ -1,21 +1,21 @@
 #include "inventory.h"
 
 
-void initInventory(Inventory inventory){
+void initInventory(Item inventory[INVENTORY_MAX_SIZE]){
     unsigned char i;
     for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         resetItem(inventory + i);
 }
 
-short findItem(int id, const Inventory inventory){
-    short i;
+char findItem(int id, const Item inventory[30]){
+    char i;
     for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         if(inventory[i].id == id)
             return i;
     return -1;
 }
 
-short firstEmptySlot(const Inventory inventory){
+short firstEmptySlot(const Item inventory[INVENTORY_MAX_SIZE]){
     short i;
     for(i = 0; i < INVENTORY_MAX_SIZE; i++)
         if(inventory[i].id == 0 && inventory[i].quantity == 0)
@@ -23,86 +23,82 @@ short firstEmptySlot(const Inventory inventory){
     return -1;
 }
 
-unsigned char setItem(int id, unsigned char quantity, Inventory inventory){
+unsigned char setItem(int id, unsigned char quantity, Inventory* inventory){
     Item item;
-    short index = firstEmptySlot(inventory);
+    short index = firstEmptySlot(inventory->slots);
 
     if(index == -1) return FAILURE; //If inventory is full
 
     getItem(id, &item, NULL);
-    affectItem(inventory + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus,
+    affectItem(inventory->slots + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus,
                item.ability, item.growTime, item.sprite, item.objectSpriteRef, 0, item.linkedTool);
+    saveNewItem(inventory, index, NULL);
     return SUCCESS;
 }
 
-unsigned char addItem(int id, unsigned char quantity, Inventory inventory){
-    short index = findItem(id, inventory);
+unsigned char addItem(int id, unsigned char quantity, Inventory* inventory){
+    char index = findItem(id, inventory->slots);
 
     if(index == -1) //If item does not exist in this inventory
         return setItem(id, quantity, inventory);
     //but if it does
-    inventory[index].quantity += quantity;
+    inventory->slots[index].quantity += quantity;
+    alterItemQuantity(inventory, index, quantity, 0);
     return SUCCESS;
 }
 
-unsigned char subtractItem(int id, unsigned char quantity, Inventory inventory){
-    short index = findItem(id, inventory);
-    if(index == -1 || inventory[index].quantity < quantity) return FAILURE;
+unsigned char subtractItem(int id, unsigned char quantity, Inventory* inventory){
+    char index = findItem(id, inventory->slots);
+    if(index == -1 || inventory->slots[index].quantity < quantity) return FAILURE;
 
-    if(inventory[index].quantity == quantity)
-        resetItem(inventory + index);
-    else
-        inventory[index].quantity -= quantity;
-
+    if(inventory->slots[index].quantity == quantity) {
+        if(deleteSavedItem(inventory, index, NULL) == FAILURE) return FAILURE;
+        resetItem(inventory->slots + index);
+    }
+    else {
+        if(alterItemQuantity(inventory, index, quantity, 1) == FAILURE) return FAILURE;
+        inventory->slots[index].quantity -= quantity;
+    }
     return SUCCESS;
 }
 
-unsigned char saveInventory(Inventory inventory){
-    char* jsonString;
-    FILE* fp;
+unsigned char loadInventory(Inventory* inventory){
+    sqlite3* db;
+    sqlite3_stmt* res;
+    int rc, index = -1;
 
-    fp = fopen(INVENTORY_SAVE_FILE, "w");
-    if(fp == NULL) return FAILURE;
+    openDb(&db);
+    switch(inventory->ownerType){
+        case 1:
+            if(prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, OBJECT_OWN.quantity, "
+                                  "linkedObjectSpriteRef, evolution, linkedTool, OBJECT_OWN.slot FROM item, OBJECT_OWN WHERE OBJECT_OWN.itemId = item.itemId AND OBJECT_OWN.objectId = ?1", &res) == FAILURE) rc= FAILURE;
+            break;
+        case 2:
+            if(prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity, "
+                                  "linkedObjectSpriteRef, evolution, linkedTool FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res) == FAILURE) rc = FAILURE;
+            break;
+        default:
+            if(prepareRequest(db,"SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, PLAYER_OWN.quantity, "
+                              "linkedObjectSpriteRef, evolution, linkedTool, PLAYER_OWN.slot FROM item, PLAYER_OWN WHERE PLAYER_OWN.itemId = item.itemId AND PLAYER_OWN.playerId = ?1", &res) == FAILURE) rc = FAILURE;
+            break;
+    }
 
-    jsonString = jsonifyInventory(inventory);
-    if(jsonString == NULL){
-        fclose(fp);
+    if(rc == FAILURE){
+        sqlite3_finalize(res);
+        sqlite3_close(db);
+        fprintf(stderr, "Error : %s\n", sqlite3_errmsg(db));
         return FAILURE;
     }
 
-    fwrite(jsonString, strlen(jsonString), 1, fp);
-    fclose(fp);
-    free(jsonString);
-    return SUCCESS;
-}
-
-unsigned char loadInventory(Inventory inventory){
-    cJSON* jsonInventory;
-    cJSON* jsonItem;
-    sqlite3* db;
-    unsigned char i;
-
-    if(openDb(&db) == FAILURE) return FAILURE;
-
-    if((i = parseJsonFile(INVENTORY_SAVE_FILE, &jsonInventory)) != SUCCESS) return i;
-
-    cJSON_ArrayForEach(jsonItem, jsonInventory){
-        //On récupère l'id et la quantité dans la save
-        cJSON* id = cJSON_GetObjectItemCaseSensitive(jsonItem, "id");
-        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonItem, "quantity");
-
-        if(id->valueint == 0){
-            resetItem(inventory + i++);
-            continue;
-        }
-
-        //On récupère le reste dans la bdd
-        if(getItem(id->valueint, inventory + i, db) == FAILURE) return FAILURE;
-        inventory[i].quantity = quantity->valueint;
-
-        ++i;
+    sqlite3_bind_int(res, 1, inventory->ownerId);
+    while(sqlite3_step(res) == SQLITE_ROW){
+        if(inventory->ownerType != 2) index = sqlite3_column_int(res, 12);
+        else ++index;
+        affectItem(inventory->slots + index, sqlite3_column_int(res, 0), (char*)sqlite3_column_text(res, 1), sqlite3_column_int(res, 8), (char*)sqlite3_column_text(res, 2),
+                   (char*)sqlite3_column_text(res, 3), sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6),
+                   (char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 9), sqlite3_column_int(res, 10), sqlite3_column_int(res, 11));
     }
-
+    sqlite3_finalize(res);
     sqlite3_close(db);
     return SUCCESS;
 }
@@ -130,25 +126,36 @@ unsigned char parseJsonFile(const char* fileName, cJSON** dest){
     return SUCCESS;
 }
 
-char* jsonifyInventory(Inventory inventory){
-    cJSON *jsonInventory;
-    cJSON *jsonItem;
-    char *jsonString;
-    unsigned char i;
+unsigned char swapInventoryItems(Inventory* srcInventory, char srcSlot, Inventory* destInventory, char destSlot){
+    sqlite3* db;
+    if(openDb(&db) == FAILURE) return FAILURE;
 
-    jsonInventory = cJSON_CreateArray();
-    if(jsonInventory == NULL) return NULL;
+    if(destInventory->slots[destSlot].id != 0 && srcInventory->slots[srcSlot].id == destInventory->slots[destSlot].id){
+        if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE)
+            return returnProperly(db, NULL, FAILURE);
+        if(alterItemQuantity(destInventory, destSlot, srcInventory->slots[srcSlot].quantity, 0) == FAILURE)
+            return returnProperly(db, NULL, FAILURE);
+        resetItem(srcInventory->slots + srcSlot);
 
-    for(i = 0; i < INVENTORY_MAX_SIZE; i++){
-        jsonItem = cJSON_CreateObject();
-        if(jsonItem == NULL) return NULL;
+    } else if(srcInventory == destInventory) {
+        if(updateItemSlot(srcInventory, srcSlot, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
 
-        cJSON_AddNumberToObject(jsonItem, "id", inventory[i].id);
-        cJSON_AddNumberToObject(jsonItem, "quantity", inventory[i].quantity);
+        if(destInventory->slots[destSlot].id != 0)
+            if(updateItemSlot(destInventory, destSlot, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
 
-        cJSON_AddItemToArray(jsonInventory, jsonItem);
+        swapItems(srcInventory->slots + srcSlot, destInventory->slots + destSlot);
+    }else {
+        if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+        if(destInventory->slots[destSlot].id != 0)
+            if(deleteSavedItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+
+        swapItems(srcInventory->slots + srcSlot, destInventory->slots + destSlot);
+
+        if(srcInventory->slots[srcSlot].id != 0)
+            if(saveNewItem(srcInventory, srcSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
+        if(saveNewItem(destInventory, destSlot, db) == FAILURE) return returnProperly(db, NULL, FAILURE);
     }
-    jsonString = cJSON_Print(jsonInventory);
 
-    return jsonString;
+    sqlite3_close(db);
+    return SUCCESS;
 }

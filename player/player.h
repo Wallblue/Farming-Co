@@ -26,8 +26,8 @@ void moveLeft(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char
 void moveRight(SDL_Rect *, SDL_Rect *, int *, const int *, char **, unsigned char **, char*);
 void moveUp(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
 void moveDown(SDL_Rect *, SDL_Rect *,  int *, int *, char **, unsigned char **, char*);
-char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory inventory, Item *heldItem);
-unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, unsigned char** soiledFloor, char zone, int todayDate, Item *heldItem, Inventory inventory);
+char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory* inventory, Item *heldItem);
+unsigned char inputObject(int xMouse, int yMouse, unsigned char **tab, char **mapFg, unsigned char** soiledFloor, char zone, int todayDate, Item *heldItem, Inventory* inventory);
 void soilFloor(unsigned char, unsigned char, unsigned char **, Item *);
 
 #endif //FARMINGCO_PLAYER_H
