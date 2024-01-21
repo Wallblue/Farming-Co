@@ -23,7 +23,7 @@ void applyFilter(SDL_Renderer *, const int *, SDL_Texture *);
 void seeTime(SDL_Renderer*, const int*);
 void pauseMenu(SDL_Renderer *, SDL_Texture*);
 int getDateInGame();
-unsigned char  getSleep(struct ThreadData*);
+void getSleep(struct ThreadData *data);
 unsigned char updateDate(int);
 unsigned char updatePlants(int);
 unsigned char updateSprite(sqlite3* db, int objectId, int state);

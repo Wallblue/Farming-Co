@@ -41,7 +41,7 @@ int day(void* data) {
             }
 
             if (*sleep == 1) {
-                if(getSleep(data)== FAILURE)exitWithError("Database couldn't update today's date.");
+                getSleep(data);
                 startTime = currentTime;
             }
         }
@@ -183,18 +183,20 @@ int getDateInGame(){
     int rc;
     if(openDb(&db) == FAILURE){
         sqlite3_close(db);
-        return -1;
+        return FAILURE;
     }
 
     if(prepareRequest(db, "SELECT timeInGame FROM player WHERE playerId = 1", &res) == FAILURE){
+        sqlite3_finalize(res);
         sqlite3_close(db);
-        return -1;
+        return FAILURE;
     }
     rc = sqlite3_step(res);
     if(rc != SQLITE_ROW){
         fprintf(stderr, "Can't get current day");
+        sqlite3_finalize(res);
         sqlite3_close(db);
-        return -1;
+        return FAILURE;
     }
     rc = sqlite3_column_int(res, 0);
     sqlite3_finalize(res);
@@ -202,14 +204,10 @@ int getDateInGame(){
     return rc;
 }
 
-unsigned char getSleep(struct ThreadData* data){
+void getSleep(struct ThreadData* data){
     *data->sleep = 0;
     (*data->todayDate)++;
     *data->timeInGame = 0;
-    if(updateDate(*data->todayDate)== FAILURE) return FAILURE;
-    if(updatePlants(*data->todayDate)==FAILURE) return FAILURE;
-    if(updateMisc(*data->todayDate) == FAILURE) return FAILURE;
-    return SUCCESS;
 }
 
 unsigned char updateDate(int todayDate){
@@ -223,6 +221,7 @@ unsigned char updateDate(int todayDate){
     }
 
     if(prepareRequest(db, "UPDATE player SET timeInGame = ?1", &res) == FAILURE) {
+        sqlite3_finalize(res);
         sqlite3_close(db);
         return FAILURE;
     }
@@ -231,7 +230,6 @@ unsigned char updateDate(int todayDate){
     rc = sqlite3_step(res);
 
     if(rc != SQLITE_DONE){
-        fprintf(stderr, "Couldn't update Database");
         sqlite3_finalize(res);
         sqlite3_close(db);
         return FAILURE;
@@ -241,6 +239,7 @@ unsigned char updateDate(int todayDate){
     sqlite3_close(db);
     return SUCCESS;
 }
+
 
 unsigned char updatePlants(int todayDate) {
     sqlite3* db;
@@ -256,6 +255,7 @@ unsigned char updatePlants(int todayDate) {
 
     if (prepareRequest(db, query, &res) == FAILURE) {
         fprintf(stderr, "Couldn't prepare query: %s", query);
+        sqlite3_finalize(res);
         sqlite3_close(db);
         return FAILURE;
     }
