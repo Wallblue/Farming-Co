@@ -71,7 +71,7 @@ void applyFilter(SDL_Renderer * renderer, const int * timeInGame, SDL_Texture *l
 void seeTime(SDL_Renderer *renderer, const int* timeInGame) {
     TTF_Font* font = loadFont(64);
 
-    SDL_Color textColor = {0, 0, 0};
+    SDL_Color textColor = {BLACK};
     SDL_Rect bgRect = {696, 14, 93, 36};
 
     char text[20];
