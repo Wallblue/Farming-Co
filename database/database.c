@@ -77,3 +77,10 @@ unsigned char startGame(){
     sqlite3_close(db);
     return SUCCESS;
 }
+
+unsigned char returnProperly(sqlite3* db, sqlite3_stmt* res, unsigned char returnValue){
+    if(res != NULL) sqlite3_finalize(res);
+    if(returnValue == FAILURE) fprintf(stderr, "SQL Error : %s\n", sqlite3_errmsg(db));
+    if(db != NULL) sqlite3_close(db);
+    return returnValue;
+}
