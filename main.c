@@ -14,7 +14,7 @@
 
 SDL_Window *initWindow();
 
-void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, SDL_Texture *, struct ThreadData* , Inventory inventory);
+void gameLoop(SDL_Renderer *, SDL_Texture *, SDL_Texture *, SDL_Texture *, SDL_Texture *, struct ThreadData* , Inventory* inventory);
 
 SDL_Renderer *initRenderer(SDL_Window *);
 
@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
     SDL_Texture *playerTexture = loadTexture(renderer, "../assets/sheets/player.bmp");
     SDL_Texture *furnitureTexture = loadTexture(renderer, "../assets/sheets/furniture.bmp");
     SDL_Texture *lightLayer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
-    unsigned char err;
     Inventory inventory;
 
     if (createDatabase() == FAILURE) exitWithError("Database creation error.");
@@ -54,19 +53,20 @@ int main(int argc, char **argv) {
     threadData.pause = &pause;
     threadData.todayDate = &todayDate;
 
-    //SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
+    SDL_Thread *threadID = SDL_CreateThread(day, "LazyThread", (void *) (&threadData));
 
     if (initObjectMaps() == FAILURE) exitWithError("Can't initialize maps.");
     if (loadObjectsMaps() == FAILURE) exitWithError("Can't load maps.");
 
-    if ((err = loadInventory(inventory)) != SUCCESS) {
-        if (err == 2) initInventory(inventory);
-        else exitWithError("Can't load saved inventory.");
-    }
+    inventory.ownerType = 0;
+    inventory.ownerId = 1;
+    initInventory(inventory.slots);
+    if (loadInventory(&inventory) == FAILURE)
+        exitWithError("Can't load saved inventory.");
 
-    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, lightLayer, &threadData ,inventory);
+    gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, lightLayer, &threadData, &inventory);
 
-    if(saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
+    //if(saveInventory(inventory) == FAILURE) exitWithError("Couldn't save properly.");
 
     // Libération des ressources
     TTF_Quit();
@@ -96,7 +96,7 @@ SDL_Window *initWindow() {
     return window;
 }
 
-void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory inventory) {
+void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *playerTexture, SDL_Texture *furnitureTexture, SDL_Texture *lightLayer, struct ThreadData* data, Inventory* inventory) {
     // Boucle principale du jeu
     int endGame = 0;
     int countX = 18;
@@ -117,7 +117,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     SDL_Rect playerDst;
     SDL_Rect playerSrc;
 
-    Inventory tempInventory = {0};
+    Inventory tempInventory;
 
     playerSrc.w = tileHeightWidth;
     playerSrc.h = tileHeightWidth;
@@ -172,7 +172,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         SDL_RenderCopy(renderer, playerTexture, &playerSrc, &playerDst);
         seeTime(renderer, data->timeInGame);
         applyFilter(renderer,  data->timeInGame, lightLayer);
-        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory) == FAILURE)
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)
             exitWithError("Can't load hotbar");
 
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
@@ -221,15 +221,19 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(lastMovement){
                                     case 0:
                                         interactedWith = mapObjects[countY][countX-1];
+                                        tempInventory.ownerId = getObjectIdByCoordinates(countX - 1, countY, zone, NULL);
                                         break;
                                     case 1:
                                         interactedWith = mapObjects[countY][countX+1];
+                                        tempInventory.ownerId = getObjectIdByCoordinates(countX + 1, countY, zone, NULL);
                                         break;
                                     case 2:
                                         interactedWith = mapObjects[countY-1][countX];
+                                        tempInventory.ownerId = getObjectIdByCoordinates(countX, countY - 1, zone, NULL);
                                         break;
                                     case 3:
                                         interactedWith = mapObjects[countY+1][countX];
+                                        tempInventory.ownerId = getObjectIdByCoordinates(countX, countY + 1, zone, NULL);
                                         break;
                                 }
 
@@ -240,8 +244,11 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         break;
 
                                     case 'P':
+                                        tempInventory.ownerType = 1;
+                                        initInventory(tempInventory.slots);
+                                        loadInventory(&tempInventory);
                                         makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone);
-                                        if(inventoryEventLoop(renderer, inventory, tempInventory) == -1) endGame = 1;
+                                        if(inventoryEventLoop(renderer, &tempInventory, inventory) == -1) endGame = 1;
                                         break;
                                 }
                                 break;
@@ -293,17 +300,17 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         if(*data->pause == 0) {
 
                                             if(mapObjects[y/32][x/32] != '/') {
-                                                err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory + (currentSlot - 1));
+                                                err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory->slots + (currentSlot - 1));
                                                 if (err == 3)
                                                     fprintf(stderr, "Inventory full !\n");
                                                 else if (err == 2)
                                                     fprintf(stderr, "Wrong tool !\n");
                                                 else if (err == FAILURE)
                                                     exitWithError("Error while trying to break object.");
-                                            }else if (inventory[currentSlot - 1].id != 0 && inventory[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
-                                                inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,inventory + (currentSlot - 1), inventory);
+                                            }else if (inventory->slots[currentSlot - 1].id != 0 && inventory->slots[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
+                                                inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,inventory->slots + (currentSlot - 1), inventory);
                                             else if (mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' && zone == 2 || zone == 3)
-                                                soilFloor(x / 32, y / 32, soiledFloor, inventory + (currentSlot - 1));
+                                                soilFloor(x / 32, y / 32, soiledFloor, inventory->slots + (currentSlot - 1));
 
                                         }else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 && y <= screenHeight / 3 + 66) *data->pause = 0;

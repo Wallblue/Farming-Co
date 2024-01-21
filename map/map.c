@@ -388,3 +388,33 @@ unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db){
 
     return SUCCESS;
 }
+
+int getObjectIdByCoordinates(int x, int y, char zone, sqlite3* db){
+    sqlite3_stmt* res;
+    int rc;
+    char homemadeDb = 0;
+
+    if(db == NULL) {
+        if (openDb(&db) == FAILURE) return FAILURE;
+        homemadeDb = 1;
+    }
+    if(prepareRequest(db, "SELECT objectId FROM object WHERE x = ?1 AND y = ?2 AND zone = ?3", &res) == FAILURE){
+        sqlite3_close(db);
+        return FAILURE;
+    }
+    sqlite3_bind_int(res, 1, x);
+    sqlite3_bind_int(res, 2, y);
+    sqlite3_bind_int(res, 3, zone);
+    rc = sqlite3_step(res);
+
+    if(rc != SQLITE_ROW){
+        fprintf(stderr, "Can't find object : %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    rc = sqlite3_column_int(res, 0);
+    sqlite3_finalize(res);
+    if(homemadeDb == 1) sqlite3_close(db);
+    return rc;
+}

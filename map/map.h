@@ -8,6 +8,20 @@
 #ifndef FARMINGCO_MAP_H
 #define FARMINGCO_MAP_H
 
+//Structures
+struct Object{
+    int x;
+    int y;
+    char zone;
+    unsigned char growTime;
+    int poseDate;
+    char state;
+    unsigned char boosted;
+    int itemId;
+};
+typedef struct Object Object;
+
+//Includes
 #include <SDL.h>
 #include "../items/items.h"
 #include "../items/inventory/inventory.h"
@@ -32,19 +46,6 @@ extern unsigned char** homeObjects;
 extern unsigned char** soiledFloor3;
 extern unsigned char** soiledFloor4;
 
-//Structures
-struct Object{
-    int x;
-    int y;
-    char zone;
-    unsigned char growTime;
-    int poseDate;
-    char state;
-    unsigned char boosted;
-    int itemId;
-};
-typedef struct Object Object;
-
 //Functions
 void printMap(SDL_Renderer *, SDL_Texture *, char **);
 unsigned char initObjectMaps();
@@ -52,6 +53,7 @@ unsigned char initLine(unsigned char** line, const char* defaultLine);
 void freeObjectMaps();
 void affectObject(Object* object, int x, int y, char zone, int growTime, int growDate, int itemId);
 unsigned char deleteObjectByCoordinates(int x, int y, char zone, sqlite3* db);
+int getObjectIdByCoordinates(int x, int y, char zone, sqlite3* db);
 void updateSoil();
 
 #endif //FARMINGCO_MAP_H
