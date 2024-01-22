@@ -322,14 +322,19 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
         return 2;
     }
 
+    sqlite3_reset(res);
     rc = 0;
     if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
         if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) rc = 3;
         if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) rc = 3;
     }else //Classic loot
-        if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) rc = 3;
+        rc = addItem(objectLinkedItemId, 1, inventory);
 
     sqlite3_finalize(res);
+    if(rc == FAILURE){
+        sqlite3_close(db);
+        return FAILURE;
+    }
     if(rc == 3){
         sqlite3_close(db);
         return 3;

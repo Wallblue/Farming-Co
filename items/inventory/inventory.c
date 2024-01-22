@@ -27,12 +27,12 @@ unsigned char setItem(int id, unsigned char quantity, Inventory* inventory){
     Item item;
     short index = firstEmptySlot(inventory->slots);
 
-    if(index == -1) return FAILURE; //If inventory is full
+    if(index == -1) return 3; //If inventory is full
 
     getItem(id, &item, NULL);
     affectItem(inventory->slots + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus,
                item.ability, item.growTime, item.sprite, item.objectSpriteRef, 0, item.linkedTool, item.price);
-    saveNewItem(inventory, index, NULL);
+    if(saveNewItem(inventory, index, NULL) == FAILURE) return FAILURE;
     return SUCCESS;
 }
 
@@ -43,7 +43,7 @@ unsigned char addItem(int id, unsigned char quantity, Inventory* inventory){
         return setItem(id, quantity, inventory);
     //but if it does
     inventory->slots[index].quantity += quantity;
-    alterItemQuantity(inventory, index, quantity);
+    if(alterItemQuantity(inventory, index, quantity) == FAILURE) return FAILURE;
     return SUCCESS;
 }
 
