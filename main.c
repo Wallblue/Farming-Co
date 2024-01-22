@@ -23,11 +23,11 @@ int main(int argc, char **argv) {
     Inventory inventory;
 
     if (createDatabase() == FAILURE) exitWithError("Database creation error.");
-    if (startGame() == FAILURE) exitWithError("Couldn't start game.");
     if (addItemsToDatabase() == FAILURE) exitWithError("Items loading in database impossible");
     if (addNpcToDatabase() == FAILURE) exitWithError("Impossible to add NPCs to database");
     if (addDialogsToDatabase() == FAILURE) exitWithError("Impossible to add dialogs to database.");
     if (addSalesToDatabase() == FAILURE) exitWithError("Impossible to add sales to database");
+    if (startGame() == FAILURE) exitWithError("Couldn't start game.");
 
     todayDate = getDateInGame();
     struct ThreadData threadData;

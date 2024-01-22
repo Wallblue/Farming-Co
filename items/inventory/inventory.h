@@ -3,11 +3,10 @@
 
     #include <cJSON.h>
     #define INVENTORY_MAX_SIZE 30
-    #define INVENTORY_SAVE_FILE "../save/inventorySave.json"
 
 //Structures :
-    #include "../items.h"
 
+    #include "../items.h"
     struct Inventory{ //Owner type : 1 - Object | 2 - NPC | else Player
         char ownerType;
         int ownerId;

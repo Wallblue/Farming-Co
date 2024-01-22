@@ -69,32 +69,56 @@ unsigned char prepareRequest(sqlite3* db, const char* request, sqlite3_stmt** re
     return SUCCESS;
 }
 
+unsigned char addStartKitToDatabase(){
+    cJSON* jsonContent = NULL;
+    cJSON* jsonObject;
+    char* sqlReq;
+    sqlite3* db;
+
+    if(parseJsonFile("../player/startKit.json", &jsonContent) == FAILURE) return FAILURE;
+
+    if(openDb(&db) == FAILURE) return FAILURE;
+
+    cJSON_ArrayForEach(jsonObject, jsonContent){
+        cJSON* itemId = cJSON_GetObjectItemCaseSensitive(jsonObject, "itemId");
+        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonObject, "quantity");
+        cJSON* slot = cJSON_GetObjectItemCaseSensitive(jsonObject, "slot");
+
+        sqlReq = malloc(100 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        if(sqlReq == NULL) {
+            free(sqlReq);
+            return FAILURE;
+        }
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO PLAYER_OWN (itemId, playerId, quantity, slot) VALUES (%d, %d, %d, %d);",
+                       itemId->valueint, playerId, quantity->valueint, slot->valueint) + 1] = '\0';
+
+        if(executeSQL(db, sqlReq) == FAILURE){
+            free(sqlReq);
+            return FAILURE;
+        }
+        free(sqlReq);
+    }
+
+    sqlite3_close(db);
+    return SUCCESS;
+}
+
 unsigned char startGame(){
     sqlite3* db;
     if(openDb(&db) == FAILURE) return FAILURE;
     char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 10)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (6, 1, 1, 0)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (7, 1, 1, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (8, 1, 1, 2)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (35, 1, 1, 3)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (32, 1, 1, 4)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (18, 1, 1, 5)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (19, 1, 1, 6)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+
+    if(sqlite3_changes(db) != 0)
+        if(addStartKitToDatabase() == FAILURE) returnProperlyM(db, NULL, "Couldn't add startKit.\n", FAILURE);
+
     sqlite3_close(db);
     return SUCCESS;
 }
 
 unsigned char returnProperly(sqlite3 *db, sqlite3_stmt *res, const char *errmsg, unsigned char returnValue) {
     if(res != NULL) sqlite3_finalize(res);
-    if(returnValue == FAILURE) fprintf(stderr, "SQL Error : %s\n", sqlite3_errmsg(db));
+    if(returnValue == FAILURE) fprintf(stderr, errmsg, sqlite3_errmsg(db));
     if(db != NULL) sqlite3_close(db);
     return returnValue;
 }
