@@ -149,7 +149,7 @@ unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Item inve
     return SUCCESS;
 }
 
-unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud){
+void displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud){
     int xFirstSlotEnd = xHud + INV_LEFT_RIGHT_PADDING; //x and y coordinate of the first slot right upper corner except for last slots of range
     xFirstSlotEnd += (nX+1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
     int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
@@ -239,10 +239,18 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     }
      */
 
+    //texte pour la quantité
+    if(heldInventory->growTime > 9 || heldInventory->energyBonus > 99)ySpace += 45;
+    else ySpace += 35;
+    char qteText[20];
+    sprintf(qteText, "Quantity : %d", heldInventory->quantity);
+    SDL_Surface* quantitySurface = loadItemSurface(quantitySurface, qteText, 32, DESC_BOX_WIDTH - 10);
+    SDL_Texture* quantityTexture = loadItemTexture(quantityTexture, renderer, quantitySurface);
+    SDL_Rect quantityRect = {x, y + ySpace, quantitySurface->w, quantitySurface->h};
+
 
     //Texte pour la description
-    if(heldInventory->growTime > 9 || heldInventory->energyBonus > 99)ySpace += 50;
-    else ySpace += 35;
+    ySpace += 35;
     SDL_Surface* descSurface = loadItemSurface(descSurface, heldInventory->description, 32, DESC_BOX_WIDTH-10);
     SDL_Texture* descTexture = loadItemTexture(descTexture, renderer, descSurface);
     SDL_Rect descRect = { x,y + ySpace,descSurface->w, descSurface->h};
@@ -252,7 +260,9 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     if(heldInventory->energyBonus != 0)SDL_RenderCopy(renderer, energyTexture, NULL, &energyRect);
     if(heldInventory->growTime != 0)SDL_RenderCopy(renderer, growTexture, NULL, &growRect);
     //if(heldInventory->priceTime != 0)SDL_RenderCopy(renderer, priceTexture, NULL, &priceRect);
+    SDL_RenderCopy(renderer, quantityTexture, NULL, &quantityRect);
     SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
+
 
     SDL_FreeSurface(nameSurface);
     SDL_DestroyTexture(nameTexture);
@@ -270,6 +280,8 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     }*/
     SDL_FreeSurface(descSurface);
     SDL_DestroyTexture(descTexture);
+    SDL_FreeSurface(quantitySurface);
+    SDL_DestroyTexture(quantityTexture);
 
 }
 

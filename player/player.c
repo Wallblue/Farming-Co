@@ -368,7 +368,7 @@ unsigned char inputObject(int xMouse, int yMouse, unsigned char** tab, char **ma
             if(yMouse >= 5 && yMouse<=13 && xMouse >= 4 && xMouse <= 20 && strcmp(heldItem->type, "crops") != 0) {
                 tab[yMouse][xMouse] = (char) heldItem->objectSpriteRef;
                 if((char) heldItem->objectSpriteRef == 'J' || (char) heldItem->objectSpriteRef == 'I') {
-                    if (yMouse + 1 == 14) {
+                    if (yMouse + 1 == 14 ||  tab[yMouse + 1][xMouse] != '/') {
                         tab[yMouse][xMouse] = '/';
                         success = 0;
                         break;

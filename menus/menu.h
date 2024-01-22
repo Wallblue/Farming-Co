@@ -30,7 +30,7 @@ unsigned char highlightSlot(SDL_Renderer* renderer, unsigned char nX, unsigned c
 unsigned char dragItem(SDL_Renderer* renderer, int xMouse, int yMouse, Item inventory[30], char draggedItemIndex);
 unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave, Inventory* inventory, Inventory* secondInventory, Inventory* heldInventory,
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
-unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud);
+void displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud);
 void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char nX, unsigned char nY, int xHud, int yHud);
 unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer);
 #endif
