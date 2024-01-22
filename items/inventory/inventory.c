@@ -75,7 +75,7 @@ unsigned char loadInventory(Inventory* inventory){
             break;
         case 2:
             rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity - NPC_OWN.sold, "
-                                    "linkedObjectSpriteRef, evolution, linkedTool, NPC_OWN.buyingPrice FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res);
+                                    "linkedObjectSpriteRef, evolution, linkedTool, NPC_OWN.buyingPrice FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.npcId = ?1", &res);
             break;
         default:
             rc = prepareRequest(db,"SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, PLAYER_OWN.quantity, "

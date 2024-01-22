@@ -173,3 +173,38 @@ Npc* getNpcByChar(const unsigned char npcChar){
 
     return npc;
 }
+
+unsigned char addSalesToDatabase(){
+    cJSON* jsonContent = NULL;
+    cJSON* jsonObject;
+    char* sqlReq;
+    sqlite3* db;
+
+    if(parseJsonFile("../npc/npc_own.json", &jsonContent) == FAILURE) return FAILURE;
+
+    if(openDb(&db) == FAILURE) return FAILURE;
+
+    cJSON_ArrayForEach(jsonObject, jsonContent){
+        cJSON* itemId = cJSON_GetObjectItemCaseSensitive(jsonObject, "itemId");
+        cJSON* npcId = cJSON_GetObjectItemCaseSensitive(jsonObject, "npcId");
+        cJSON* buyingPrice = cJSON_GetObjectItemCaseSensitive(jsonObject, "buyingPrice");
+        cJSON* quantity = cJSON_GetObjectItemCaseSensitive(jsonObject, "quantity");
+
+        sqlReq = malloc(120 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        if(sqlReq == NULL) {
+            free(sqlReq);
+            return FAILURE;
+        }
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO NPC_OWN (itemId, npcId, buyingPrice, quantity, sold) VALUES (%d, %d, %d, %d, 0);",
+                       itemId->valueint, npcId->valueint, buyingPrice->valueint, quantity->valueint) + 1] = '\0';
+
+        if(executeSQL(db, sqlReq) == FAILURE){
+            free(sqlReq);
+            return FAILURE;
+        }
+        free(sqlReq);
+    }
+
+    sqlite3_close(db);
+    return SUCCESS;
+}

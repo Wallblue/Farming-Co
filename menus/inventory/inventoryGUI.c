@@ -58,15 +58,17 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
                             if(heldInventory->ownerType == 0 && inventoryPointer->ownerType == 2) {
                                 sellItem(heldInventory, inventoryPointer, draggedItem);
                                 if(heldInventory->slots[draggedItem].id == 0) draggedItem = -1;
-                            }else if(heldInventory != inventoryPointer || draggedItem != index)
+                            }else {
+                                if (heldInventory != inventoryPointer || draggedItem != index)
                                     swapInventoryItems(heldInventory, draggedItem, inventoryPointer, index);
                                 draggedItem = -1;
+                            }
                         } else if(inventoryPointer->slots[index].id != 0) {
                             if(inventoryPointer->ownerType != 2){
                                 draggedItem = index;
                                 heldInventory = inventoryPointer;
                             } else
-                                (inventoryPointer == inventory ? secondInventory : inventory, inventoryPointer, index);
+                                buyItem(inventoryPointer == inventory ? secondInventory : inventory, inventoryPointer, index);
                         }
                     }
                     break;
@@ -170,7 +172,7 @@ void displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned ch
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 }
 
-void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char nX, unsigned char nY, int xHud, int yHud){
+void seeItemData(SDL_Renderer* renderer, Item *heldItem, unsigned char nX, unsigned char nY, int xHud, int yHud){
     int xFirstSlotEnd = xHud + INV_LEFT_RIGHT_PADDING;
     xFirstSlotEnd += (nX + 1) % 10 == 0 ? -DESC_BOX_WIDTH : SLOT_SIDE;
     int yFirstSlot = yHud + INV_TOP_BOT_PADDING;
@@ -180,7 +182,7 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     int y = yFirstSlot + nY * (SLOT_SIDE + INV_SPACE_BTWN_LINES);
 
     //Texte pour le nom
-    SDL_Surface* nameSurface = loadItemSurface(nameSurface, heldInventory->name, 42, DESC_BOX_WIDTH-10);
+    SDL_Surface* nameSurface = loadItemSurface(nameSurface, heldItem->name, 42, DESC_BOX_WIDTH - 10);
     SDL_Texture* nameTexture = loadItemTexture(nameTexture, renderer, nameSurface);
     SDL_Rect nameRect = { x,y + ySpace,nameSurface->w, nameSurface->h };
 
@@ -189,11 +191,11 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     SDL_Texture* energyTexture;
     SDL_Rect energyRect;
 
-    if (heldInventory->energyBonus != 0) {
+    if (heldItem->energyBonus != 0) {
         ySpace += 35;
         char energyText[20];
 
-        sprintf(energyText, "Energy Bonus +%d", heldInventory->energyBonus);
+        sprintf(energyText, "Energy Bonus +%d", heldItem->energyBonus);
 
         energySurface = loadItemSurface(energySurface, energyText, 32, DESC_BOX_WIDTH-10);
         energyTexture = loadItemTexture(energyTexture, renderer, energySurface);
@@ -208,11 +210,11 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
     SDL_Texture* growTexture;
     SDL_Rect growRect;
 
-    if (heldInventory->growTime != 0) {
-        if(heldInventory->energyBonus > 99) ySpace += 45;
+    if (heldItem->growTime != 0) {
+        if(heldItem->energyBonus > 99) ySpace += 45;
         else ySpace += 35;
         char growText[20];
-        sprintf(growText, "Grow Time : %d days", heldInventory->growTime);
+        sprintf(growText, "Grow Time : %d days", heldItem->growTime);
 
         growSurface = loadItemSurface(growSurface, growText, 32, DESC_BOX_WIDTH-10);
         growTexture = loadItemTexture(growTexture, renderer, growSurface);
@@ -222,20 +224,17 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
         growRect.h = growSurface->h;
     }
 
-
-    //Texte s'il y a prix
-    /*
     SDL_Surface* priceSurface;
     SDL_Texture* priceTexture;
     SDL_Rect priceRect;
 
-    if(heldInventory->price != 0){
-        if(heldInventory->growTime > 9)ySpace += 50;
-        if(heldInventory->energyBonus > 99)ySpace += 50;
+    if(heldItem->price != 0){
+        if(heldItem->growTime > 9)ySpace += 50;
+        if(heldItem->energyBonus > 99)ySpace += 50;
         else ySpace += 25;
         char priceText[20];
 
-        sprintf(priceText, "Price : %d", heldInventory->price);
+        sprintf(priceText, "Price : %d", heldItem->price);
 
         priceSurface = loadItemSurface(priceSurface, priceText, 32, DESC_BOX_WIDTH-10);
         priceTexture = loadItemTexture(priceTexture, renderer, priceSurface);
@@ -244,13 +243,12 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
         priceRect.w = priceSurface->w;
         priceRect.h = priceSurface->h;
     }
-     */
 
     //texte pour la quantité
-    if(heldInventory->growTime > 9 || heldInventory->energyBonus > 99)ySpace += 45;
+    if(heldItem->growTime > 9 || heldItem->energyBonus > 99)ySpace += 45;
     else ySpace += 35;
     char qteText[20];
-    sprintf(qteText, "Quantity : %d", heldInventory->quantity);
+    sprintf(qteText, "Quantity : %d", heldItem->quantity);
     SDL_Surface* quantitySurface = loadItemSurface(quantitySurface, qteText, 32, DESC_BOX_WIDTH - 10);
     SDL_Texture* quantityTexture = loadItemTexture(quantityTexture, renderer, quantitySurface);
     SDL_Rect quantityRect = {x, y + ySpace, quantitySurface->w, quantitySurface->h};
@@ -258,33 +256,33 @@ void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char n
 
     //Texte pour la description
     ySpace += 35;
-    SDL_Surface* descSurface = loadItemSurface(descSurface, heldInventory->description, 32, DESC_BOX_WIDTH-10);
+    SDL_Surface* descSurface = loadItemSurface(descSurface, heldItem->description, 32, DESC_BOX_WIDTH - 10);
     SDL_Texture* descTexture = loadItemTexture(descTexture, renderer, descSurface);
     SDL_Rect descRect = { x,y + ySpace,descSurface->w, descSurface->h};
 
 
     SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
-    if(heldInventory->energyBonus != 0)SDL_RenderCopy(renderer, energyTexture, NULL, &energyRect);
-    if(heldInventory->growTime != 0)SDL_RenderCopy(renderer, growTexture, NULL, &growRect);
-    //if(heldInventory->priceTime != 0)SDL_RenderCopy(renderer, priceTexture, NULL, &priceRect);
+    if(heldItem->energyBonus != 0)SDL_RenderCopy(renderer, energyTexture, NULL, &energyRect);
+    if(heldItem->growTime != 0)SDL_RenderCopy(renderer, growTexture, NULL, &growRect);
+    if(heldItem->price != 0)SDL_RenderCopy(renderer, priceTexture, NULL, &priceRect);
     SDL_RenderCopy(renderer, quantityTexture, NULL, &quantityRect);
     SDL_RenderCopy(renderer, descTexture, NULL, &descRect);
 
 
     SDL_FreeSurface(nameSurface);
     SDL_DestroyTexture(nameTexture);
-    if(heldInventory->energyBonus != 0){
+    if(heldItem->energyBonus != 0){
         SDL_FreeSurface(energySurface);
         SDL_DestroyTexture(energyTexture);
     }
-    if(heldInventory->growTime != 0){
+    if(heldItem->growTime != 0){
         SDL_FreeSurface(growSurface);
         SDL_DestroyTexture(growTexture);
     }
-    /*if(heldInventory->price != 0){
+    if(heldItem->price != 0){
         SDL_FreeSurface(priceSurface);
         SDL_DestroyTexture(priceTexture);
-    }*/
+    }
     SDL_FreeSurface(descSurface);
     SDL_DestroyTexture(descTexture);
     SDL_FreeSurface(quantitySurface);
