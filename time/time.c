@@ -31,8 +31,8 @@ int day(void* data) {
                 startTime = currentTime - pauseTime;
                 pauseTime = 0;
             }
-            //remplacer 1000*60 par 1000 pour rester en secondes
-            if ((elapsedTime / (1000*60)) == *getHours + 1) {
+            //remplacer 1000*30 par 1000 pour rester en secondes
+            if ((elapsedTime / (1000*30)) == *getHours + 1) {
                 (*getHours)++;
             }
 
