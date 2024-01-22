@@ -61,6 +61,7 @@ void chat(SDL_Renderer *renderer, unsigned char npcChar, SDL_Texture *lightLayer
         SDL_DestroyTexture(traderTexture);
     }
 
+    free(npc->name);
     free(npc);
     SDL_FreeSurface(nameSurface);
     SDL_DestroyTexture(nameTexture);
@@ -134,33 +135,38 @@ Npc* getNpcByChar(const unsigned char npcChar){
 
     switch(npcChar){
         case '0':
-            npc->name = malloc(sizeof(char) * strlen(NPC1_NAME));
+            npc->name = malloc(sizeof(char) * (strlen(NPC1_NAME) + 1));
             if(npc->name == NULL) return NULL;
             strcpy(npc->name, NPC1_NAME);
+            npc->name[strlen(NPC1_NAME)] = '\0';
             npc->id = 1;
             break;
         case '1':
-            npc->name = malloc(sizeof(char) * strlen(NPC2_NAME));
+            npc->name = malloc(sizeof(char) * (strlen(NPC2_NAME) + 1));
             if(npc->name == NULL) return NULL;
             strcpy(npc->name, NPC2_NAME);
+            npc->name[strlen(NPC2_NAME)] = '\0';
             npc->id = 2;
             break;
         case '2':
-            npc->name = malloc(sizeof(char) * strlen(NPC3_NAME));
+            npc->name = malloc(sizeof(char) * (strlen(NPC3_NAME) + 1));
             if(npc->name == NULL) return NULL;
             strcpy(npc->name, NPC3_NAME);
+            npc->name[strlen(NPC3_NAME)] = '\0';
             npc->id = 3;
             break;
         case '3':
-            npc->name = malloc(sizeof(char) * strlen(NPC4_NAME));
+            npc->name = malloc(sizeof(char) * (strlen(NPC4_NAME) + 1));
             if(npc->name == NULL) return NULL;
             strcpy(npc->name, NPC4_NAME);
+            npc->name[strlen(NPC4_NAME)] = '\0';
             npc->id = 4;
             break;
         case '4':
-            npc->name = malloc(sizeof(char) * strlen(NPC5_NAME));
+            npc->name = malloc(sizeof(char) * (strlen(NPC5_NAME) + 1));
             if(npc->name == NULL) return NULL;
             strcpy(npc->name, NPC5_NAME);
+            npc->name[strlen(NPC5_NAME)] = '\0';
             npc->id = 5;
             break;
     }
