@@ -149,14 +149,11 @@ unsigned char deleteSavedItem(Inventory* inventory, char slot, sqlite3* db){
     return SUCCESS;
 }
 
-unsigned char alterItemQuantity(Inventory* inventory, char slot, unsigned char quantity, char mode){ //Mode 1 : subtract, default : add
+unsigned char alterItemQuantity(Inventory* inventory, char slot, short quantity){ //Mode 1 : subtract, default : add
     sqlite3* db;
     sqlite3_stmt* res;
-    int computeQuantity = quantity;
     int rc;
     if(openDb(&db) == FAILURE) return FAILURE;
-
-    if(mode == 1) computeQuantity = -computeQuantity;
 
     switch(inventory->ownerType){
         case 1:
@@ -164,14 +161,14 @@ unsigned char alterItemQuantity(Inventory* inventory, char slot, unsigned char q
             sqlite3_bind_int(res, 4, slot);
             break;
         case 2:
-            rc = prepareRequest(db, "UPDATE NPC_OWN SET quantity = quantity + ?1 WHERE itemId = ?2 AND npcId = ?3", &res);
+            rc = prepareRequest(db, "UPDATE NPC_OWN SET sold = sold - ?1 WHERE itemId = ?2 AND npcId = ?3", &res);
             break;
         default:
             rc = prepareRequest(db, "UPDATE PLAYER_OWN SET quantity = quantity  + ?1 WHERE itemId = ?2 AND playerId = ?3 AND slot = ?4", &res);
             sqlite3_bind_int(res, 4, slot);
     }
     if(rc == FAILURE) returnProperlyM(db, res, "SQL Error : %s\n", FAILURE);
-    sqlite3_bind_int(res, 1, computeQuantity);
+    sqlite3_bind_int(res, 1, quantity);
     sqlite3_bind_int(res, 2, inventory->slots[slot].id);
     sqlite3_bind_int(res, 3, inventory->ownerId);
 

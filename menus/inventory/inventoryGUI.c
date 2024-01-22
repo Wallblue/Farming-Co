@@ -66,7 +66,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
             }
         }
     }
-
+    SDL_DestroyTexture(rendererSave);
     return exit;
 }
 

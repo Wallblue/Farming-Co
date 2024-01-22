@@ -42,5 +42,5 @@ int getWallet(sqlite3* db){
 }
 
 char isWalletFilledEnough(int quantity, sqlite3* db){
-    return (char) (getWallet(db) - quantity < 0);
+    return (char) (getWallet(db) - quantity > 0);
 }
