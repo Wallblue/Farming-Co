@@ -30,3 +30,20 @@ unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
 
     return SUCCESS;
 }
+
+unsigned char buyItem(Inventory* playerInventory, Inventory* npcInventory, char index){
+    if(!isWalletFilledEnough(npcInventory->slots[index].price, NULL)){
+        fprintf(stderr, "Not enough money\n");
+        return 2;
+    }
+    if(alterMoneyAmount(-npcInventory->slots[index].price, NULL) == FAILURE) return FAILURE;
+    if(addItem(npcInventory->slots[index].id, 1, playerInventory) == FAILURE) return FAILURE;
+    if(subtractItem(npcInventory->slots[index].id, 1, npcInventory) == FAILURE) return FAILURE;
+    return SUCCESS;
+}
+
+unsigned char sellItem(Inventory* playerInventory, Inventory* npcInventory, char index){
+    if(alterMoneyAmount(playerInventory->slots[index].price, NULL) == FAILURE) return FAILURE;
+    if(subtractItem(playerInventory->slots[index].id, 1, playerInventory) == FAILURE) return FAILURE;
+    return SUCCESS;
+}
