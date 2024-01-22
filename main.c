@@ -95,6 +95,9 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     unsigned char interactedWith;
     unsigned char **soiledFloor;
     char npcInteract = 0;
+    unsigned char hasInteracted = 0;
+    char savedDialog[50];
+    int savedTrader;
 
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
@@ -161,11 +164,11 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         if(seeWallet(renderer, lightLayer) == FAILURE)exitWithError("Can't load wallet");
         applyFilter(renderer,  data->timeInGame, lightLayer);
         if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)exitWithError("Can't load hotbar");
-
-        if(npcInteract == 1)chat(renderer, interactedWith, lightLayer);
-
+        if(npcInteract == 1) {
+            chat(renderer, interactedWith, lightLayer, savedDialog, hasInteracted, &savedTrader);
+            hasInteracted = 1 ;
+        }
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
-
         SDL_RenderPresent(renderer);
         SDL_Delay(FPS_LIMIT / 1000);
 
@@ -241,20 +244,22 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         tempInventory.ownerType = 1;
                                         initInventory(tempInventory.slots);
                                         loadInventory(&tempInventory);
-                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
+                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture);
                                         if(inventoryEventLoop(renderer, &tempInventory, inventory) == -1) endGame = 1;
                                         break;
                                     case '0': case '1': case '2': case '3': case '4':
-                                        makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
-                                        if(npcInteract == 0) npcInteract = 1;
-                                        else npcInteract = 0;
+                                        if(npcInteract == 0)
+                                            npcInteract = 1;
+                                        else {
+                                            npcInteract = 0;
+                                            hasInteracted = 0;
+                                        }
                                         break;
-
                                 }
                                 break;
 
                             case SDLK_e:
-                                makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture, npcInteract, interactedWith, lightLayer);
+                                makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture);
                                 if (inventoryEventLoop(renderer, inventory, NULL) == -1) endGame = 1;
                                 break;
 
@@ -297,7 +302,6 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         SDL_GetMouseState(&x, &y);
 
                                         if(*data->pause == 0) {
-
                                             if(mapObjects[y/32][x/32] != '/') {
                                                 err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory->slots + (currentSlot - 1));
                                                 if (err == 3)
@@ -306,10 +310,14 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                                     fprintf(stderr, "Wrong tool !\n");
                                                 else if (err == FAILURE)
                                                     exitWithError("Error while trying to break object.");
-                                            }else if (inventory->slots[currentSlot - 1].id != 0 && inventory->slots[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
+                                            }
+                                            else if (inventory->slots[currentSlot - 1].id != 0 && inventory->slots[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
                                                 inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,inventory->slots + (currentSlot - 1), inventory);
                                             else if (mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' && zone == 2 || zone == 3)
                                                 soilFloor(x / 32, y / 32, soiledFloor, inventory->slots + (currentSlot - 1));
+                                            else if (savedTrader == 1){
+                                                if(x >= screenWidth / 1.2 - 20 && y >= screenHeight / 2 && x <= screenWidth / 1.2 - 20 + screenWidth/7 && y <= screenHeight / 2 + screenHeight/12)printf("carré");
+                                            }
 
                                         }else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 && y <= screenHeight / 3 + 66) *data->pause = 0;
@@ -387,7 +395,7 @@ SDL_Texture* saveRendererToTexture(SDL_Renderer* renderer){
 }
 
 void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
-                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone, unsigned char** soiledFloor, SDL_Texture* npcTexture, int npcInteract, unsigned char interactedWith, SDL_Texture* lightLayer){
+                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone, unsigned char** soiledFloor, SDL_Texture* npcTexture){
     SDL_RenderClear(renderer);
 
     printMap(renderer, floorTexture, mapBg);
@@ -396,12 +404,9 @@ void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Tex
     if(zone == 2)printMap(renderer, floorTexture,(char **) soiledFloor);
     if(zone == 3)printMap(renderer, floorTexture,(char **) soiledFloor);
     if (zone == 0)printMap(renderer, floorTexture, houseRoof);
-    if(npcInteract == 1)chat(renderer, interactedWith, lightLayer);
-
 
     printMap(renderer, furnitureTexture, (char**)mapObjects);
     SDL_RenderCopy(renderer, playerTexture, playerSrc, playerDst);
-
 
 }
 
