@@ -13,6 +13,9 @@
 #include <sqlite3.h>
 #include "../colors.h"
 #include "../main.h"
-void chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture* lightLayer, char *savedDialog, unsigned char hasInteracted);
+void
+chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture *lightLayer, char *savedDialog, unsigned char hasInteracted,
+     int *savedTrader);
 char* getContent(unsigned char id);
+int isTrader(unsigned char id);
 #endif //FARMINGCO_NPC_H

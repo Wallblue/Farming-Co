@@ -103,6 +103,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     char npcInteract = 0;
     unsigned char hasInteracted = 0;
     char savedDialog[50];
+    int savedTrader;
 
 
     SDL_Texture* hotbarTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, HOTBAR_WIDTH, SLOT_SIDE);
@@ -170,7 +171,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         applyFilter(renderer,  data->timeInGame, lightLayer);
         if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)exitWithError("Can't load hotbar");
         if(npcInteract == 1) {
-            chat(renderer, interactedWith, lightLayer, savedDialog, hasInteracted);
+            chat(renderer, interactedWith, lightLayer, savedDialog, hasInteracted, &savedTrader);
             hasInteracted = 1 ;
         }
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
@@ -307,7 +308,6 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         SDL_GetMouseState(&x, &y);
 
                                         if(*data->pause == 0) {
-
                                             if(mapObjects[y/32][x/32] != '/') {
                                                 err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory->slots + (currentSlot - 1));
                                                 if (err == 3)
@@ -316,10 +316,14 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                                     fprintf(stderr, "Wrong tool !\n");
                                                 else if (err == FAILURE)
                                                     exitWithError("Error while trying to break object.");
-                                            }else if (inventory->slots[currentSlot - 1].id != 0 && inventory->slots[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
+                                            }
+                                            else if (inventory->slots[currentSlot - 1].id != 0 && inventory->slots[currentSlot - 1].objectSpriteRef != '/' && mapFg[y / 32][x / 32] == '/')
                                                 inputObject(x, y, mapObjects, mapFg, soiledFloor, zone, *data->todayDate,inventory->slots + (currentSlot - 1), inventory);
                                             else if (mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' && zone == 2 || zone == 3)
                                                 soilFloor(x / 32, y / 32, soiledFloor, inventory->slots + (currentSlot - 1));
+                                            else if (savedTrader == 1){
+                                                if(x >= screenWidth / 1.2 - 20 && y >= screenHeight / 2 && x <= screenWidth / 1.2 - 20 + screenWidth/7 && y <= screenHeight / 2 + screenHeight/12)printf("carré");
+                                            }
 
                                         }else if (*data->pause == 1) {
                                             if (x >= 300 && y >= screenHeight / 3 + 16 && x <= 500 && y <= screenHeight / 3 + 66) *data->pause = 0;

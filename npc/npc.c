@@ -4,10 +4,13 @@
 
 #include "npc.h"
 
-void chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture* lightLayer, char *savedDialog, unsigned char hasInteracted){
+void
+chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture *lightLayer, char *savedDialog, unsigned char hasInteracted,
+     int *savedTrader) {
     SDL_Rect bgRect = {40, screenHeight/1.7, screenWidth-80, screenHeight/4};
     char npcName[10];
     unsigned char id;
+    int trader;
 
     SDL_SetRenderTarget(renderer, lightLayer);
     SDL_SetRenderDrawColor(renderer, 0, 0, 10, 200);
@@ -48,9 +51,12 @@ void chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture* lightLayer, ch
     char *content;
     if(hasInteracted == 0){
         content = getContent(id);
+        *savedTrader = isTrader(id);
         sprintf(savedDialog, "%s", content);
     }
     if(hasInteracted == 1)content = savedDialog;
+
+    trader = *savedTrader;
 
     SDL_Surface* chatSurface = loadItemSurface(chatSurface, content, 42, screenWidth - 100);
     SDL_Texture* chatTexture = loadItemTexture(chatTexture, renderer, chatSurface);
@@ -59,10 +65,33 @@ void chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture* lightLayer, ch
     SDL_RenderCopy(renderer, nameTexture, NULL, &nameRect);
     SDL_RenderCopy(renderer, chatTexture, NULL, &chatRect);
 
+    if(trader == 1){
+        SDL_Rect tradingRect = {screenWidth / 1.2 - 20, screenHeight / 2, screenWidth/7, screenHeight/12};
+
+        SDL_SetRenderTarget(renderer, lightLayer);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 10, 200);
+
+        SDL_RenderClear(renderer);
+        SDL_SetRenderTarget(renderer, NULL);
+
+        SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer, lightLayer, NULL, &tradingRect);
+
+        SDL_Surface* traderSurface = loadItemSurface(traderSurface, "Trade", 58, screenWidth - 80);
+        SDL_Texture* traderTexture = loadItemTexture(traderTexture, renderer, traderSurface);
+        SDL_Rect traderRect = {screenWidth / 1.2 - 6, screenHeight / 2 + 10, traderSurface->w, traderSurface->h };
+
+        SDL_RenderCopy(renderer, traderTexture, NULL, &traderRect);
+
+        SDL_FreeSurface(traderSurface);
+        SDL_DestroyTexture(traderTexture);
+    }
+
     SDL_FreeSurface(nameSurface);
     SDL_DestroyTexture(nameTexture);
     SDL_FreeSurface(chatSurface);
     SDL_DestroyTexture(chatTexture);
+
 }
 
 char* getContent(unsigned char id) {
@@ -95,4 +124,30 @@ char* getContent(unsigned char id) {
     sqlite3_close(db);
 
     return result;
+}
+
+int isTrader(unsigned char id){
+    sqlite3_stmt* res;
+    sqlite3* db;
+    int rc;
+
+    if(openDb(&db) == FAILURE){
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    if(prepareRequest(db, "SELECT trader FROM npc WHERE npcId = ?1", &res) == FAILURE){
+        sqlite3_finalize(res);
+        sqlite3_close(db);
+        return FAILURE;
+    }
+
+    sqlite3_bind_int(res, 1, id);
+    sqlite3_step(res);
+
+    rc = sqlite3_column_int(res, 0);
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+
+    return rc;
 }
