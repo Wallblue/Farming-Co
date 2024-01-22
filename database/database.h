@@ -12,6 +12,7 @@
 #include "../define.h"
 #include <stdlib.h>
 
+
 int createDatabase();
 unsigned char openDb(sqlite3** db);
 unsigned char startGame();

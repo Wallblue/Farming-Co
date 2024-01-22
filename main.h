@@ -25,7 +25,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
 SDL_Renderer *initRenderer(SDL_Window *);
 SDL_Texture *loadTexture(SDL_Renderer *, const char *);
 void makeHudDisappear(SDL_Renderer* renderer, SDL_Texture* floorTexture, SDL_Texture* furnitureTexture, SDL_Texture* playerTexture,
-                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone, unsigned char** soiledFloor, SDL_Texture* npcTexture, int npcInteract, unsigned char interactedWith, SDL_Texture* lightLayer);
+                      char** mapBg, char** mapFg, unsigned char** mapObjects, SDL_Rect* playerSrc, SDL_Rect* playerDst, char zone, unsigned char** soiledFloor, SDL_Texture* npcTexture);
 TTF_Font *loadFont(int size);
 SDL_Surface *loadItemSurface(SDL_Surface* surface, char* text, int size, int wrapLength);
 SDL_Texture *loadItemTexture(SDL_Texture* texture, SDL_Renderer* renderer, SDL_Surface* surface);
