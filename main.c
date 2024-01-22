@@ -44,12 +44,6 @@ int main(int argc, char **argv) {
     if (loadInventory(&inventory) == FAILURE)
         exitWithError("Can't load saved inventory.");
 
-    addItem(6, 1, &inventory);
-    addItem(7, 1, &inventory);
-    addItem(9, 1, &inventory);
-    addItem(18, 1, &inventory);
-    addItem(31, 1, &inventory);
-
     updateNPC();
     gameLoop(renderer, floorTexture, playerTexture, furnitureTexture, npcTexture, lightLayer, &threadData, &inventory);
 
