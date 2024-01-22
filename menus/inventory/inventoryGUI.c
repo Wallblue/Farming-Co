@@ -68,7 +68,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
                                 draggedItem = index;
                                 heldInventory = inventoryPointer;
                             } else
-                                buyItem(inventoryPointer == inventory ? secondInventory : inventory, inventoryPointer, index);
+                                (inventoryPointer == inventory ? secondInventory : inventory, inventoryPointer, index);
                         }
                     }
                     break;
