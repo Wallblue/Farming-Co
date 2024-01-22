@@ -32,5 +32,10 @@ unsigned char refreshInventory(SDL_Renderer *renderer, SDL_Texture *rendererSave
                  int xHud, int yHud, int xMouse, int yMouse, char draggedItemIndex);
 unsigned char displayDescriptionBox(SDL_Renderer* renderer, unsigned char nX, unsigned char nY, int xHud, int yHud);
 void seeItemData(SDL_Renderer* renderer, Item heldInventory[30], unsigned char nX, unsigned char nY, int xHud, int yHud);
+
 unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer);
+
+char tradingEventLoop(SDL_Renderer* renderer, Inventory* npcInventory, Inventory* playerInventory);
+unsigned char buyItem(Inventory* playerInventory, Inventory* npcInventory, char index);
+unsigned char sellItem(Inventory* playerInventory, Inventory* npcInventory, char index);
 #endif
