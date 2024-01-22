@@ -108,10 +108,10 @@ unsigned char saveNewItem(Inventory* inventory, int slot, sqlite3* db){
     sqlite3_bind_int(res, 3, inventory->slots[slot].quantity);
 
     rc = sqlite3_step(res);
+    if(rc != SQLITE_DONE) returnProperlyM(db, res, "Can't save new item : %s\n", FAILURE);
+
     sqlite3_finalize(res);
     if(homeMadeDb == 1) sqlite3_close(db);
-
-    if(rc != SQLITE_DONE) return FAILURE;
     return SUCCESS;
 }
 
@@ -142,10 +142,11 @@ unsigned char deleteSavedItem(Inventory* inventory, char slot, sqlite3* db){
     sqlite3_bind_int(res, 2, inventory->ownerId);
 
     rc = sqlite3_step(res);
+
+    if(rc != SQLITE_DONE) returnProperlyM(db, res, "Can't delete item : %s\n", FAILURE);
+
     sqlite3_finalize(res);
     if(homeMadeDb == 1) sqlite3_close(db);
-
-    if(rc != SQLITE_DONE) return FAILURE;
     return SUCCESS;
 }
 
@@ -173,11 +174,9 @@ unsigned char alterItemQuantity(Inventory* inventory, char slot, short quantity)
     sqlite3_bind_int(res, 3, inventory->ownerId);
 
     rc = sqlite3_step(res);
-    sqlite3_finalize(res);
-    sqlite3_close(db);
-    if(rc != SQLITE_DONE) return FAILURE;
+    if(rc != SQLITE_DONE) returnProperlyM(db, res, "Can't modify item quantity : %s\n", FAILURE);
 
-    return SUCCESS;
+    returnProperlyM(db, res, NULL, SUCCESS);
 }
 
 unsigned char updateItemSlot(Inventory* inventory, char srcSlot, char destSlot, sqlite3* db){

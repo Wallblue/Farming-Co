@@ -107,7 +107,7 @@ unsigned char startGame(){
     sqlite3* db;
     if(openDb(&db) == FAILURE) return FAILURE;
     char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 10)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    if(executeSQL(db, sqlReq) == FAILURE) returnProperlyM(db, NULL, "Couldn't init database.\n", FAILURE);
 
     if(sqlite3_changes(db) != 0)
         if(addStartKitToDatabase() == FAILURE) returnProperlyM(db, NULL, "Couldn't add startKit.\n", FAILURE);

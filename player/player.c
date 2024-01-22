@@ -279,7 +279,8 @@ void moveDown(SDL_Rect *playerSrc, SDL_Rect *playerDst, int *countX, int *countY
 char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char **objectMap, Inventory* inventory, Item *heldItem) {
     sqlite3* db;
     sqlite3_stmt* res;
-    int rc, objectLinkedToolAbility, objectLinkedItemId;
+    int rc, objectLinkedToolAbility, objectLinkedItemId, evolutionId;
+    unsigned char objectState;
 
     if(openDb(&db) == FAILURE) return FAILURE;
 
@@ -315,21 +316,26 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     }
     objectLinkedToolAbility = sqlite3_column_int(res, 0);
     objectLinkedItemId = sqlite3_column_int(res, 1);
+    evolutionId = sqlite3_column_int(res, 2);
+    objectState = sqlite3_column_int(res, 3);
 
+    sqlite3_finalize(res);
     if(objectLinkedToolAbility != heldItem->ability) {
         sqlite3_close(db);
-        sqlite3_finalize(res);
         return 2;
     }
 
     rc = 0;
-    if(sqlite3_column_int(res, 3) == 3) { //This is for the cultivated loot
-        if (addItem(sqlite3_column_int(res, 2), rand() % 4 + 1, inventory) == FAILURE) rc = 3;
+    if(objectState == 3) { //This is for the cultivated loot
+        if (addItem(evolutionId, rand() % 4 + 1, inventory) == FAILURE) rc = 3;
         if (addItem(objectLinkedItemId, rand() % 3 + 1, inventory) == FAILURE) rc = 3;
     }else //Classic loot
-        if(addItem(objectLinkedItemId, 1, inventory) == FAILURE) rc = 3;
+        rc = addItem(objectLinkedItemId, 1, inventory);
 
-    sqlite3_finalize(res);
+    if(rc == FAILURE){
+        sqlite3_close(db);
+        return FAILURE;
+    }
     if(rc == 3){
         sqlite3_close(db);
         return 3;
