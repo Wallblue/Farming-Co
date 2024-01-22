@@ -76,6 +76,7 @@ SDL_Window *initWindow() {
                                           SDL_WINDOWPOS_CENTERED,
                                           screenWidth, screenHeight,
                                           SDL_WINDOW_SHOWN);
+
     if (window == NULL) {
         exitWithError("Erreur de création de la fenêtre");
     }

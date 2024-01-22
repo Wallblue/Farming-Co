@@ -235,6 +235,25 @@ unsigned char updateDate(int todayDate){
         return FAILURE;
     }
 
+    if(todayDate%3 == 0) {
+        sqlite3_reset(res);
+
+        if (prepareRequest(db, "UPDATE NPC_OWN SET sold = 0", &res) == FAILURE) {
+            sqlite3_finalize(res);
+            sqlite3_close(db);
+            return FAILURE;
+        }
+
+        sqlite3_bind_int(res, 1, todayDate);
+        rc = sqlite3_step(res);
+
+        if (rc != SQLITE_DONE) {
+            sqlite3_finalize(res);
+            sqlite3_close(db);
+            return FAILURE;
+        }
+    }
+
     sqlite3_finalize(res);
     sqlite3_close(db);
     return SUCCESS;
