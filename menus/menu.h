@@ -35,5 +35,5 @@ void seeItemData(SDL_Renderer* renderer, Item *heldItem, unsigned char nX, unsig
 
 unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer);
 unsigned char buyItem(Inventory* playerInventory, Inventory* npcInventory, char index);
-unsigned char sellItem(Inventory* playerInventory, Inventory* npcInventory, char index);
+unsigned char sellItem(Inventory* playerInventory, char index);
 #endif

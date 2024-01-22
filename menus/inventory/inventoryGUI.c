@@ -56,7 +56,7 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
 
                         if(draggedItem != -1){
                             if(heldInventory->ownerType == 0 && inventoryPointer->ownerType == 2) {
-                                sellItem(heldInventory, inventoryPointer, draggedItem);
+                                sellItem(heldInventory, draggedItem);
                                 if(heldInventory->slots[draggedItem].id == 0) draggedItem = -1;
                             }else {
                                 if (heldInventory != inventoryPointer || draggedItem != index)

@@ -42,7 +42,7 @@ unsigned char buyItem(Inventory* playerInventory, Inventory* npcInventory, char 
     return SUCCESS;
 }
 
-unsigned char sellItem(Inventory* playerInventory, Inventory* npcInventory, char index){
+unsigned char sellItem(Inventory* playerInventory, char index){
     if(alterMoneyAmount(playerInventory->slots[index].price, NULL) == FAILURE) return FAILURE;
     if(subtractItem(playerInventory->slots[index].id, 1, playerInventory) == FAILURE) return FAILURE;
     return SUCCESS;

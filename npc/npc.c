@@ -94,8 +94,15 @@ char* getContent(unsigned char id) {
         sqlite3_step(res);
     }
 
-    content = malloc(strlen((const char*)sqlite3_column_text(res, 0)) * sizeof(char));
+    content = malloc(strlen((const char*)sqlite3_column_text(res, 0)) * sizeof(char) + 1);
+    if(content == NULL){
+        sqlite3_finalize(res);
+        sqlite3_close(db);
+        fprintf(stderr, "Couldn't allocate dialog.\n");
+        return NULL;
+    }
     strcpy(content, (const char*)sqlite3_column_text(res, 0));
+    content[strlen((const char*)sqlite3_column_text(res, 0))] = '\0';
 
     sqlite3_finalize(res);
     sqlite3_close(db);

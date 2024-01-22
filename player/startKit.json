@@ -1,0 +1,31 @@
+[
+  {
+    "itemId": 6,
+    "quantity": 1,
+    "slot": 0
+  },{
+    "itemId": 7,
+    "quantity": 1,
+    "slot": 1
+  },{
+    "itemId": 8,
+    "quantity": 1,
+    "slot": 2
+  },{
+    "itemId": 35,
+    "quantity": 1,
+    "slot": 3
+  },{
+    "itemId": 32,
+    "quantity": 18,
+    "slot": 4
+  },{
+    "itemId": 18,
+    "quantity": 1,
+    "slot": 5
+  },{
+    "itemId": 19,
+    "quantity": 1,
+    "slot": 6
+  }
+]
