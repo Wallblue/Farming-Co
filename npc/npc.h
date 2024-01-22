@@ -25,5 +25,7 @@ chat(SDL_Renderer *renderer, unsigned char npcChar, SDL_Texture *lightLayer, cha
 char* getContent(unsigned char id);
 int isTrader(unsigned char id);
 Npc* getNpcByChar(const unsigned char npcChar);
+unsigned char addNpcToDatabase();
 unsigned char addSalesToDatabase();
+unsigned char addDialogsToDatabase();
 #endif //FARMINGCO_NPC_H

@@ -1,0 +1,67 @@
+[
+  {
+    "dialogId": 1,
+    "content": "Explore my shop, it's filled with curated brilliance.",
+    "npcId": 1
+  },{
+    "dialogId": 2,
+    "content": "Discover intellect in every item at my shop. Take a look!",
+    "npcId": 1
+  },{
+    "dialogId": 3,
+    "content": "Smart choices await you in my updated collection. Care to browse?",
+    "npcId": 1
+  },{
+    "dialogId": 4,
+    "content": "Hello dear, take a peek at my updated shop - found some gems you might like!",
+    "npcId": 2
+  },{
+    "dialogId": 5,
+    "content": "Hi darling, check out the latest in my shop. Curated just for you!",
+    "npcId": 2
+  },{
+    "dialogId": 6,
+    "content": "New arrivals at my fantastic shop! Care to have a quick look?",
+    "npcId": 2
+  },{
+    "dialogId": 7,
+    "content": "I do not like chocolate",
+    "npcId": 3
+  },{
+    "dialogId": 8,
+    "content": "What a great place !",
+    "npcId": 3
+  },{
+    "dialogId": 9,
+    "content": "My name is Chocolat, but I'm not to be eaten",
+    "npcId": 3
+  },{
+    "dialogId": 10,
+    "content": "Check out my shop selected just for you!",
+    "npcId": 4
+  },{
+    "dialogId": 11,
+    "content": "Explore my shop's latest finds!",
+    "npcId": 4
+  },{
+    "dialogId": 12,
+    "content": "See what's new at my shop!",
+    "npcId": 4
+  },{
+    "dialogId": 13,
+    "content": "Do not be afraid, I do not jinx people",
+    "npcId": 5
+  },{
+    "dialogId": 14,
+    "content": "I'm craving chocolate ! But it might kill me",
+    "npcId": 5
+  },{
+    "dialogId": 15,
+    "content": "Meow meow meow meow meow (inaudible)",
+    "npcId": 5
+  },{
+    "dialogId": 16,
+    "content": "Coucou Monsieur Sananes",
+    "npcId": 5
+  }
+]

@@ -30,8 +30,6 @@ CREATE TABLE IF NOT EXISTS npc(
     name VARCHAR(25),
     sprite VARCHAR(128),
     trader BOOLEAN,
-    x INTEGER,
-    y INTEGER,
     zone INTEGER
 );
 

@@ -1,0 +1,33 @@
+[
+  {
+    "npcId": 1,
+    "name": "Pumpkin",
+    "spriteRef": "0",
+    "trader": 1,
+    "zone": 1
+  },{
+    "npcId": 2,
+    "name": "Bianca",
+    "spriteRef": "1",
+    "trader": 1,
+    "zone": 1
+  },{
+    "npcId": 3,
+    "name": "Chocolat",
+    "spriteRef": "2",
+    "trader": 0,
+    "zone": 1
+  },{
+    "npcId": 4,
+    "name": "Penny",
+    "spriteRef": "3",
+    "trader": 1,
+    "zone": 1
+  },{
+    "npcId": 5,
+    "name": "Cosmos",
+    "spriteRef": "4",
+    "trader": 0,
+    "zone": 1
+  }
+]

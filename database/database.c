@@ -74,16 +74,7 @@ unsigned char startGame(){
     if(openDb(&db) == FAILURE) return FAILURE;
     char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 100)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO npc VALUES (1, \"Pumpkin\", \"0\", 1, 0, 0, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO npc VALUES (2, \"Bianca\", \"1\", 1, 0, 0, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO npc VALUES (3, \"Chocolat\", \"2\", 0, 0, 0, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO npc VALUES (4, \"Penny\", \"3\", 1, 0, 0, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-    sqlReq = "INSERT OR IGNORE INTO npc VALUES (5, \"Cosmos\", \"4\", 0, 0, 0, 1)";
-    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+
     sqlReq = "INSERT OR IGNORE INTO dialog VALUES (1, \"Explore my shop, it's filled with curated brilliance.\", 1)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
     sqlReq = "INSERT OR IGNORE INTO dialog VALUES (2, \"Discover intellect in every item at my shop. Take a look!\", 1)";

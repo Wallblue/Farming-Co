@@ -174,6 +174,42 @@ Npc* getNpcByChar(const unsigned char npcChar){
     return npc;
 }
 
+unsigned char addNpcToDatabase(){
+    cJSON* jsonContent = NULL;
+    cJSON* jsonObject;
+    char* sqlReq;
+    sqlite3* db;
+
+    if(parseJsonFile("../npc/npcs.json", &jsonContent) == FAILURE) return FAILURE;
+
+    if(openDb(&db) == FAILURE) return FAILURE;
+
+    cJSON_ArrayForEach(jsonObject, jsonContent){
+        cJSON* npcId = cJSON_GetObjectItemCaseSensitive(jsonObject, "npcId");
+        cJSON* name = cJSON_GetObjectItemCaseSensitive(jsonObject, "name");
+        cJSON* spriteRef = cJSON_GetObjectItemCaseSensitive(jsonObject, "spriteRef");
+        cJSON* trader = cJSON_GetObjectItemCaseSensitive(jsonObject, "trader");
+        cJSON* zone = cJSON_GetObjectItemCaseSensitive(jsonObject, "zone");
+
+        sqlReq = malloc(130 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        if(sqlReq == NULL) {
+            free(sqlReq);
+            return FAILURE;
+        }
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO npc (npcId, name, sprite, trader, zone) VALUES (%d, \"%s\", %c, %d, %d);",
+                       npcId->valueint, name->valuestring, *spriteRef->valuestring, trader->valueint, zone->valueint) + 1] = '\0';
+
+        if(executeSQL(db, sqlReq) == FAILURE){
+            free(sqlReq);
+            return FAILURE;
+        }
+        free(sqlReq);
+    }
+
+    sqlite3_close(db);
+    return SUCCESS;
+}
+
 unsigned char addSalesToDatabase(){
     cJSON* jsonContent = NULL;
     cJSON* jsonObject;
@@ -197,6 +233,40 @@ unsigned char addSalesToDatabase(){
         }
         sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO NPC_OWN (itemId, npcId, buyingPrice, quantity, sold) VALUES (%d, %d, %d, %d, 0);",
                        itemId->valueint, npcId->valueint, buyingPrice->valueint, quantity->valueint) + 1] = '\0';
+
+        if(executeSQL(db, sqlReq) == FAILURE){
+            free(sqlReq);
+            return FAILURE;
+        }
+        free(sqlReq);
+    }
+
+    sqlite3_close(db);
+    return SUCCESS;
+}
+
+unsigned char addDialogsToDatabase(){
+    cJSON* jsonContent = NULL;
+    cJSON* jsonObject;
+    char* sqlReq;
+    sqlite3* db;
+
+    if(parseJsonFile("../npc/dialogs.json", &jsonContent) == FAILURE) return FAILURE;
+
+    if(openDb(&db) == FAILURE) return FAILURE;
+
+    cJSON_ArrayForEach(jsonObject, jsonContent){
+        cJSON* dialogId = cJSON_GetObjectItemCaseSensitive(jsonObject, "dialogId");
+        cJSON* content = cJSON_GetObjectItemCaseSensitive(jsonObject, "content");
+        cJSON* npcId = cJSON_GetObjectItemCaseSensitive(jsonObject, "npcId");
+
+        sqlReq = malloc(190 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        if(sqlReq == NULL) {
+            free(sqlReq);
+            return FAILURE;
+        }
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO dialog (dialogId, content, npcId) VALUES (%d, \"%s\", %d);",
+                       dialogId->valueint, content->valuestring, npcId->valueint) + 1] = '\0';
 
         if(executeSQL(db, sqlReq) == FAILURE){
             free(sqlReq);
