@@ -8,7 +8,7 @@
 
 void affectItem(Item *item, int id, const char *name, unsigned char quantity, const char *type, const char *description,
                 unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char *sprite,
-                unsigned char objectSpriteRef, int evolution, int linkedTool) {
+                unsigned char objectSpriteRef, int evolution, int linkedTool, int price) {
     item->id = id;
     strcpy(item->name, name);
     item->quantity = quantity;
@@ -21,10 +21,11 @@ void affectItem(Item *item, int id, const char *name, unsigned char quantity, co
     item->objectSpriteRef = objectSpriteRef;
     item->evolution = evolution;
     item->linkedTool = linkedTool;
+    item->price = price;
 }
 
 void resetItem(Item* item){
-    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "", 0, 0, 0);
+    affectItem(item, 0, "", 0, "", "", 0, 0, 0, "", 0, 0, 0, 0);
 }
 
 unsigned char addItemsToDatabase(){
@@ -49,16 +50,17 @@ unsigned char addItemsToDatabase(){
         cJSON* linkedSpriteRef = cJSON_GetObjectItemCaseSensitive(jsonObject, "linkedSpriteRef");
         cJSON* evolution = cJSON_GetObjectItemCaseSensitive(jsonObject, "evolution");
         cJSON* linkedTool = cJSON_GetObjectItemCaseSensitive(jsonObject, "linkedTool");
+        cJSON* sellingPrice = cJSON_GetObjectItemCaseSensitive(jsonObject, "sellingPrice");
 
-        sqlReq = malloc(460 * sizeof(char)); //Allocating max size bc we can't calculate it before
+        sqlReq = malloc(470 * sizeof(char)); //Allocating max size bc we can't calculate it before
         if(sqlReq == NULL) {
             free(sqlReq);
             return FAILURE;
         }
-        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM (itemId, name, type, description, energyBonus, ability, sprite, growTime, linkedObjectSpriteRef, evolution, linkedTool)"
-                                          " VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, \"%s\", %hhu, \"%c\", %d, %d);",
+        sqlReq[sprintf(sqlReq, "INSERT OR IGNORE INTO ITEM (itemId, name, type, description, energyBonus, ability, sprite, growTime, linkedObjectSpriteRef, evolution, linkedTool, sellingPrice)"
+                                          " VALUES (%d, \"%s\", \"%s\", \"%s\", %hu, %hhu, \"%s\", %hhu, \"%c\", %d, %d, %d);",
                 id->valueint, name->valuestring, type->valuestring, description->valuestring, energyBonus->valueint, ability->valueint, sprite->valuestring,
-                growTime->valueint, *(linkedSpriteRef->valuestring), evolution == NULL ? 0 : evolution->valueint, linkedTool->valueint) + 1] = '\0';
+                growTime->valueint, *(linkedSpriteRef->valuestring), evolution == NULL ? 0 : evolution->valueint, linkedTool->valueint, sellingPrice->valueint) + 1] = '\0';
 
         if(executeSQL(db, sqlReq) == FAILURE){
             free(sqlReq);
@@ -80,7 +82,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
         if (openDb(&db) == FAILURE) return FAILURE;
         homeMadeDb = 1;
     }
-    if(prepareRequest(db, "SELECT name, type, description, energyBonus, ability, growTime, sprite, linkedObjectSpriteRef, evolution, linkedTool FROM item WHERE itemId = ?1;", &res) == FAILURE) return FAILURE;
+    if(prepareRequest(db, "SELECT name, type, description, energyBonus, ability, growTime, sprite, linkedObjectSpriteRef, evolution, linkedTool, sellingPrice FROM item WHERE itemId = ?1;", &res) == FAILURE) return FAILURE;
     sqlite3_bind_int(res, 1, id);
     rc = sqlite3_step(res);
     if(rc != SQLITE_ROW){
@@ -91,7 +93,7 @@ unsigned char getItem(int id, Item* dest, sqlite3* db){
     affectItem(dest, id, (char *) sqlite3_column_text(res, 0), 0, (char *) sqlite3_column_text(res, 1),
                (char *) sqlite3_column_text(res, 2),sqlite3_column_int(res, 3),
                sqlite3_column_int(res, 4), sqlite3_column_int(res, 5),(char *) sqlite3_column_text(res, 6),
-               *sqlite3_column_text(res, 7), sqlite3_column_int(res, 8), sqlite3_column_int(res, 9));
+               *sqlite3_column_text(res, 7), sqlite3_column_int(res, 8), sqlite3_column_int(res, 9), sqlite3_column_int(res, 10));
 
     if(homeMadeDb == 1) sqlite3_close(db);
     sqlite3_finalize(res);
@@ -111,12 +113,12 @@ void swapItems(Item* srcItem, Item* destItem){
     if(srcItem == destItem) return;
 
     affectItem(&temp, srcItem->id, srcItem->name, srcItem->quantity, srcItem->type, srcItem->description, srcItem->energyBonus,
-               srcItem->ability, srcItem->growTime, srcItem->sprite, srcItem->objectSpriteRef, srcItem->evolution, srcItem->linkedTool);
+               srcItem->ability, srcItem->growTime, srcItem->sprite, srcItem->objectSpriteRef, srcItem->evolution, srcItem->linkedTool, srcItem->price);
 
     affectItem(srcItem, destItem->id, destItem->name, destItem->quantity, destItem->type, destItem->description, destItem->energyBonus,
-               destItem->ability, destItem->growTime, destItem->sprite, destItem->objectSpriteRef, destItem->evolution, destItem->linkedTool);
+               destItem->ability, destItem->growTime, destItem->sprite, destItem->objectSpriteRef, destItem->evolution, destItem->linkedTool, destItem->price);
 
     affectItem(destItem, temp.id, temp.name, temp.quantity, temp.type, temp.description, temp.energyBonus,
-               temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef, temp.evolution, temp.linkedTool);
+               temp.ability, temp.growTime, temp.sprite, temp.objectSpriteRef, temp.evolution, temp.linkedTool, temp.price);
 }
 

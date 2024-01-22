@@ -31,7 +31,7 @@ unsigned char setItem(int id, unsigned char quantity, Inventory* inventory){
 
     getItem(id, &item, NULL);
     affectItem(inventory->slots + index, item.id, item.name, quantity, item.type, item.description, item.energyBonus,
-               item.ability, item.growTime, item.sprite, item.objectSpriteRef, 0, item.linkedTool);
+               item.ability, item.growTime, item.sprite, item.objectSpriteRef, 0, item.linkedTool, item.price);
     saveNewItem(inventory, index, NULL);
     return SUCCESS;
 }
@@ -43,7 +43,7 @@ unsigned char addItem(int id, unsigned char quantity, Inventory* inventory){
         return setItem(id, quantity, inventory);
     //but if it does
     inventory->slots[index].quantity += quantity;
-    alterItemQuantity(inventory, index, quantity, 0);
+    alterItemQuantity(inventory, index, quantity);
     return SUCCESS;
 }
 
@@ -56,7 +56,7 @@ unsigned char subtractItem(int id, unsigned char quantity, Inventory* inventory)
         resetItem(inventory->slots + index);
     }
     else {
-        if(alterItemQuantity(inventory, index, quantity, 1) == FAILURE) return FAILURE;
+        if(alterItemQuantity(inventory, index, (short)-quantity) == FAILURE) return FAILURE;
         inventory->slots[index].quantity -= quantity;
     }
     return SUCCESS;
@@ -71,15 +71,15 @@ unsigned char loadInventory(Inventory* inventory){
     switch(inventory->ownerType){
         case 1:
             rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, OBJECT_OWN.quantity, "
-                                    "linkedObjectSpriteRef, evolution, linkedTool, OBJECT_OWN.slot FROM item, OBJECT_OWN WHERE OBJECT_OWN.itemId = item.itemId AND OBJECT_OWN.objectId = ?1", &res);
+                                    "linkedObjectSpriteRef, evolution, linkedTool, item.sellingPrice, OBJECT_OWN.slot FROM item, OBJECT_OWN WHERE OBJECT_OWN.itemId = item.itemId AND OBJECT_OWN.objectId = ?1", &res);
             break;
         case 2:
-            rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity, "
-                                    "linkedObjectSpriteRef, evolution, linkedTool FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res);
+            rc = prepareRequest(db, "SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, NPC_OWN.quantity - NPC_OWN.sold, "
+                                    "linkedObjectSpriteRef, evolution, linkedTool, NPC_OWN.buyingPrice FROM item, NPC_OWN WHERE NPC_OWN.itemId = item.itemId AND NPC_OWN.objectId = ?1", &res);
             break;
         default:
             rc = prepareRequest(db,"SELECT item.itemId, name, type, description, energyBonus, ability, growTime, sprite, PLAYER_OWN.quantity, "
-                                   "linkedObjectSpriteRef, evolution, linkedTool, PLAYER_OWN.slot FROM item, PLAYER_OWN WHERE PLAYER_OWN.itemId = item.itemId AND PLAYER_OWN.playerId = ?1", &res);
+                                   "linkedObjectSpriteRef, evolution, linkedTool, item.sellingPrice, PLAYER_OWN.slot FROM item, PLAYER_OWN WHERE PLAYER_OWN.itemId = item.itemId AND PLAYER_OWN.playerId = ?1", &res);
             break;
     }
 
@@ -92,11 +92,12 @@ unsigned char loadInventory(Inventory* inventory){
 
     sqlite3_bind_int(res, 1, inventory->ownerId);
     while(sqlite3_step(res) == SQLITE_ROW){
-        if(inventory->ownerType != 2) index = sqlite3_column_int(res, 12);
+        if(inventory->ownerType != 2) index = sqlite3_column_int(res, 13);
         else ++index;
         affectItem(inventory->slots + index, sqlite3_column_int(res, 0), (char*)sqlite3_column_text(res, 1), sqlite3_column_int(res, 8), (char*)sqlite3_column_text(res, 2),
                    (char*)sqlite3_column_text(res, 3), sqlite3_column_int(res, 4), sqlite3_column_int(res, 5), sqlite3_column_int(res, 6),
-                   (char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 9), sqlite3_column_int(res, 10), sqlite3_column_int(res, 11));
+                   (char*)sqlite3_column_text(res, 7), *sqlite3_column_text(res, 9), sqlite3_column_int(res, 10), sqlite3_column_int(res, 11),
+                   sqlite3_column_int(res, 12));
     }
     sqlite3_finalize(res);
     sqlite3_close(db);
@@ -133,7 +134,7 @@ unsigned char swapInventoryItems(Inventory* srcInventory, char srcSlot, Inventor
     if(destInventory->slots[destSlot].id != 0 && srcInventory->slots[srcSlot].id == destInventory->slots[destSlot].id){
         if(deleteSavedItem(srcInventory, srcSlot, db) == FAILURE)
             return returnProperly(db, NULL, "SQL Error : %s", FAILURE);
-        if(alterItemQuantity(destInventory, destSlot, srcInventory->slots[srcSlot].quantity, 0) == FAILURE)
+        if(alterItemQuantity(destInventory, destSlot, srcInventory->slots[srcSlot].quantity) == FAILURE)
             return returnProperly(db, NULL, "SQL Error : %s", FAILURE);
         resetItem(srcInventory->slots + srcSlot);
 

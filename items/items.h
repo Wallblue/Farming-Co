@@ -18,6 +18,7 @@ struct Item{
     unsigned char objectSpriteRef;
     int evolution;
     int linkedTool;
+    int price;
 };
 typedef struct Item Item;
 
@@ -34,7 +35,7 @@ typedef struct Item Item;
 //Functions :
 void affectItem(Item *item, int id, const char *name, unsigned char quantity, const char *type, const char *description,
                 unsigned short energyBonus, unsigned char ability, unsigned char growTime, const char *sprite,
-                unsigned char objectSpriteRef, int evolution, int linkedTool);
+                unsigned char objectSpriteRef, int evolution, int linkedTool, int price);
 void resetItem(Item* item);
 unsigned char addItemsToDatabase();
 unsigned char getItem(int id, Item* dest, sqlite3* db);
