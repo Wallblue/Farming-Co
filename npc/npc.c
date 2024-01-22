@@ -4,12 +4,10 @@
 
 #include "npc.h"
 
-void
-chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture *lightLayer, char *savedDialog, unsigned char hasInteracted,
-     int *savedTrader) {
-    SDL_Rect bgRect = {40, screenHeight/1.7, screenWidth-80, screenHeight/4};
-    char npcName[10];
-    unsigned char id;
+void chat(SDL_Renderer *renderer, unsigned char npcChar, SDL_Texture *lightLayer, char **savedDialog, unsigned char hasInteracted,
+          int *savedTrader) {
+    SDL_Rect bgRect = {40, screenHeight / 1.7, screenWidth - 80, screenHeight / 4};
+    Npc* npc;
     int trader;
 
     SDL_SetRenderTarget(renderer, lightLayer);
@@ -21,44 +19,20 @@ chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture *lightLayer, char *s
     SDL_SetTextureBlendMode(lightLayer, SDL_BLENDMODE_BLEND);
     SDL_RenderCopy(renderer, lightLayer, NULL, &bgRect);
 
-    switch(npc){
-        case '0':
-            sprintf(npcName, "%s", NPC1_NAME);
-            id = 1;
-            break;
-        case '1':
-            sprintf(npcName, "%s", NPC2_NAME);
-            id = 2;
-            break;
-        case '2':
-            sprintf(npcName, "%s", NPC3_NAME);
-            id = 3;
-            break;
-        case '3':
-            sprintf(npcName, "%s", NPC4_NAME);
-            id = 4;
-            break;
-        case '4':
-            sprintf(npcName, "%s", NPC5_NAME);
-            id = 5;
-            break;
-    }
+    npc = getNpcByChar(npcChar);
 
-    SDL_Surface* nameSurface = loadItemSurface(nameSurface, npcName, 58, screenWidth-80);
-    SDL_Texture* nameTexture = loadItemTexture(nameTexture, renderer, nameSurface);
-    SDL_Rect nameRect = {60, screenHeight / 1.7 + 20, nameSurface->w, nameSurface->h };
+    SDL_Surface *nameSurface = loadItemSurface(nameSurface, npc->name, 58, screenWidth - 80);
+    SDL_Texture *nameTexture = loadItemTexture(nameTexture, renderer, nameSurface);
+    SDL_Rect nameRect = {60, screenHeight / 1.7 + 20, nameSurface->w, nameSurface->h};
 
-    char *content;
-    if(hasInteracted == 0){
-        content = getContent(id);
-        *savedTrader = isTrader(id);
-        sprintf(savedDialog, "%s", content);
+    if (hasInteracted == 0) {
+        *savedDialog = getContent(npc->id);
+        *savedTrader = isTrader(npc->id);
     }
-    if(hasInteracted == 1)content = savedDialog;
 
     trader = *savedTrader;
 
-    SDL_Surface* chatSurface = loadItemSurface(chatSurface, content, 42, screenWidth - 100);
+    SDL_Surface* chatSurface = loadItemSurface(chatSurface, *savedDialog, 42, screenWidth - 100);
     SDL_Texture* chatTexture = loadItemTexture(chatTexture, renderer, chatSurface);
     SDL_Rect chatRect = {60, screenHeight / 1.7 + 60, chatSurface->w, chatSurface->h };
 
@@ -87,16 +61,17 @@ chat(SDL_Renderer *renderer, unsigned char npc, SDL_Texture *lightLayer, char *s
         SDL_DestroyTexture(traderTexture);
     }
 
+    free(npc);
     SDL_FreeSurface(nameSurface);
     SDL_DestroyTexture(nameTexture);
     SDL_FreeSurface(chatSurface);
     SDL_DestroyTexture(chatTexture);
-
 }
 
 char* getContent(unsigned char id) {
     sqlite3_stmt* res;
     sqlite3* db;
+    char* content;
     srand(time(NULL));
     int chosenDialog = rand() % 3 + 1;
     int i;
@@ -118,12 +93,13 @@ char* getContent(unsigned char id) {
         sqlite3_step(res);
     }
 
-    const char* content = (const char*)sqlite3_column_text(res, 0);
-    char* result = strdup(content);
+    content = malloc(strlen((const char*)sqlite3_column_text(res, 0)) * sizeof(char));
+    strcpy(content, (const char*)sqlite3_column_text(res, 0));
+
     sqlite3_finalize(res);
     sqlite3_close(db);
 
-    return result;
+    return content;
 }
 
 int isTrader(unsigned char id){
@@ -150,4 +126,44 @@ int isTrader(unsigned char id){
     sqlite3_close(db);
 
     return rc;
+}
+
+Npc* getNpcByChar(const unsigned char npcChar){
+    Npc* npc = malloc(sizeof(Npc));
+    if(npc == NULL) return NULL;
+
+    switch(npcChar){
+        case '0':
+            npc->name = malloc(sizeof(char) * strlen(NPC1_NAME));
+            if(npc->name == NULL) return NULL;
+            strcpy(npc->name, NPC1_NAME);
+            npc->id = 1;
+            break;
+        case '1':
+            npc->name = malloc(sizeof(char) * strlen(NPC2_NAME));
+            if(npc->name == NULL) return NULL;
+            strcpy(npc->name, NPC2_NAME);
+            npc->id = 2;
+            break;
+        case '2':
+            npc->name = malloc(sizeof(char) * strlen(NPC3_NAME));
+            if(npc->name == NULL) return NULL;
+            strcpy(npc->name, NPC3_NAME);
+            npc->id = 3;
+            break;
+        case '3':
+            npc->name = malloc(sizeof(char) * strlen(NPC4_NAME));
+            if(npc->name == NULL) return NULL;
+            strcpy(npc->name, NPC4_NAME);
+            npc->id = 4;
+            break;
+        case '4':
+            npc->name = malloc(sizeof(char) * strlen(NPC5_NAME));
+            if(npc->name == NULL) return NULL;
+            strcpy(npc->name, NPC5_NAME);
+            npc->id = 5;
+            break;
+    }
+
+    return npc;
 }

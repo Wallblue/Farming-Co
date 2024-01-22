@@ -96,7 +96,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
     unsigned char **soiledFloor;
     char npcInteract = 0;
     unsigned char hasInteracted = 0;
-    char savedDialog[50];
+    char* savedDialog;
     int savedTrader;
 
 
@@ -165,7 +165,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         applyFilter(renderer,  data->timeInGame, lightLayer);
         if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)exitWithError("Can't load hotbar");
         if(npcInteract == 1) {
-            chat(renderer, interactedWith, lightLayer, savedDialog, hasInteracted, &savedTrader);
+            chat(renderer, interactedWith, lightLayer, &savedDialog, hasInteracted, &savedTrader);
             hasInteracted = 1 ;
         }
         if(*data->pause == 1)pauseMenu(renderer, lightLayer);
@@ -213,20 +213,20 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                 switch(lastMovement){
                                     case 0:
                                         interactedWith = mapObjects[countY][countX-1];
-                                        tempInventory.ownerId = getObjectIdByCoordinates(countX - 1, countY, zone, NULL);
+                                        if(interactedWith != '/') tempInventory.ownerId = getObjectIdByCoordinates(countX - 1, countY, zone, NULL);
                                         break;
                                     case 1:
                                         interactedWith = mapObjects[countY][countX+1];
-                                        tempInventory.ownerId = getObjectIdByCoordinates(countX + 1, countY, zone, NULL);
+                                        if(interactedWith != '/') tempInventory.ownerId = getObjectIdByCoordinates(countX + 1, countY, zone, NULL);
                                         break;
                                     case 2:
                                         interactedWith = mapObjects[countY-1][countX];
-                                        tempInventory.ownerId = getObjectIdByCoordinates(countX, countY - 1, zone, NULL);
+                                        if(interactedWith != '/') tempInventory.ownerId = getObjectIdByCoordinates(countX, countY - 1, zone, NULL);
                                         if(zone==1)interactedWith = npcMap[countY-1][countX];
                                         break;
                                     case 3:
                                         interactedWith = mapObjects[countY+1][countX];
-                                        tempInventory.ownerId = getObjectIdByCoordinates(countX, countY + 1, zone, NULL);
+                                        if(interactedWith != '/') tempInventory.ownerId = getObjectIdByCoordinates(countX, countY + 1, zone, NULL);
                                         break;
                                 }
 
@@ -253,6 +253,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         else {
                                             npcInteract = 0;
                                             hasInteracted = 0;
+                                            free(savedDialog);
                                         }
                                         break;
                                 }
