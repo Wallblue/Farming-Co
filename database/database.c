@@ -72,9 +72,22 @@ unsigned char prepareRequest(sqlite3* db, const char* request, sqlite3_stmt** re
 unsigned char startGame(){
     sqlite3* db;
     if(openDb(&db) == FAILURE) return FAILURE;
-    char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 100)";
+    char* sqlReq = "INSERT OR IGNORE INTO PLAYER VALUES (1, \"Player\", DATE('now'), \"Farm\", 0, 10)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
-
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (6, 1, 1, 0)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (7, 1, 1, 1)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (8, 1, 1, 2)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (35, 1, 1, 3)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (32, 1, 1, 4)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (18, 1, 1, 5)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
+    sqlReq = "INSERT OR IGNORE INTO PLAYER_OWN VALUES (19, 1, 1, 6)";
+    if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
     sqlReq = "INSERT OR IGNORE INTO dialog VALUES (1, \"Explore my shop, it's filled with curated brilliance.\", 1)";
     if(executeSQL(db, sqlReq) == FAILURE) return FAILURE;
     sqlReq = "INSERT OR IGNORE INTO dialog VALUES (2, \"Discover intellect in every item at my shop. Take a look!\", 1)";

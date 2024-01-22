@@ -46,8 +46,17 @@
     "npcId": 2,
     "buyingPrice": 10,
     "quantity": 30
-  },
-  {
+  },  {
+    "itemId": 13,
+    "npcId": 2,
+    "buyingPrice": 10,
+    "quantity": 30
+  }, {
+    "itemId": 10,
+    "npcId": 2,
+    "buyingPrice": 10,
+    "quantity": 30
+  }, {
     "itemId": 21,
     "npcId": 4,
     "buyingPrice": 10,
@@ -63,6 +72,66 @@
     "itemId": 23,
     "npcId": 4,
     "buyingPrice": 30,
+    "quantity": 5
+  },{
+    "itemId": 24,
+    "npcId": 4,
+    "buyingPrice": 30,
+    "quantity": 5
+  },{
+    "itemId": 25,
+    "npcId": 4,
+    "buyingPrice": 30,
+    "quantity": 5
+  },{
+    "itemId": 26,
+    "npcId": 4,
+    "buyingPrice": 50,
+    "quantity": 5
+  },{
+    "itemId": 27,
+    "npcId": 4,
+    "buyingPrice": 25,
+    "quantity": 5
+  },{
+    "itemId": 28,
+    "npcId": 4,
+    "buyingPrice": 25,
+    "quantity": 5
+  },{
+    "itemId": 29,
+    "npcId": 4,
+    "buyingPrice": 25,
+    "quantity": 5
+  },{
+    "itemId": 30,
+    "npcId": 4,
+    "buyingPrice": 25,
+    "quantity": 5
+  },{
+    "itemId": 31,
+    "npcId": 4,
+    "buyingPrice": 50,
+    "quantity": 5
+  },{
+    "itemId": 32,
+    "npcId": 4,
+    "buyingPrice": 50,
+    "quantity": 5
+  },{
+    "itemId": 33,
+    "npcId": 4,
+    "buyingPrice": 40,
+    "quantity": 5
+  },{
+    "itemId": 34,
+    "npcId": 4,
+    "buyingPrice": 20,
+    "quantity": 5
+  },{
+    "itemId": 9,
+    "npcId": 4,
+    "buyingPrice": 50,
     "quantity": 5
   }
 ]
