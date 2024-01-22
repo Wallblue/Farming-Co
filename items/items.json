@@ -70,7 +70,7 @@
     "sprite": "axe.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 6
+    "sellingPrice" : 0
   }, {
     "id": 7,
     "name": "hoe",
@@ -82,7 +82,7 @@
     "sprite": "hoe.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 6
+    "sellingPrice" : 0
   }, {
     "id": 8,
     "name": "watering can",
@@ -94,7 +94,7 @@
     "sprite": "watering_can.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 5
+    "sellingPrice" : 0
   }, {
     "id": 9,
     "name": "chest",
@@ -130,7 +130,7 @@
     "sprite": "berries.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 5
+    "sellingPrice" : 9
   }, {
     "id": 12,
     "name": "bottle",
@@ -202,7 +202,7 @@
     "sprite": "wheat.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 6
+    "sellingPrice" : 11
   }, {
     "id": 18,
     "name": "Berry crops",
@@ -420,7 +420,7 @@
     "sprite": "pickaxe.bmp",
     "linkedSpriteRef" : "/",
     "linkedTool" : 0,
-    "sellingPrice" : 6
+    "sellingPrice" : 0
   }
 
 ]

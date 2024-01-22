@@ -25,6 +25,9 @@ int main(int argc, char **argv) {
     if (createDatabase() == FAILURE) exitWithError("Database creation error.");
     if (startGame() == FAILURE) exitWithError("Couldn't start game.");
     if (addItemsToDatabase() == FAILURE) exitWithError("Items loading in database impossible");
+    if (addNpcToDatabase() == FAILURE) exitWithError("Impossible to add NPCs to database");
+    if (addDialogsToDatabase() == FAILURE) exitWithError("Impossible to add dialogs to database.");
+    if (addSalesToDatabase() == FAILURE) exitWithError("Impossible to add sales to database");
 
     todayDate = getDateInGame();
     struct ThreadData threadData;

@@ -1,0 +1,68 @@
+[
+  {
+    "itemId": 6,
+    "npcId": 1,
+    "buyingPrice": 0,
+    "quantity": 5
+  },
+  {
+    "itemId": 7,
+    "npcId": 1,
+    "buyingPrice": 0,
+    "quantity": 5
+  },
+  {
+    "itemId": 8,
+    "npcId": 1,
+    "buyingPrice": 0,
+    "quantity": 5
+  },
+  {
+    "itemId": 35,
+    "npcId": 1,
+    "buyingPrice": 0,
+    "quantity": 5
+  },
+  {
+    "itemId": 18,
+    "npcId": 2,
+    "buyingPrice": 15,
+    "quantity": 30
+  },
+  {
+    "itemId": 19,
+    "npcId": 2,
+    "buyingPrice": 25,
+    "quantity": 30
+  },
+  {
+    "itemId": 14,
+    "npcId": 2,
+    "buyingPrice": 16,
+    "quantity": 16
+  },
+  {
+    "itemId": 16,
+    "npcId": 2,
+    "buyingPrice": 10,
+    "quantity": 30
+  },
+  {
+    "itemId": 21,
+    "npcId": 4,
+    "buyingPrice": 10,
+    "quantity": 10
+  },
+  {
+    "itemId": 22,
+    "npcId": 4,
+    "buyingPrice": 20,
+    "quantity": 10
+  },
+  {
+    "itemId": 23,
+    "npcId": 4,
+    "buyingPrice": 30,
+    "quantity": 5
+  }
+]
