@@ -53,13 +53,22 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
                     }
                     if(isMouseOnSlot(xMouse, yMouse, xHud, temp) == SDL_TRUE){
                         index = (char) ((yMouse - temp - INV_TOP_BOT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_LINES) * 10 + (xMouse - xHud - INV_LEFT_RIGHT_PADDING) / (SLOT_SIDE + INV_SPACE_BTWN_SLOTS));
+
                         if(draggedItem != -1){
-                            if(draggedItem != index || heldInventory != inventoryPointer)
-                                swapInventoryItems(heldInventory, draggedItem, inventoryPointer, index);
-                            draggedItem = -1;
+                            if(heldInventory->ownerType == 0 && inventoryPointer->ownerType == 2) {
+                                sellItem(heldInventory, inventoryPointer, draggedItem);
+                                if(heldInventory->slots[draggedItem].id == 0) draggedItem = -1;
+                            }else if(heldInventory != inventoryPointer || draggedItem != index){
+                                if (draggedItem != index)
+                                    swapInventoryItems(heldInventory, draggedItem, inventoryPointer, index);
+                                draggedItem = -1;
+                            }
                         } else if(inventoryPointer->slots[index].id != 0) {
-                            draggedItem = index;
-                            heldInventory = inventoryPointer;
+                            if(inventoryPointer->ownerType != 2){
+                                draggedItem = index;
+                                heldInventory = inventoryPointer;
+                            } else
+                                buyItem(inventoryPointer == inventory ? secondInventory : inventory, inventoryPointer, index);
                         }
                     }
                     break;
