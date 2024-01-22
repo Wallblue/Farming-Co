@@ -58,11 +58,9 @@ char inventoryEventLoop(SDL_Renderer* renderer, Inventory* inventory, Inventory*
                             if(heldInventory->ownerType == 0 && inventoryPointer->ownerType == 2) {
                                 sellItem(heldInventory, inventoryPointer, draggedItem);
                                 if(heldInventory->slots[draggedItem].id == 0) draggedItem = -1;
-                            }else if(heldInventory != inventoryPointer || draggedItem != index){
-                                if (draggedItem != index)
+                            }else if(heldInventory != inventoryPointer || draggedItem != index)
                                     swapInventoryItems(heldInventory, draggedItem, inventoryPointer, index);
                                 draggedItem = -1;
-                            }
                         } else if(inventoryPointer->slots[index].id != 0) {
                             if(inventoryPointer->ownerType != 2){
                                 draggedItem = index;

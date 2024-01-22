@@ -317,7 +317,17 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                             else if (mapObjects[y / 32][x / 32] == '/' && mapFg[y / 32][x / 32] == '/' && zone == 2 || zone == 3)
                                                 soilFloor(x / 32, y / 32, soiledFloor, inventory->slots + (currentSlot - 1));
                                             else if (savedTrader == 1){
-                                                if(x >= screenWidth / 1.2 - 20 && y >= screenHeight / 2 && x <= screenWidth / 1.2 - 20 + screenWidth/7 && y <= screenHeight / 2 + screenHeight/12)printf("carré");
+                                                if(x >= screenWidth / 1.2 - 20 && y >= screenHeight / 2 && x <= screenWidth / 1.2 - 20 + screenWidth/7 && y <= screenHeight / 2 + screenHeight/12){
+                                                    Npc* npc = getNpcByChar(interactedWith);
+                                                    tempInventory.ownerType = 2;
+                                                    tempInventory.ownerId = npc->id;
+                                                    initInventory(tempInventory.slots);
+                                                    loadInventory(&tempInventory);
+                                                    makeHudDisappear(renderer, floorTexture, furnitureTexture, playerTexture, mapBg, mapFg, mapObjects, &playerSrc, &playerDst, zone,  soiledFloor, npcTexture);
+                                                    inventoryEventLoop(renderer, &tempInventory, inventory);
+                                                    free(npc->name);
+                                                    free(npc);
+                                                }
                                             }
 
                                         }else if (*data->pause == 1) {
