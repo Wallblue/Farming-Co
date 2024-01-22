@@ -246,7 +246,7 @@ void seeItemData(SDL_Renderer* renderer, Item *heldItem, unsigned char nX, unsig
 
     //texte pour la quantité
     if(heldItem->growTime > 9 || heldItem->energyBonus > 99)ySpace += 45;
-    else ySpace += 35;
+    else ySpace += 25;
     char qteText[20];
     sprintf(qteText, "Quantity : %d", heldItem->quantity);
     SDL_Surface* quantitySurface = loadItemSurface(quantitySurface, qteText, 32, DESC_BOX_WIDTH - 10);
