@@ -1,0 +1,38 @@
+﻿________________
+
+
+
+Guide d’utilisation
+
+
+ZQSD ou flèches directionnelles pour avancer
+
+
+F pour faire une action sur un coffre, lit ou PNJ
+
+
+ECHAP pour activer le menu de pause -> ECHAP ou bouton RESUME pour quitter le menu de pause, QUIT pour quitter le jeu 
+
+
+E pour ouvrir l’inventaire, appuyer sur les items dans les cases pour pouvoir les déplacer 
+
+
+Clique gauche avec un objet tenu dans l’inventaire pour poser un objet, graine
+
+
+Clique gauche pour bêcher la terre avec la houe en main
+
+
+Clique gauche avec le bon outil pour détruire un objet : 
+* Hache : bois, meubles
+* Pioche : caillou
+* Houe : graines et herbe
+
+
+Clique gauche sur “TRADE” quand on parle avec un PNJ marchand pour échanger avec 
+
+
+Clique gauche pour acheter sa marchandise  
+
+
+________________
