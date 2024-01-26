@@ -73,8 +73,8 @@ char* getContent(unsigned char id) {
     sqlite3_stmt* res;
     sqlite3* db;
     char* content;
-    srand(time(NULL));
     int chosenDialog = rand() % 3 + 1;
+    SDL_Log("%d\n",chosenDialog);
     int i;
 
     if (openDb(&db) == FAILURE) {
