@@ -27,7 +27,7 @@
 #define WALLET_WIDTH CLOCK_WIDTH
 #define WALLET_HEIGHT CLOCK_HEIGHT
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30]);
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30], unsigned char playerY);
 unsigned char printInventoryHUD(SDL_Renderer* renderer, Item inventory[30], char draggedItemIndex, int xHud, int yHud);
 SDL_Texture* loadItemTextureFromBMP(char* sprite, SDL_Renderer* renderer);
 unsigned char insertItemInSlot(SDL_Renderer* renderer, Item* item, SDL_Rect* slotRect);

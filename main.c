@@ -167,7 +167,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
         seeTime(renderer, data->timeInGame);
         if(seeWallet(renderer, lightLayer) == FAILURE)exitWithError("Can't load wallet");
         applyFilter(renderer,  data->timeInGame, lightLayer);
-        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots) == FAILURE)exitWithError("Can't load hotbar");
+        if (printHotbarHUD(renderer, hotbarTexture, currentSlot, inventory->slots, countY) == FAILURE)exitWithError("Can't load hotbar");
         if(npcInteract == 1) {
             chat(renderer, interactedWith, lightLayer, &savedDialog, hasInteracted, &savedTrader);
             hasInteracted = 1 ;

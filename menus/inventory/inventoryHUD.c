@@ -1,12 +1,10 @@
 #include "../menu.h"
-#include "../../colors.h"
-#include "../../define.h"
-#include <SDL.h>
-#include <string.h>
 
-unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30]){
+unsigned char printHotbarHUD(SDL_Renderer* renderer, SDL_Texture* hotbarTexture, unsigned char selectedSlot, Item inventory[30], unsigned char playerY){
     SDL_Rect hotbarSlot;
-    SDL_Rect hotbarDest = {(screenWidth - HOTBAR_WIDTH) / 2, screenHeight - SLOT_SIDE - 10, HOTBAR_WIDTH, SLOT_SIDE};
+    SDL_Rect hotbarDest = {playerY > mapHeight / 2 ? (CLOCK_X - HOTBAR_WIDTH) / 2 + 15 : (screenWidth - HOTBAR_WIDTH) / 2,
+                           playerY > mapHeight / 2 ? 10 : screenHeight - SLOT_SIDE - 10,
+                           HOTBAR_WIDTH, SLOT_SIDE};
     unsigned char i;
 
     if(SDL_SetRenderTarget(renderer, hotbarTexture) < 0) return FAILURE;
