@@ -186,10 +186,16 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                     if (*data->pause == 0 && npcInteract == 0 || event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_f) {
                         switch (event.key.keysym.sym) {
                             case SDLK_ESCAPE:
-                                if (*data->pause == 0) {
-                                    *data->pause = 1;
-                                } else
-                                    *data->pause = 0;
+                                if(npcInteract != 0){
+                                    npcInteract = 0;
+                                    hasInteracted = 0;
+                                    free(savedDialog);
+                                } else {
+                                    if (*data->pause == 0)
+                                        *data->pause = 1;
+                                    else
+                                        *data->pause = 0;
+                                }
                                 break;
 
                             //0: gauche, 1: droite, 2: haut, 3: bas
