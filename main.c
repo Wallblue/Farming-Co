@@ -308,8 +308,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
 
                                         if(*data->pause == 0) {
                                             if(mapObjects[y/32][x/32] != '/') {
-                                                err = 0;
-                                                destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory->slots + (currentSlot - 1));
+                                                err = destroyObject(x / 32, y / 32, zone, mapObjects, inventory,inventory->slots + (currentSlot - 1));
                                                 if (err == 3)
                                                     fprintf(stderr, "Inventory full !\n");
                                                 else if (err == 2)

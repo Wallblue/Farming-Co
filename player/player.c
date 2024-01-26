@@ -285,16 +285,7 @@ char destroyObject(unsigned char nX, unsigned char nY, char zone, unsigned char 
     if(openDb(&db) == FAILURE) return FAILURE;
 
     //if it's a bed (because takes 2 tiles)
-    if(objectMap[nY][nX] == 'J' || objectMap[nY][nX] == 'I') {
-        objectMap[nY + 1][nX] = '/';
-        objectMap[nY][nX] = '/';
-    }
-    if(objectMap[nY][nX] == 'T' || objectMap[nY][nX] == 'S') {
-        objectMap[nY - 1][nX] = '/';
-        objectMap[nY][nX] = '/';
-        nY--;
-    }
-
+    if(objectMap[nY][nX] == 'T' || objectMap[nY][nX] == 'S') nY--; //If it's a bed, we use the saved tile
 
     if(prepareRequest(db,
                       "SELECT tool.ability, objectItem.itemId, objectItem.evolution, object.state FROM object, item as objectItem, item as tool "
