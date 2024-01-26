@@ -3,7 +3,7 @@
 unsigned char seeWallet(SDL_Renderer* renderer, SDL_Texture* lightLayer){
     int rc;
 
-    SDL_Rect walletRect = {696, 64, 93, 36};
+    SDL_Rect walletRect = {WALLET_X, WALLET_Y, WALLET_WIDTH, WALLET_HEIGHT};
 
     SDL_SetRenderTarget(renderer, lightLayer);
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 150);

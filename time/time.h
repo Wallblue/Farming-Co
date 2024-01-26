@@ -7,6 +7,11 @@
 #ifndef FARMINGCO_TIME_H
 #define FARMINGCO_TIME_H
 
+#define CLOCK_X 696
+#define CLOCK_Y 14
+#define CLOCK_WIDTH 93
+#define CLOCK_HEIGHT 36
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>

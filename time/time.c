@@ -72,7 +72,7 @@ void seeTime(SDL_Renderer *renderer, const int* timeInGame) {
     TTF_Font* font = loadFont(64);
 
     SDL_Color textColor = {BLACK};
-    SDL_Rect bgRect = {696, 14, 93, 36};
+    SDL_Rect bgRect = {CLOCK_X, CLOCK_Y, CLOCK_WIDTH, CLOCK_HEIGHT};
 
     char text[20];
     if(*timeInGame < 17) {
