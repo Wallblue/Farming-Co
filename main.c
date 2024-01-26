@@ -252,6 +252,7 @@ void gameLoop(SDL_Renderer *renderer, SDL_Texture *floorTexture, SDL_Texture *pl
                                         if(inventoryEventLoop(renderer, &tempInventory, inventory) == -1) endGame = 1;
                                         break;
                                     case '0': case '1': case '2': case '3': case '4':
+                                        if(zone != 1) break; //To avoid talking with plants
                                         if(npcInteract == 0)
                                             npcInteract = 1;
                                         else {

@@ -511,7 +511,6 @@ void updateNPC() {
         }
     }
 
-    srand(time(NULL));
     int npc1Loc = rand() % 3;
     int npc2Loc = rand() % 3;
     int npc3Loc = rand() % 3;
